@@ -1,9 +1,9 @@
 from hyperqueue.client import Client
 from hyperqueue.job import Job
 
-from ..ctx import Context, InputConfiguration
+from ..ctx import Context
 from ..gmx import GMX
-from ..io import replace_in_place, remove
+from ..utils.io import delete_file, replace_in_place
 from ..paths import use_dir
 
 
@@ -54,7 +54,7 @@ def solvate(gmx: GMX, directory: str, topname: str):
         "-p", topology_path(topname),
         "-o", solvated
     ])
-    remove(f"topology/#topol_{topname}.top.1#")
+    delete_file(f"topology/#topol_{topname}.top.1#")
     replace_in_place(solvated, [("HOH", "SOL")])
 
 
@@ -69,7 +69,7 @@ def add_ions(ctx: Context, config: InputConfiguration, gmx: GMX, directory: str,
         "-o", add_ions,
         "-maxwarn", "2"
     ])
-    remove("mdout.mdp")
+    delete_file("mdout.mdp")
     gmx.execute([
         "genion",
         "-s", add_ions,
@@ -80,8 +80,8 @@ def add_ions(ctx: Context, config: InputConfiguration, gmx: GMX, directory: str,
         "-conc", "0.15",
         "-neutral"
     ], input=b"SOL\n")
-    remove(f"topology/#topol_{topname}.top.1#")
-    remove(add_ions)
+    delete_file(f"topology/#topol_{topname}.top.1#")
+    delete_file(add_ions)
 
 
 def energy_minimize(ctx: Context, gmx: GMX, client: Client, directory: str, topname: str):
