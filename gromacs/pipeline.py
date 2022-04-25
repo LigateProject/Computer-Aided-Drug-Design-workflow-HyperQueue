@@ -1,28 +1,18 @@
 import logging
 import shutil
-import subprocess
 from pathlib import Path
-from hyperqueue.client import Client
 
-from src.ctx import Context, InputConfiguration
-from src.parts.solvate_minimize import solvate_prepare
+from hyperqueue.cluster import LocalCluster, WorkerConfig
+from hyperqueue.job import Job
 
-ROOT = Path(__file__).parents[1].absolute()
-PMX_DIR = ROOT / "libs/pmx"
-WORK_DIR = ROOT / "experiments"
-MDP_DIR = ROOT / "libs/awh-benchmark/scripts/mdp"
-GMX_BINARY = ROOT / "libs/gromacs-2021.3/build/install/bin/gmx"
+from src.ctx import Context
+from src.gmx import GMX
+from src.input import ComputationTriple, ForceField, Protein
+from src.steps.pmx_input import PmxInputProvider
+from src.steps.solvate_minimize import solvate_prepare
 
-ctx = Context(pmx_dir=PMX_DIR, root_dir=WORK_DIR, mdp_dir=MDP_DIR, gmx_binary=GMX_BINARY)
-config = InputConfiguration(
-    protein="bace",
-    mutation="edge_CAT-13a_CAT-13m",
-    forcefield="AMBER",
-    itp_input_files=[...]
-)
-
-get_top_from_pmx("bace", "AMBER")
-get_top_from_ligen(...)
+# get_top_from_pmx("bace", "AMBER")
+# get_top_from_ligen(...)
 
 # 1) MDP per stage
 # 2) two .PDB files
@@ -37,10 +27,21 @@ get_top_from_ligen(...)
 # MPI only for proteins, with GPUs smaller number of ranks
 # GPUs should be configurable easily
 
-shutil.rmtree("../experiments", ignore_errors=True)
-script_dir = MDP_DIR.parent
-subprocess.run("./setGlobalVariables.sh", cwd=script_dir, check=True)
-subprocess.run("./01_assembleAndModifyInputFiles.sh", cwd=script_dir, check=True)
+mdpdir = Path("mdp")
+workdir = Path("work")
+gmx = GMX(Path("../libs/gromacs-2021.3/build/install/bin/gmx"))
+
+input = ComputationTriple(
+    protein=Protein.Bace,
+    mutation="edge_CAT-13a_CAT-13m",
+    forcefield=ForceField.Amber,
+)
+
+ctx = Context(
+    workdir=workdir,
+    mdpdir=mdpdir,
+    gmx=gmx
+)
 
 if __name__ == "__main__":
     logging.basicConfig(
@@ -48,5 +49,21 @@ if __name__ == "__main__":
         format="%(asctime)s %(name)s:%(levelname)-4s %(message)s",
         datefmt="%d-%m-%Y %H:%M:%S",
     )
-    client = Client()
-    solvate_prepare(ctx, client, config)
+    with LocalCluster() as cluster:
+        cluster.start_worker(WorkerConfig(cores=4))
+        client = cluster.client()
+
+        shutil.rmtree(workdir, ignore_errors=True)
+        shutil.rmtree("job-1", ignore_errors=True)
+
+        # Step 1: generate input files into `workdir`
+        pmx_path = Path("../libs/pmx")
+        pmx_provider = PmxInputProvider(pmx_path)
+        pmx_provider.provide_input(input, workdir)
+
+        # Step 2: solvate minimize
+        job = Job()
+        deps = solvate_prepare(ctx, input, job)
+
+        job_id = client.submit(job)
+        client.wait_for_jobs(job_ids=[job_id])

@@ -1,9 +1,8 @@
 import contextlib
 import os
 from pathlib import Path
-from typing import Union
 
-GenericPath = Union[Path, str]
+from .io import GenericPath
 
 PATH_STACK = []
 

@@ -1,7 +1,8 @@
 from pathlib import Path
 from typing import List
 
-from . import ComputationTriple, ForceField, GeneratedInput, InputProvider, Mutation, Protein
+from ..input import ComputationTriple, ForceField, InputProvider, Mutation, Protein
+from ..input.properties import protein_ff
 from ..utils.io import append_lines_to, append_to, copy_files, ensure_directory, get_file_lines, \
     paths_in_dir, replace_in_place
 
@@ -13,7 +14,7 @@ class PmxInputProvider(InputProvider):
     def __init__(self, pmx_path: Path):
         self.pmx_path = pmx_path.resolve()
 
-    def provide_input(self, input: ComputationTriple, directory: Path) -> GeneratedInput:
+    def provide_input(self, input: ComputationTriple, directory: Path):
         # TODO: thrombin logic
         assert input.protein == Protein.Bace
         assert input.forcefield == ForceField.Amber
@@ -94,8 +95,6 @@ ligand in water
 MOL 1
 """)
 
-        return GeneratedInput(pdb_files=[])
-
 
 def fix_masses_for_awh(itp_file: Path):
     with open(itp_file) as f:
@@ -112,8 +111,8 @@ def fix_masses_for_awh(itp_file: Path):
                 else:
                     mass = data[7]
                 f.write("%6s%12s%7s%7s%7s%7s%11s%11s%12s%11s%11s\n" % (
-                data[0], data[1], data[2], data[3], data[4], data[5], data[6], mass, data[8],
-                data[9], mass))
+                    data[0], data[1], data[2], data[3], data[4], data[5], data[6], mass, data[8],
+                    data[9], mass))
             else:
                 f.write(line)
             if (len(data) > 1 and data[1] == "atoms"):
@@ -183,12 +182,6 @@ def protein_name(protein: Protein) -> str:
     return {
         Protein.Bace: "bace"
     }[protein]
-
-
-def protein_ff(input: ComputationTriple) -> str:
-    return {
-        ForceField.Amber: "amber"
-    }[input.forcefield]
 
 
 def ligand_ff(input: ComputationTriple) -> str:

@@ -1,13 +1,16 @@
 import dataclasses
 from pathlib import Path
 
+from .gmx import GMX
+
 
 @dataclasses.dataclass
 class Context:
-    pmx_dir: Path
-    root_dir: Path
-    mdp_dir: Path
-    gmx_binary: Path
+    workdir: Path
+    mdpdir: Path
+    gmx: GMX
 
     def __post_init__(self):
-        self.root_dir.mkdir(parents=True, exist_ok=True)
+        self.workdir = self.workdir.resolve()
+        self.mdpdir = self.mdpdir.resolve()
+        self.workdir.mkdir(parents=True, exist_ok=True)

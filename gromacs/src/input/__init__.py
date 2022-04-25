@@ -7,9 +7,15 @@ from typing import List
 class Protein(enum.Enum):
     Bace = enum.auto()
 
+    def __repr__(self) -> str:
+        return self.name
+
 
 class ForceField(enum.Enum):
     Amber = enum.auto()
+
+    def __repr__(self) -> str:
+        return self.name
 
 
 Mutation = str
@@ -21,6 +27,9 @@ class ComputationTriple:
     mutation: Mutation
     forcefield: ForceField
 
+    def __repr__(self) -> str:
+        return f"(protein {self.protein}, mutation {self.mutation}, forcefield {self.forcefield})"
+
 
 @dataclasses.dataclass
 class GeneratedInput:
@@ -28,5 +37,5 @@ class GeneratedInput:
 
 
 class InputProvider:
-    def provide_input(self, input: ComputationTriple, directory: Path) -> GeneratedInput:
+    def provide_input(self, input: ComputationTriple, directory: Path):
         raise NotImplementedError
