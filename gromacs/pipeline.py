@@ -9,7 +9,7 @@ from src.ctx import Context
 from src.gmx import GMX
 from src.input import ComputationTriple, ForceField, Protein
 from src.steps.pmx_input import PmxInputProvider
-from src.steps.solvate_minimize import solvate_prepare
+from src.steps.solvate_minimize import MinimizationParams, solvate_prepare
 
 # get_top_from_pmx("bace", "AMBER")
 # get_top_from_ligen(...)
@@ -28,7 +28,7 @@ from src.steps.solvate_minimize import solvate_prepare
 # GPUs should be configurable easily
 
 mdpdir = Path("mdp")
-workdir = Path("work")
+workdir = Path("awh-job")
 gmx = GMX(Path("../libs/gromacs-2021.3/build/install/bin/gmx"))
 
 input = ComputationTriple(
@@ -43,6 +43,7 @@ ctx = Context(
     gmx=gmx
 )
 
+
 if __name__ == "__main__":
     logging.basicConfig(
         level=logging.DEBUG,
@@ -54,7 +55,6 @@ if __name__ == "__main__":
         client = cluster.client()
 
         shutil.rmtree(workdir, ignore_errors=True)
-        shutil.rmtree("job-1", ignore_errors=True)
 
         # Step 1: generate input files into `workdir`
         pmx_path = Path("../libs/pmx")
@@ -62,8 +62,9 @@ if __name__ == "__main__":
         pmx_provider.provide_input(input, workdir)
 
         # Step 2: solvate minimize
-        job = Job()
-        deps = solvate_prepare(ctx, input, job)
+        job = Job(workdir)
+        minimization_params = MinimizationParams(steps=100)
+        deps = solvate_prepare(ctx, input, minimization_params, job)
 
         job_id = client.submit(job)
         client.wait_for_jobs(job_ids=[job_id])

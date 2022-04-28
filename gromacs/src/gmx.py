@@ -37,18 +37,9 @@ class GMX:
             kwargs["stdin"] = subprocess.DEVNULL
 
         logging.info(f"Executing `{' '.join(cmd)}` in {workdir or os.getcwd()}")
-        result = subprocess.run(cmd,
-                                stdout=subprocess.PIPE,
-                                stderr=subprocess.PIPE,
-                                cwd=workdir,
-                                **kwargs)
+        result = subprocess.run(cmd, cwd=workdir, **kwargs)
         if result.returncode != 0:
-            raise Exception(f"""
-`{' '.join(cmd)}` resulted in error.
-Exit code: {result.returncode}
-Stdout: {result.stdout.decode()}
-Stderr: {result.stderr.decode()}
-""".strip())
+            raise Exception(f"`{' '.join(cmd)}` resulted in error. Exit code: {result.returncode}")
         return result
 
 
