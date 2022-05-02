@@ -4,6 +4,7 @@ from pathlib import Path
 
 from hyperqueue.cluster import LocalCluster, WorkerConfig
 from hyperqueue.job import Job
+from hyperqueue.visualization import visualize_job
 
 from src.ctx import Context
 from src.gmx import GMX
@@ -44,7 +45,6 @@ ctx = Context(
     gmx=gmx
 )
 
-
 if __name__ == "__main__":
     logging.basicConfig(
         level=logging.DEBUG,
@@ -63,13 +63,14 @@ if __name__ == "__main__":
         pmx_provider.provide_input(input, workdir)
 
         # Step 2: solvate minimize
-        job = Job(workdir)
+        job = Job(workdir, default_env=dict(HQ_PYLOG="DEBUG"))
         minimization_params = MinimizationParams(steps=100)
-        deps = solvate_prepare(ctx, input, minimization_params, job)
+        minimization_output = solvate_prepare(ctx, input, minimization_params, job)
 
         # Step 3: equilibrate
         equilibrate_params = EquilibrateParams(steps=100)
-        deps = equilibrate(ctx, input, equilibrate_params, deps, job)
+        equilibrate(ctx, input, equilibrate_params, minimization_output, job)
 
-        job_id = client.submit(job)
-        client.wait_for_jobs(job_ids=[job_id])
+        visualize_job(job, "job.dot")
+        submitted_job = client.submit(job)
+        client.wait_for_jobs([submitted_job])

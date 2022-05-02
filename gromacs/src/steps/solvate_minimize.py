@@ -1,7 +1,6 @@
 import dataclasses
 import logging
 from pathlib import Path
-from typing import List
 
 from hyperqueue.job import Job
 from hyperqueue.task.task import Task
@@ -31,6 +30,12 @@ class MinimizationWorkload:
 @dataclasses.dataclass
 class MinimizationPreparedData:
     mdp: Path
+
+
+@dataclasses.dataclass
+class MinimizationOutput:
+    ligand_task: Task
+    protein_task: Task
 
 
 def modify_grofile_inplace(path: GenericPath):
@@ -158,17 +163,23 @@ def energy_minimization_task(ctx: Context, input: MinimizationWorkload, triple: 
 
 
 def solvate_prepare(ctx: Context, triple: ComputationTriple, params: MinimizationParams,
-                    job: Job) -> List[Task]:
+                    job: Job) -> MinimizationOutput:
     ligand_dir = ctx.workdir / "ligand"
     ligand_dir.mkdir(exist_ok=True)
 
     protein_dir = ctx.workdir / "protein"
     protein_dir.mkdir(exist_ok=True)
 
-    inputs = [
-        MinimizationWorkload(lop=LigandOrProtein.Ligand, directory=ligand_dir),
-        MinimizationWorkload(lop=LigandOrProtein.Protein, directory=protein_dir)
-    ]
-    task = job.function(editconf_task, args=(ctx, inputs[0], inputs[1]))
-    return [job.function(energy_minimization_task, args=(ctx, input, triple, params), deps=[task])
-            for input in inputs]
+    ligand_workload = MinimizationWorkload(lop=LigandOrProtein.Ligand, directory=ligand_dir)
+    protein_workload = MinimizationWorkload(lop=LigandOrProtein.Protein, directory=protein_dir)
+    task = job.function(editconf_task, args=(ctx, ligand_workload, protein_workload),
+                        name="minimize-editconf")
+
+    ligand_task = job.function(energy_minimization_task,
+                               args=(ctx, ligand_workload, triple, params), deps=[task],
+                               name="minimize-ligand")
+    protein_task = job.function(energy_minimization_task,
+                                args=(ctx, protein_workload, triple, params), deps=[task],
+                                name="minimize-protein")
+
+    return MinimizationOutput(ligand_task=ligand_task, protein_task=protein_task)
