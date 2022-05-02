@@ -8,6 +8,7 @@ from hyperqueue.job import Job
 from src.ctx import Context
 from src.gmx import GMX
 from src.input import ComputationTriple, ForceField, Protein
+from src.steps.equilibrate import EquilibrateParams, equilibrate
 from src.steps.pmx_input import PmxInputProvider
 from src.steps.solvate_minimize import MinimizationParams, solvate_prepare
 
@@ -65,6 +66,10 @@ if __name__ == "__main__":
         job = Job(workdir)
         minimization_params = MinimizationParams(steps=100)
         deps = solvate_prepare(ctx, input, minimization_params, job)
+
+        # Step 3: equilibrate
+        equilibrate_params = EquilibrateParams(steps=100)
+        deps = equilibrate(ctx, input, equilibrate_params, deps, job)
 
         job_id = client.submit(job)
         client.wait_for_jobs(job_ids=[job_id])

@@ -2,7 +2,7 @@ import logging
 import os
 import subprocess
 from pathlib import Path
-from typing import Any, List, Optional
+from typing import Any, Dict, List, Optional
 
 from .utils.paths import GenericPath, resolve_path
 
@@ -28,7 +28,11 @@ class GMX:
         ])
 
     def execute(self, args: List[str], *, input: Optional[bytes] = None,
-                workdir: Optional[GenericPath] = None):
+                workdir: Optional[GenericPath] = None, env: Optional[Dict[str, str]] = None):
+        environment = os.environ.copy()
+        if env is not None:
+            environment.update(env)
+
         cmd = normalize_paths([self.gmx_path, *args])
         kwargs = {}
         if input is not None:
@@ -37,7 +41,7 @@ class GMX:
             kwargs["stdin"] = subprocess.DEVNULL
 
         logging.info(f"Executing `{' '.join(cmd)}` in {workdir or os.getcwd()}")
-        result = subprocess.run(cmd, cwd=workdir, **kwargs)
+        result = subprocess.run(cmd, cwd=workdir, env=environment, **kwargs)
         if result.returncode != 0:
             raise Exception(f"`{' '.join(cmd)}` resulted in error. Exit code: {result.returncode}")
         return result

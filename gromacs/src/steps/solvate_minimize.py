@@ -1,16 +1,15 @@
 import dataclasses
-import enum
 import logging
 from pathlib import Path
 from typing import List
 
 from hyperqueue.job import Job
-from hyperqueue.output import default_stdout
 from hyperqueue.task.task import Task
 
+from .common import LigandOrProtein, get_topname, topology_path
 from ..ctx import Context
 from ..input import ComputationTriple
-from ..input.properties import get_cl, get_na, protein_ff
+from ..input.properties import get_cl, get_na
 from ..mdp import render_mdp
 from ..utils.io import GenericPath, delete_file, replace_in_place
 
@@ -18,14 +17,6 @@ from ..utils.io import GenericPath, delete_file, replace_in_place
 @dataclasses.dataclass
 class MinimizationParams:
     steps: int = 100
-
-
-class LigandOrProtein(enum.Enum):
-    Ligand = enum.auto()
-    Protein = enum.auto()
-
-    def __repr__(self) -> str:
-        return self.name
 
 
 @dataclasses.dataclass
@@ -79,25 +70,11 @@ def corrected_box_path(input: MinimizationWorkload) -> Path:
     return input.directory / "correctBox.gro"
 
 
-TopName = str
-
-
-def topology_path(topname: TopName) -> str:
-    return f"topology/topol_{topname}.top"
-
-
-def get_topname(input: MinimizationWorkload, triple: ComputationTriple) -> TopName:
-    return {
-        LigandOrProtein.Ligand: "ligandInWater",
-        LigandOrProtein.Protein: protein_ff(triple)
-    }[input.lop]
-
-
 def solvate(ctx: Context, input: MinimizationWorkload, triple: ComputationTriple):
     logging.info(f"Running solvate step on {input}, {triple}")
 
     solvated = solvated_path(input)
-    topname = get_topname(input, triple)
+    topname = get_topname(input.lop, triple)
 
     ctx.gmx.execute([
         "solvate",
@@ -114,7 +91,7 @@ def add_ions(ctx: Context, input: MinimizationWorkload, triple: ComputationTripl
              params: MinimizationParams) -> MinimizationPreparedData:
     logging.info(f"Running add_ions step on {input}, {triple}")
 
-    topname = get_topname(input, triple)
+    topname = get_topname(input.lop, triple)
     topology = ctx.workdir / topology_path(topname)
     add_ions = input.directory / "addIons.tpr"
 
@@ -150,7 +127,7 @@ def energy_minimize(ctx: Context, input: MinimizationWorkload, triple: Computati
                     prepared: MinimizationPreparedData):
     logging.info(f"Running energy_minimize step on {input}, {triple}")
 
-    topname = get_topname(input, triple)
+    topname = get_topname(input.lop, triple)
     ctx.gmx.execute([
         "grompp",
         "-f", prepared.mdp,
@@ -193,6 +170,5 @@ def solvate_prepare(ctx: Context, triple: ComputationTriple, params: Minimizatio
         MinimizationWorkload(lop=LigandOrProtein.Protein, directory=protein_dir)
     ]
     task = job.function(editconf_task, args=(ctx, inputs[0], inputs[1]))
-    return [job.function(energy_minimization_task, args=(ctx, input, triple, params), deps=[task],
-                         stdout=default_stdout())
+    return [job.function(energy_minimization_task, args=(ctx, input, triple, params), deps=[task])
             for input in inputs]
