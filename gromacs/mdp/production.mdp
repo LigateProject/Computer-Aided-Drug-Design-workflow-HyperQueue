@@ -8,7 +8,7 @@ integrator               = md
 ; Start time and timestep in ps
 tinit                    = 0
 dt                       = 0.002
-nsteps                   = 10000000
+nsteps                   = {{ nsteps | default(10000000) }}
 
 ld_seed = -1
 ; For exact run continuation or redoing part of a run
@@ -203,7 +203,7 @@ awh1-dim1-coord-index      = 1 ; might not be necessary with fep-lambda
 ;awh1-dim1-force-constant   = 10000 ; high value suggested by reference manual; not needed with fep-lambda (only grompp error, not clear from BioExcel nor mdp homepage)
 awh1-dim1-start            = 0 ; BioExcel (mdp homepage only documents usage together with pull code)
 awh1-dim1-end              = 11 ; BioExcel (mdp homepage only documents usage together with pull code)
-awh1-dim1-diffusion        = 0.001 ; recommendation from BioExcel seminar: 0.001 -> might want to add this on the mdp homepage
+awh1-dim1-diffusion        = {{ awh1_dim1_diffusion | default(0.001) }} ; recommendation from BioExcel seminar: 0.001 -> might want to add this on the mdp homepage
 awh1-dim1-cover-diameter   = 0.0 ; stick to default here (must be changed if multiple walkers are used)
 
 ;refcoord-scaling = com; should not be needed: no position restraints applied

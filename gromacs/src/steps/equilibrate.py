@@ -1,6 +1,9 @@
 import dataclasses
+from pathlib import Path
+from typing import Tuple
 
 from hyperqueue.job import Job
+from hyperqueue.task.task import Task
 
 from .common import LigandOrProtein, LopWorkload, get_topname, topology_path
 from .solvate_minimize import MinimizationOutput
@@ -14,11 +17,24 @@ class EquilibrateParams:
     steps: int = 100
 
 
-def equilibrate_task(ctx: Context, workload: LopWorkload, triple: ComputationTriple,
-                     params: EquilibrateParams):
-    equi_dir = workload.directory / "equi_NVT"
-    equi_dir.mkdir(parents=True, exist_ok=True)
+@dataclasses.dataclass
+class EquilibratePartOutput:
+    directory: Path
+    equi_directory: Path
 
+
+@dataclasses.dataclass
+class EquilibrateOutput:
+    # Tasks are stored separately from the output to avoid passing task references
+    # as arguments to downstream tasks.
+    ligand_task: Task
+    ligand_output: EquilibratePartOutput
+    protein_task: Task
+    protein_output: EquilibratePartOutput
+
+
+def equilibrate_task(ctx: Context, workload: LopWorkload, triple: ComputationTriple,
+                     equi_dir: Path, params: EquilibrateParams):
     generated_mdp = "generated_eq_nvt_l0.mdp"
     render_mdp(ctx.mdpdir / "eq_nvt_l0.mdp", generated_mdp, nsteps=params.steps)
 
@@ -51,13 +67,32 @@ def equilibrate_task(ctx: Context, workload: LopWorkload, triple: ComputationTri
 
 
 def equilibrate(ctx: Context, triple: ComputationTriple, params: EquilibrateParams,
-                minimization_output: MinimizationOutput, job: Job):
+                minimization_output: MinimizationOutput, job: Job) -> EquilibrateOutput:
+    def create_task(workload: LopWorkload, dependency: Task, name: str) -> Tuple[Task, Path]:
+        equi_dir = workload.directory / "equi_NVT"
+        equi_dir.mkdir(parents=True, exist_ok=True)
+        return (job.function(equilibrate_task, args=(ctx, workload, triple, equi_dir, params),
+                             deps=[dependency], name=name), equi_dir)
+
     ligand_workload = LopWorkload(lop=LigandOrProtein.Ligand,
                                   directory=minimization_output.ligand_directory)
     protein_workload = LopWorkload(lop=LigandOrProtein.Protein,
                                    directory=minimization_output.protein_directory)
 
-    job.function(equilibrate_task, args=(ctx, ligand_workload, triple, params),
-                 deps=[minimization_output.ligand_task], name="equilibrate-ligand")
-    job.function(equilibrate_task, args=(ctx, protein_workload, triple, params),
-                 deps=[minimization_output.protein_task], name="equilibrate-protein")
+    ligand_task, ligand_equi_dir = create_task(ligand_workload, minimization_output.ligand_task,
+                                               "equilibrate-ligand")
+    protein_task, protein_equi_dir = create_task(protein_workload,
+                                                 minimization_output.protein_task,
+                                                 "equilibrate-protein")
+    return EquilibrateOutput(
+        ligand_task=ligand_task,
+        ligand_output=EquilibratePartOutput(
+            directory=ligand_workload.directory,
+            equi_directory=ligand_equi_dir
+        ),
+        protein_task=protein_task,
+        protein_output=EquilibratePartOutput(
+            directory=protein_workload.directory,
+            equi_directory=protein_equi_dir
+        )
+    )

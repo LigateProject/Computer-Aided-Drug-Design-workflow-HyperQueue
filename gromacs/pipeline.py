@@ -9,6 +9,7 @@ from hyperqueue.visualization import visualize_job
 from src.ctx import Context
 from src.gmx import GMX
 from src.input import ComputationTriple, ForceField, Protein
+from src.steps.awh import AWHParams, awh
 from src.steps.equilibrate import EquilibrateParams, equilibrate
 from src.steps.pmx_input import PmxInputProvider
 from src.steps.solvate_minimize import MinimizationParams, solvate_prepare
@@ -69,7 +70,11 @@ if __name__ == "__main__":
 
         # Step 3: equilibrate
         equilibrate_params = EquilibrateParams(steps=100)
-        equilibrate(ctx, input, equilibrate_params, minimization_output, job)
+        equilibrate_output = equilibrate(ctx, input, equilibrate_params, minimization_output, job)
+
+        # Step 4: AWH
+        awh_params = AWHParams(steps=100, diffusion=0.005, replicates=3)
+        awh(ctx, input, awh_params, equilibrate_output, job)
 
         visualize_job(job, "job.dot")
         submitted_job = client.submit(job)
