@@ -5,7 +5,7 @@ from pathlib import Path
 from hyperqueue.job import Job
 from hyperqueue.task.task import Task
 
-from .common import LigandOrProtein, get_topname, topology_path
+from .common import LigandOrProtein, LopWorkload, get_topname, topology_path
 from ..ctx import Context
 from ..input import ComputationTriple
 from ..input.properties import get_cl, get_na
@@ -19,15 +19,6 @@ class MinimizationParams:
 
 
 @dataclasses.dataclass
-class MinimizationWorkload:
-    lop: LigandOrProtein
-    directory: Path
-
-    def __repr__(self) -> str:
-        return f"{self.lop} at `{str(self.directory)}`"
-
-
-@dataclasses.dataclass
 class MinimizationPreparedData:
     mdp: Path
 
@@ -35,7 +26,9 @@ class MinimizationPreparedData:
 @dataclasses.dataclass
 class MinimizationOutput:
     ligand_task: Task
+    ligand_directory: Path
     protein_task: Task
+    protein_directory: Path
 
 
 def modify_grofile_inplace(path: GenericPath):
@@ -67,15 +60,15 @@ def modify_grofile_inplace(path: GenericPath):
     ])
 
 
-def solvated_path(input: MinimizationWorkload) -> Path:
+def solvated_path(input: LopWorkload) -> Path:
     return input.directory / "solvated.gro"
 
 
-def corrected_box_path(input: MinimizationWorkload) -> Path:
+def corrected_box_path(input: LopWorkload) -> Path:
     return input.directory / "correctBox.gro"
 
 
-def solvate(ctx: Context, input: MinimizationWorkload, triple: ComputationTriple):
+def solvate(ctx: Context, input: LopWorkload, triple: ComputationTriple):
     logging.info(f"Running solvate step on {input}, {triple}")
 
     solvated = solvated_path(input)
@@ -92,7 +85,7 @@ def solvate(ctx: Context, input: MinimizationWorkload, triple: ComputationTriple
     replace_in_place(solvated, [("HOH", "SOL")])
 
 
-def add_ions(ctx: Context, input: MinimizationWorkload, triple: ComputationTriple,
+def add_ions(ctx: Context, input: LopWorkload, triple: ComputationTriple,
              params: MinimizationParams) -> MinimizationPreparedData:
     logging.info(f"Running add_ions step on {input}, {triple}")
 
@@ -128,7 +121,7 @@ def add_ions(ctx: Context, input: MinimizationWorkload, triple: ComputationTripl
     return MinimizationPreparedData(mdp=Path(generated_mdp))
 
 
-def energy_minimize(ctx: Context, input: MinimizationWorkload, triple: ComputationTriple,
+def energy_minimize(ctx: Context, input: LopWorkload, triple: ComputationTriple,
                     prepared: MinimizationPreparedData):
     logging.info(f"Running energy_minimize step on {input}, {triple}")
 
@@ -145,8 +138,7 @@ def energy_minimize(ctx: Context, input: MinimizationWorkload, triple: Computati
     ctx.gmx.execute(["mdrun", "-v", "-deffnm", "EM"], workdir=input.directory)
 
 
-def editconf_task(ctx: Context, input_ligand: MinimizationWorkload,
-                  input_protein: MinimizationWorkload):
+def editconf_task(ctx: Context, input_ligand: LopWorkload, input_protein: LopWorkload):
     # Place the molecule of interest in a rhombic dodecahedron of the desired size (1.5 nm
     # distance to the edges)
     logging.info(f"Running editconf step on {input_ligand} and {input_protein}")
@@ -155,7 +147,7 @@ def editconf_task(ctx: Context, input_ligand: MinimizationWorkload,
     modify_grofile_inplace(corrected_box_path(input_protein))
 
 
-def energy_minimization_task(ctx: Context, input: MinimizationWorkload, triple: ComputationTriple,
+def energy_minimization_task(ctx: Context, input: LopWorkload, triple: ComputationTriple,
                              params: MinimizationParams):
     solvate(ctx, input, triple)
     prepared = add_ions(ctx, input, triple, params)
@@ -170,8 +162,8 @@ def solvate_prepare(ctx: Context, triple: ComputationTriple, params: Minimizatio
     protein_dir = ctx.workdir / "protein"
     protein_dir.mkdir(exist_ok=True)
 
-    ligand_workload = MinimizationWorkload(lop=LigandOrProtein.Ligand, directory=ligand_dir)
-    protein_workload = MinimizationWorkload(lop=LigandOrProtein.Protein, directory=protein_dir)
+    ligand_workload = LopWorkload(lop=LigandOrProtein.Ligand, directory=ligand_dir)
+    protein_workload = LopWorkload(lop=LigandOrProtein.Protein, directory=protein_dir)
     task = job.function(editconf_task, args=(ctx, ligand_workload, protein_workload),
                         name="minimize-editconf")
 
@@ -182,4 +174,9 @@ def solvate_prepare(ctx: Context, triple: ComputationTriple, params: Minimizatio
                                 args=(ctx, protein_workload, triple, params), deps=[task],
                                 name="minimize-protein")
 
-    return MinimizationOutput(ligand_task=ligand_task, protein_task=protein_task)
+    return MinimizationOutput(
+        ligand_task=ligand_task,
+        ligand_directory=ligand_dir,
+        protein_task=protein_task,
+        protein_directory=protein_dir
+    )
