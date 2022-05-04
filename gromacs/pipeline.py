@@ -9,6 +9,7 @@ from hyperqueue.visualization import visualize_job
 from src.ctx import Context
 from src.gmx import GMX
 from src.input import ComputationTriple, ForceField, Protein
+from src.steps.analyze import analyze
 from src.steps.awh import AWHParams, awh
 from src.steps.equilibrate import EquilibrateParams, equilibrate
 from src.steps.pmx_input import PmxInputProvider
@@ -34,7 +35,7 @@ mdpdir = Path("mdp")
 workdir = Path("awh-job")
 gmx = GMX(Path("../libs/gromacs-2021.3/build/install/bin/gmx"))
 
-input = ComputationTriple(
+triple = ComputationTriple(
     protein=Protein.Bace,
     mutation="edge_CAT-13a_CAT-13m",
     forcefield=ForceField.Amber,
@@ -61,20 +62,23 @@ if __name__ == "__main__":
         # Step 1: generate input files into `workdir`
         pmx_path = Path("../libs/pmx")
         pmx_provider = PmxInputProvider(pmx_path)
-        pmx_provider.provide_input(input, workdir)
+        pmx_provider.provide_input(triple, workdir)
 
         # Step 2: solvate minimize
         job = Job(workdir, default_env=dict(HQ_PYLOG="DEBUG"))
         minimization_params = MinimizationParams(steps=100)
-        minimization_output = solvate_prepare(ctx, input, minimization_params, job)
+        minimization_output = solvate_prepare(ctx, triple, minimization_params, job)
 
         # Step 3: equilibrate
         equilibrate_params = EquilibrateParams(steps=100)
-        equilibrate_output = equilibrate(ctx, input, equilibrate_params, minimization_output, job)
+        equilibrate_output = equilibrate(ctx, triple, equilibrate_params, minimization_output, job)
 
         # Step 4: AWH
-        awh_params = AWHParams(steps=100, diffusion=0.005, replicates=3)
-        awh(ctx, input, awh_params, equilibrate_output, job)
+        awh_params = AWHParams(steps=5000, diffusion=0.005, replicates=3)
+        awh_output = awh(ctx, triple, awh_params, equilibrate_output, job)
+
+        # Step 5: analyze
+        analyze(ctx, awh_output, job)
 
         visualize_job(job, "job.dot")
         submitted_job = client.submit(job)
