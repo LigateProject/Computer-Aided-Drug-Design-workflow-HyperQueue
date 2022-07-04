@@ -6,10 +6,9 @@ from typing import List, Optional
 import numpy as np
 from hyperqueue.job import Job
 
+from ..ctx import Context
 from .awh import AWHOutput, AWHPartOutput
 from .common import LigandOrProtein
-from ..ctx import Context
-
 
 # With nsteps = 5000 and dt = 0.002, you need TMAX = 5000 * 0.002 = 10.
 
@@ -45,8 +44,9 @@ class AnalysisResult:
     difference: float
 
 
-def calculate_diff_error(ctx: Context, inputs: List[AWHPartOutput],
-                         lop: LigandOrProtein) -> AnalysisResult:
+def calculate_diff_error(
+    ctx: Context, inputs: List[AWHPartOutput], lop: LigandOrProtein
+) -> AnalysisResult:
     items = [input for input in inputs if input.lop == lop]
     awh_directory = items[0].awh_directory
     tmax = 10  # TODO: calculate from input parameters, currently assumes 5000 AWH steps
@@ -60,15 +60,22 @@ def calculate_diff_error(ctx: Context, inputs: List[AWHPartOutput],
         deltas = []
         for run in items:
             run_dir = run.run_directory
-            ctx.gmx.execute([
-                "awh",
-                "-f", run_dir / "awh.edr",
-                "-s", run_dir / "awh.tpr",
-                "-o", run_dir / "awh_pmf.xvg",
-                "-more",
-                "-b", str(tmax),
-                "-e", str(tmax)
-            ])
+            ctx.gmx.execute(
+                [
+                    "awh",
+                    "-f",
+                    run_dir / "awh.edr",
+                    "-s",
+                    run_dir / "awh.tpr",
+                    "-o",
+                    run_dir / "awh_pmf.xvg",
+                    "-more",
+                    "-b",
+                    str(tmax),
+                    "-e",
+                    str(tmax),
+                ]
+            )
             output_file = run_dir / f"awh_pmf_t{tmax}.xvg"
             deltag0, deltag1 = find_values_by_prefix(output_file, [LAMBDA0, LAMBDA1])
             deltag = float(deltag1) - float(deltag0)
@@ -102,10 +109,7 @@ def calculate_diff_error(ctx: Context, inputs: List[AWHPartOutput],
             difference = -average
         else:
             difference = average
-    return AnalysisResult(
-        error=error,
-        difference=difference
-    )
+    return AnalysisResult(error=error, difference=difference)
 
 
 def analyze_task(ctx: Context, inputs: List[AWHPartOutput]):
@@ -122,5 +126,9 @@ def analyze_task(ctx: Context, inputs: List[AWHPartOutput]):
 
 def analyze(ctx: Context, awh_output: AWHOutput, job: Job):
     inputs = [item.output for item in awh_output.outputs]
-    job.function(analyze_task, args=(ctx, inputs),
-                 deps=[item.task for item in awh_output.outputs], name="analysis")
+    job.function(
+        analyze_task,
+        args=(ctx, inputs),
+        deps=[item.task for item in awh_output.outputs],
+        name="analysis",
+    )

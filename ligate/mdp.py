@@ -1,6 +1,8 @@
 from pathlib import Path
-from .utils.io import GenericPath
+
 from jinja2 import Template
+
+from .utils.io import GenericPath
 
 
 def load_template(path: Path) -> Template:

@@ -33,5 +33,5 @@ def topology_path(topname: TopName) -> str:
 def get_topname(lop: LigandOrProtein, triple: ComputationTriple) -> TopName:
     return {
         LigandOrProtein.Ligand: "ligandInWater",
-        LigandOrProtein.Protein: protein_ff(triple)
+        LigandOrProtein.Protein: protein_ff(triple),
     }[lop]

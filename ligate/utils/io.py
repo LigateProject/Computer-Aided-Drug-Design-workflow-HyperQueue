@@ -3,7 +3,6 @@ import shutil
 from pathlib import Path
 from typing import Iterable, List, Optional, Tuple, Union
 
-
 GenericPath = Union[Path, str]
 
 
