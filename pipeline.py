@@ -6,14 +6,14 @@ from hyperqueue.cluster import LocalCluster, WorkerConfig
 from hyperqueue.job import Job
 from hyperqueue.visualization import visualize_job
 
-from src.ctx import Context
-from src.gmx import GMX
-from src.input import ComputationTriple, ForceField, Protein
-from src.steps.analyze import analyze
-from src.steps.awh import AWHParams, awh
-from src.steps.equilibrate import EquilibrateParams, equilibrate
-from src.steps.pmx_input import PmxInputProvider
-from src.steps.solvate_minimize import MinimizationParams, solvate_prepare
+from ligate.ctx import Context
+from ligate.gmx import GMX
+from ligate.input import ComputationTriple, ForceField, Protein
+from ligate.steps.analyze import analyze
+from ligate.steps.awh import AWHParams, awh
+from ligate.steps.equilibrate import EquilibrateParams, equilibrate
+from ligate.steps.pmx_input import PmxInputProvider
+from ligate.steps.solvate_minimize import MinimizationParams, solvate_prepare
 
 # get_top_from_pmx("bace", "AMBER")
 # get_top_from_ligen(...)
