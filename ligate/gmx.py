@@ -8,8 +8,8 @@ from .utils.paths import GenericPath, resolve_path
 
 
 class GMX:
-    def __init__(self, path: Optional[Path] = None):
-        self.gmx_path = (path or Path("gmx")).resolve()
+    def __init__(self, path: Optional[GenericPath] = None):
+        self.gmx_path = Path(path).resolve() if path is not None else Path("gmx")
 
     @property
     def binary_path(self) -> Path:
