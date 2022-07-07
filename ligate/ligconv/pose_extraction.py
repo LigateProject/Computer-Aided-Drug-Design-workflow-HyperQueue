@@ -1,6 +1,8 @@
 import itertools
+import tempfile
 
-from ..utils.io import GenericPath
+from ..utils.io import GenericPath, delete_file
+from ..wrapper.babel import Babel
 
 
 def iterate_poses(file):
@@ -22,10 +24,12 @@ def iterate_poses(file):
 
 
 # Extracts pose data to a mol2 file
-def extract_poses(pose_file: GenericPath, pose_number: int, output: GenericPath):
+def extract_pose(pose_file: GenericPath, pose_number: int, output: GenericPath):
     """
     Extract a single pose with the given number (index starting from 0) from the `pose_file`.
     Writes the pose into `output`.
+
+    The poses file is also cleaned with Babel.
     """
     with open(pose_file) as file:
         pose_data = list(
@@ -36,6 +40,7 @@ def extract_poses(pose_file: GenericPath, pose_number: int, output: GenericPath)
     with open(output, "w") as file:
         for line in pose_data[0]:
             file.write(f"{line}\n")
+
     """
     with open(pose_file) as file:
         forbiddenLines = []
@@ -81,3 +86,19 @@ def extract_poses(pose_file: GenericPath, pose_number: int, output: GenericPath)
             elif count/4.0 == intNumber:
                 if (line.find("#") == -1) and (len(line.split()) > 0):
                     output_file.write(line)"""
+
+
+def extract_and_clean_pose(
+    pose_file: GenericPath, pose_number: int, output: GenericPath, babel: Babel
+):
+    """
+    Extract a single pose with the given number (index starting from 0) from the `pose_file`.
+    Writes the pose into `output`.
+
+    The poses file is also cleaned with Babel.
+    """
+    with tempfile.NamedTemporaryFile(delete=False, suffix=".mol2") as tmpfile:
+        temp_pose_file = tmpfile.name
+    extract_pose(pose_file, pose_number, temp_pose_file)
+    babel.normalize_mol2(temp_pose_file, output)
+    delete_file(temp_pose_file)

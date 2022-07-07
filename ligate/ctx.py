@@ -1,7 +1,7 @@
 import dataclasses
 from pathlib import Path
 
-from .gmx import GMX
+from .wrapper.gmx import GMX
 
 
 @dataclasses.dataclass

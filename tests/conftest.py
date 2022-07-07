@@ -12,8 +12,10 @@ ROOT_DIR = os.path.dirname(PYTEST_DIR)
 sys.path.insert(0, ROOT_DIR)
 
 
-from ligate.gmx import GMX  # noqa
 from ligate.utils.io import GenericPath  # noqa
+from ligate.wrapper.babel import Babel  # noqa
+from ligate.wrapper.binarywrapper import BinaryWrapper  # noqa
+from ligate.wrapper.gmx import GMX  # noqa
 
 
 # Utility functions
@@ -35,21 +37,29 @@ def change_workdir(workdir: GenericPath):
         os.chdir(cwd)
 
 
-def gromacs_sanity_check(path: GenericPath):
+def wrapper_sanity_check(wrapper: BinaryWrapper, name: str, env_var: str):
     try:
-        subprocess.run([path], check=True)
+        subprocess.run([str(wrapper.binary_path)], check=True)
     except BaseException as e:
         raise Exception(
-            f"It was not possible to execute Gromacs\n{e}\nIf Gromacs is not "
+            f"It was not possible to execute {name}\n{e}\nIf {name} is not "
             f"available globally, provide a path to it in environment variable "
-            f"`GMX_PATH`."
+            f"`{env_var}`."
         )
 
 
-# Fixture
+# Fixtures
 @pytest.fixture(scope="function")
 def gmx() -> GMX:
     gmx_path = os.environ.get("GMX_PATH")
     gmx = GMX(gmx_path)
-    gromacs_sanity_check(str(gmx.binary_path))
+    wrapper_sanity_check(gmx, "Gromacs", "GMX_PATH")
     return gmx
+
+
+@pytest.fixture(scope="function")
+def babel() -> Babel:
+    babel_path = os.environ.get("OPENBABEL_PATH")
+    babel = Babel(babel_path)
+    wrapper_sanity_check(babel, "OpenBabel", "OPENBABEL_PATH")
+    return babel

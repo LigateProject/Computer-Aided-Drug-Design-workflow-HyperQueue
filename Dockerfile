@@ -9,3 +9,6 @@ COPY scripts scripts
 
 # Install Gromacs
 RUN ./scripts/install-gromacs.sh build /usr/local
+
+# Install OpenBabel
+RUN ./scripts/install-openbabel.sh build /usr/local

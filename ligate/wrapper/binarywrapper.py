@@ -2,40 +2,18 @@ import logging
 import os
 import subprocess
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Union
 
-from .utils.paths import GenericPath, resolve_path
+from ..utils.io import GenericPath
 
 
-class GMX:
-    def __init__(self, path: Optional[GenericPath] = None):
-        self.gmx_path = Path(path).resolve() if path is not None else Path("gmx")
-
-    @property
-    def binary_path(self) -> Path:
-        return self.gmx_path
-
-    def editconf(self, input: GenericPath, output: GenericPath):
-        input = resolve_path(input)
-        output = resolve_path(output)
-
-        return self.execute(
-            [
-                "editconf",
-                "-f",
-                str(input),
-                "-o",
-                str(output),
-                "-bt",
-                "dodecahedron",
-                "-d",
-                "1.5",
-            ]
-        )
+class BinaryWrapper:
+    def __init__(self, path: Optional[GenericPath], fallback: str):
+        self.binary_path = Path(path).resolve() if path is not None else Path(fallback)
 
     def execute(
         self,
-        args: List[str],
+        args: List[Union[str, Path, int]],
         *,
         input: Optional[bytes] = None,
         workdir: Optional[GenericPath] = None,
@@ -45,7 +23,7 @@ class GMX:
         if env is not None:
             environment.update(env)
 
-        cmd = normalize_arguments([self.gmx_path, *args])
+        cmd = normalize_arguments([self.binary_path, *args])
         kwargs = {}
         if input is not None:
             kwargs["input"] = input

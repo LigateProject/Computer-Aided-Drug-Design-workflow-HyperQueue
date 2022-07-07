@@ -3,9 +3,9 @@ import os.path
 from pathlib import Path
 from typing import List
 
-from ..gmx import GMX
 from ..utils.io import GenericPath
 from ..utils.paths import use_dir
+from ..wrapper.gmx import GMX
 
 
 @dataclasses.dataclass
