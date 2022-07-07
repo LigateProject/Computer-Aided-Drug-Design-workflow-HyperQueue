@@ -8,7 +8,7 @@ from ..utils.io import (
     append_to,
     copy_files,
     ensure_directory,
-    get_file_lines,
+    iterate_file_lines,
     paths_in_dir,
     replace_in_place,
 )
@@ -53,19 +53,21 @@ class PmxInputProvider(InputProvider):
         # Fuse all elements into one PDB file
         merged_pdb = structure_dir / "full.pdb"
         append_lines_to(
-            get_file_lines(structure_protein_files[0]), merged_pdb, "ENDMDL"
+            iterate_file_lines(structure_protein_files[0]), merged_pdb, "ENDMDL"
         )
         append_lines_to(
-            get_file_lines(structure_dir / "mergedA.pdb", skip=2), merged_pdb, "ENDMDL"
+            iterate_file_lines(structure_dir / "mergedA.pdb", skip=2),
+            merged_pdb,
+            "ENDMDL",
         )
 
         assert len(structure_protein_files) <= 3
         if len(structure_protein_files) > 2:
             append_lines_to(
-                get_file_lines(structure_protein_files[2]), merged_pdb, "ENDMDL"
+                iterate_file_lines(structure_protein_files[2]), merged_pdb, "ENDMDL"
             )
         if len(structure_protein_files) > 1:
-            append_lines_to(get_file_lines(structure_protein_files[1]), merged_pdb)
+            append_lines_to(iterate_file_lines(structure_protein_files[1]), merged_pdb)
 
         """
         Topology
