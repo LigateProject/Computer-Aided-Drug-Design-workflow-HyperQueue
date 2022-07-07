@@ -1,7 +1,7 @@
 import pytest
 
 from ligate.ligconv.pdb import convert_pdb_to_gmx
-from ligate.ligconv.pose_extraction import extract_and_clean_pose
+from ligate.ligconv.pose_extraction import extract_and_clean_pose, extract_pose
 from ligate.wrapper.gmx import GMX
 
 from .conftest import data_path
@@ -14,7 +14,7 @@ def test_convert_pdb_to_gmx(gmx: GMX, tmpdir):
 
 
 @pytest.mark.parametrize("pose", (0, 1, 3))
-def test_extract_pose(pose: int, tmpdir, babel):
+def test_extract_and_clean_pose(pose: int, tmpdir, babel):
     pose_path = data_path(
         "ligen/p38/ligands_gaff2/lig_p38a_2aa/out_amber_pose_000001.txt"
     )
@@ -22,3 +22,23 @@ def test_extract_pose(pose: int, tmpdir, babel):
     output = tmpdir / "pose.mol2"
     extract_and_clean_pose(pose_path, pose, output, babel)
     check_files_are_equal(data_path(f"ligen/p38/fixtures/pose{pose}.mol2"), output)
+
+
+def test_extract_pose_with_dummy_atoms(tmpdir):
+    pose_path = data_path(
+        "ligen/p38/ligands_gaff2/lig_p38a_2c/out_amber_pose_000001.txt"
+    )
+
+    output = tmpdir / "pose.mol2"
+    extract_pose(pose_path, 0, output)
+    check_files_are_equal(data_path("ligen/p38/fixtures/pose-dummy-atoms.mol2"), output)
+
+
+def test_extract_pose_with_dummy_bonds(tmpdir):
+    pose_path = data_path(
+        "ligen/p38/ligands_gaff2/lig_p38a_2c/out_amber_pose_000002.txt"
+    )
+
+    output = tmpdir / "pose.mol2"
+    extract_pose(pose_path, 0, output)
+    check_files_are_equal(data_path("ligen/p38/fixtures/pose-dummy-bonds.mol2"), output)

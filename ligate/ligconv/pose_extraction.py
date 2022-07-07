@@ -1,8 +1,39 @@
+import dataclasses
 import itertools
 import tempfile
+from typing import List
 
 from ..utils.io import GenericPath, delete_file
 from ..wrapper.babel import Babel
+
+
+@dataclasses.dataclass
+class PoseSection:
+    header: str
+    lines: List[str]
+
+
+@dataclasses.dataclass
+class Pose:
+    molecule: PoseSection
+    atoms: PoseSection
+    bonds: PoseSection
+    substructure: PoseSection
+
+
+def split_by_prefix(lines: List[str], prefix: str) -> List[PoseSection]:
+    data = []
+    for line in lines:
+        if line.startswith(prefix):
+            data.append(PoseSection(line, []))
+        else:
+            data[-1].lines.append(line)
+    return data
+
+
+def line_as_numbers(line: str, indices: List[int]) -> List[int]:
+    parts = line.split()
+    return [int(parts[index]) for index in indices]
 
 
 def iterate_poses(file):
@@ -21,6 +52,43 @@ def iterate_poses(file):
         else:
             continue
         pose_lines.append(line.rstrip())
+    if pose_lines:
+        yield list(pose_lines)
+
+
+def parse_pose(lines: List[str]) -> Pose:
+    lines = [line.rstrip() for line in lines]
+    molecule, atoms, bonds, substructure = split_by_prefix(lines, "@<TRIPOS>")
+    atom_count, bond_count = line_as_numbers(molecule.lines[1], [0, 1])
+    assert atom_count == len(atoms.lines)
+    assert bond_count == len(bonds.lines)
+
+    # Filter dummy atoms
+    dummy_atoms = set()
+    valid_atom_lines = []
+    for atom in atoms.lines:
+        if "Du" in atom:
+            dummy_atoms.add(line_as_numbers(atom, [0])[0])
+        else:
+            valid_atom_lines.append(atom)
+
+    # Filter bonds containing dummy atoms
+    valid_bond_lines = []
+    for bond in bonds.lines:
+        atom_a, atom_b = line_as_numbers(bond, [1, 2])
+        if atom_a not in dummy_atoms and atom_b not in dummy_atoms:
+            valid_bond_lines.append(bond)
+
+    return Pose(
+        molecule=molecule,
+        atoms=PoseSection(atoms.header, valid_atom_lines),
+        bonds=PoseSection(bonds.header, valid_bond_lines),
+        substructure=substructure,
+    )
+
+
+def join_lines(lines: List[str], separator="\n") -> str:
+    return separator.join(lines)
 
 
 # Extracts pose data to a mol2 file
@@ -37,55 +105,31 @@ def extract_pose(pose_file: GenericPath, pose_number: int, output: GenericPath):
         )
         assert pose_data
 
+    pose = parse_pose(pose_data[0])
+
     with open(output, "w") as file:
-        for line in pose_data[0]:
-            file.write(f"{line}\n")
+        # Write molecule header
+        file.write(f"{pose.molecule.header}\n")
+        file.write(f"{pose.molecule.lines[0]}\n")
 
-    """
-    with open(pose_file) as file:
-        forbiddenLines = []
-        forbiddenNumbers = []
-        forbiddenAtoms = 0
-        forbiddenBonds = 0
-        count = 0.0
-        for line in file:
-            if "<TRIPOS>" in line:
-                count += 1.0
-            if (count / 4.0 > pose_number - 1) and (count / 4.0 < pose_number):
-                lineToTest = line.split()
-                # check atoms
-                if "Du" in lineToTest:
-                    forbiddenNumbers.append(lineToTest[0])
-                    forbiddenLines.append(line)
-                    forbiddenAtoms += 1
-                # check bonds
-                if (len(lineToTest) > 2) and (lineToTest[1] in forbiddenNumbers
-                or lineToTest[2] in forbiddenNumbers):
-                    forbiddenLines.append(line)
-                    forbiddenBonds += 1
+        nums = line_as_numbers(pose.molecule.lines[1], [0, 1, 2, 3, 4])
+        file.write(
+            f"{len(pose.atoms.lines):5} {len(pose.bonds.lines):5} "
+            f"{nums[2]:5} {nums[3]:5} {nums[4]:5}\n"
+        )
+        file.write(f"{join_lines(pose.molecule.lines[2:])}\n")
 
-    file.seek(0)
+        # Write atoms
+        file.write(f"{pose.atoms.header}\n")
+        file.write(f"{join_lines(pose.atoms.lines)}\n")
 
-    with open(output, "w") as output_file:
-        # let's hope babel doesn't require atom numbering in MOL2 files to be continuous
-        count = 0.0
-        for line in file:
-            if "<TRIPOS>" in line:
-                count += 1.0
-            if (count/4.0 > intNumber-1) and (count/4.0 < intNumber):
-                if line not in forbiddenLines:
-                    # correct header
-                    lineToTest = line.split()
-                    if (lineToTest[0] in forbiddenNumbers) and (len(lineToTest) == 5):
-                        output_file.write("%5d %5d %5d %5d %5d\n" %
-                        (int(lineToTest[0])-forbiddenAtoms,
-                        int(lineToTest[1])-forbiddenBonds,
-                        int(lineToTest[2]), int(lineToTest[3]), int(lineToTest[4])))
-                        continue
-                    output_file.write(line)
-            elif count/4.0 == intNumber:
-                if (line.find("#") == -1) and (len(line.split()) > 0):
-                    output_file.write(line)"""
+        # Write bonds
+        file.write(f"{pose.bonds.header}\n")
+        file.write(f"{join_lines(pose.bonds.lines)}\n")
+
+        # Write substructure
+        file.write(f"{pose.substructure.header}\n")
+        file.write(f"{join_lines(pose.substructure.lines)}\n")
 
 
 def extract_and_clean_pose(
