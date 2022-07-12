@@ -17,7 +17,7 @@ tar -xvf ${GROMACS_VERSION}.tar.gz
 
 cd ${GROMACS_VERSION}
 
-mkdir build && cd build
+mkdir -p build && cd build
 cmake -DCMAKE_BUILD_TYPE=Release \
   -DGMX_BUILD_OWN_FFTW=ON \
   -DCMAKE_INSTALL_PREFIX="${INSTALL_DIR}" \
