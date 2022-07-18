@@ -1,26 +1,30 @@
 import difflib
+import os
 import shutil
+from pathlib import Path
+from typing import List
 
 from ligate.utils.io import GenericPath
 
-from ..conftest import is_bless_enabled
+from ..conftest import BlessMode, get_bless_mode
 
 
-def check_file_equals(path: str, content):
-    with open(path) as f:
-        assert f.read() == str(content)
+def bless_file(expected: GenericPath, actual: GenericPath):
+    os.makedirs(Path(expected).parent, exist_ok=True)
+    shutil.copyfile(actual, expected)
+    print(f"Blessing {expected} with {actual}")
 
 
 def check_files_are_equal(expected: GenericPath, actual: GenericPath):
     try:
         expected_file = open(expected)
     except FileNotFoundError:
-        if is_bless_enabled():
-            shutil.copyfile(actual, expected)
+        if get_bless_mode().can_create():
+            bless_file(expected, actual)
             return
 
         raise Exception(
-            "Expected file `expected` not found. Run test again with BLESS=1 to "
+            "Expected file `expected` not found. Run test again with BLESS=create to "
             "create it."
         )
 
@@ -29,6 +33,10 @@ def check_files_are_equal(expected: GenericPath, actual: GenericPath):
         actual_file = actual_file.read()
 
         if expected_file != actual_file:
+            if get_bless_mode() == BlessMode.Overwrite:
+                bless_file(expected, actual)
+                return
+
             error = f"{expected} and {actual} do not match\n"
             for line in difflib.unified_diff(
                 expected_file.splitlines(),
@@ -37,4 +45,20 @@ def check_files_are_equal(expected: GenericPath, actual: GenericPath):
                 tofile=str(actual),
             ):
                 error += f"{line}\n"
+            error += "Run test again with BLESS=ovewrite to bless the test."
             raise Exception(error)
+
+
+def remove_lines(path: GenericPath, lines: List[int]):
+    lines = set(lines)
+
+    output = []
+    with open(path) as f:
+        for (index, line) in enumerate(f):
+            if index in lines:
+                continue
+            output.append(line)
+
+    with open(path, "w") as f:
+        for line in output:
+            f.write(line)

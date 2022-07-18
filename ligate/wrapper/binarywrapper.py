@@ -19,24 +19,36 @@ class BinaryWrapper:
         workdir: Optional[GenericPath] = None,
         env: Optional[Dict[str, str]] = None,
     ):
-        environment = os.environ.copy()
-        if env is not None:
-            environment.update(env)
+        return execute_command(
+            [self.binary_path, *args], input=input, workdir=workdir, env=env
+        )
 
-        cmd = normalize_arguments([self.binary_path, *args])
-        kwargs = {}
-        if input is not None:
-            kwargs["input"] = input
-        else:
-            kwargs["stdin"] = subprocess.DEVNULL
 
-        logging.info(f"Executing `{' '.join(cmd)}` in {workdir or os.getcwd()}")
-        result = subprocess.run(cmd, cwd=workdir, env=environment, **kwargs)
-        if result.returncode != 0:
-            raise Exception(
-                f"`{' '.join(cmd)}` resulted in error. Exit code: {result.returncode}"
-            )
-        return result
+def execute_command(
+    args: List[Union[str, Path, int]],
+    *,
+    input: Optional[bytes] = None,
+    workdir: Optional[GenericPath] = None,
+    env: Optional[Dict[str, str]] = None,
+) -> subprocess.CompletedProcess:
+    environment = os.environ.copy()
+    if env is not None:
+        environment.update(env)
+
+    cmd = normalize_arguments(args)
+    kwargs = {}
+    if input is not None:
+        kwargs["input"] = input
+    else:
+        kwargs["stdin"] = subprocess.DEVNULL
+
+    logging.info(f"Executing `{' '.join(cmd)}` in {workdir or os.getcwd()}")
+    result = subprocess.run(cmd, cwd=workdir, env=environment, **kwargs)
+    if result.returncode != 0:
+        raise Exception(
+            f"`{' '.join(cmd)}` resulted in error. Exit code: {result.returncode}"
+        )
+    return result
 
 
 def normalize_arguments(input: List[Any]) -> List[str]:
