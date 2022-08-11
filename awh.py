@@ -113,6 +113,18 @@ def check_babel_import() -> bool:
     return False
 
 
+def check_rdkit_import() -> bool:
+    prefix = f"Checking if `rdkit` can be imported:"
+    try:
+        import rdkit
+        print_availability_status(prefix, True, ok="OK", notok="error")
+        return True
+    except BaseException as error:
+        print_availability_status(prefix, False, ok="OK", notok="error")
+        logging.error(error)
+    return False
+
+
 @cli.command()
 def check_env():
     """
@@ -125,6 +137,7 @@ def check_env():
     ok &= check_binary_exists("babel")
     ok &= check_babel_import()
     ok &= check_binary_exists("stage.py")
+    ok &= check_rdkit_import()
 
     if ok:
         click.echo(click.style("All environment dependencies were found!", fg="green"))
