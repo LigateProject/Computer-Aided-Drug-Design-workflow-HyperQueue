@@ -1,8 +1,9 @@
 import pytest
 
 from ligate.forcefields import Forcefield
+from ligate.ligconv.gromacs import construct_additional_gromacs_files
 from ligate.ligconv.pdb import convert_pdb_to_gmx
-from ligate.ligconv.pose_extraction import extract_and_clean_pose, extract_pose
+from ligate.ligconv.pose import extract_and_clean_pose, extract_pose, load_single_pose
 from ligate.wrapper.gmx import GMX
 
 from .conftest import data_path
@@ -65,3 +66,17 @@ def test_run_stage(tmpdir, stage):
     compare("posre_out.itp", "posre_out.itp")
     compare("out_gaff/out.itp", "out_gaff/out.itp", skip_lines=[0])
     compare("out_gaff/out.top", "out_gaff/out.top", skip_lines=[0])
+
+
+def test_construct_additional_gromacs_files(tmpdir):
+    pose_path = data_path(
+        "ligen/p38/ligands_gaff2/lig_p38a_2aa/out_amber_pose_000001.txt"
+    )
+    pose = load_single_pose(pose_path, 0)
+    gro_path = data_path("ligen/p38/ligands_gaff2/lig_p38a_2aa/mol_gmx_stage.gro")
+
+    out_path = tmpdir / "out.gro"
+    construct_additional_gromacs_files(pose, 0, gro_path, out_path)
+    check_files_are_equal(
+        data_path("ligen/p38/fixtures/gromacs/lig_p38a_2aa_additional.gro"), out_path
+    )

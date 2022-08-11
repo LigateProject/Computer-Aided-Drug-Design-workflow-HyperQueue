@@ -4,6 +4,7 @@ import tempfile
 from typing import List
 
 from ..utils.io import GenericPath, delete_file
+from ..utils.text import line_as_numbers
 from ..wrapper.babel import Babel
 
 
@@ -29,11 +30,6 @@ def split_by_prefix(lines: List[str], prefix: str) -> List[PoseSection]:
         else:
             data[-1].lines.append(line)
     return data
-
-
-def line_as_numbers(line: str, indices: List[int]) -> List[int]:
-    parts = line.split()
-    return [int(parts[index]) for index in indices]
 
 
 def iterate_poses(file):
@@ -91,6 +87,14 @@ def join_lines(lines: List[str], separator="\n") -> str:
     return separator.join(lines)
 
 
+def load_single_pose(path: GenericPath, pose_number: int) -> Pose:
+    with open(path) as file:
+        pose_data = next(
+            itertools.islice(iterate_poses(file), pose_number, pose_number + 1)
+        )
+    return parse_pose(pose_data)
+
+
 # Extracts pose data to a mol2 file
 def extract_pose(pose_file: GenericPath, pose_number: int, output: GenericPath):
     """
@@ -99,13 +103,7 @@ def extract_pose(pose_file: GenericPath, pose_number: int, output: GenericPath):
 
     The poses file is also cleaned with Babel.
     """
-    with open(pose_file) as file:
-        pose_data = list(
-            itertools.islice(iterate_poses(file), pose_number, pose_number + 1)
-        )
-        assert pose_data
-
-    pose = parse_pose(pose_data[0])
+    pose = load_single_pose(pose_file, pose_number)
 
     with open(output, "w") as file:
         # Write molecule header

@@ -9,18 +9,24 @@ from ligate.utils.io import GenericPath
 from ..conftest import BlessMode, get_bless_mode
 
 
-def bless_file(expected: GenericPath, actual: GenericPath):
+def bless_file(expected: GenericPath, actual: GenericPath, mode: BlessMode):
     os.makedirs(Path(expected).parent, exist_ok=True)
     shutil.copyfile(actual, expected)
-    print(f"Blessing {expected} with {actual}")
+
+    if mode == BlessMode.Overwrite:
+        print(f"Bless: overwriting file {expected} with contents of {actual}")
+    elif mode == BlessMode.Create:
+        print(f"Bless: creating file {expected} with contents of {actual}")
 
 
 def check_files_are_equal(expected: GenericPath, actual: GenericPath):
+    bless_mode = get_bless_mode()
+
     try:
         expected_file = open(expected)
     except FileNotFoundError:
-        if get_bless_mode().can_create():
-            bless_file(expected, actual)
+        if bless_mode.can_create():
+            bless_file(expected, actual, bless_mode)
             return
 
         raise Exception(
@@ -33,8 +39,8 @@ def check_files_are_equal(expected: GenericPath, actual: GenericPath):
         actual_file = actual_file.read()
 
         if expected_file != actual_file:
-            if get_bless_mode() == BlessMode.Overwrite:
-                bless_file(expected, actual)
+            if bless_mode == BlessMode.Overwrite:
+                bless_file(expected, actual, bless_mode)
                 return
 
             error = f"{expected} and {actual} do not match\n"
@@ -45,7 +51,7 @@ def check_files_are_equal(expected: GenericPath, actual: GenericPath):
                 tofile=str(actual),
             ):
                 error += f"{line}\n"
-            error += "Run test again with BLESS=ovewrite to bless the test."
+            error += "Run test again with BLESS=overwrite to bless the test."
             raise Exception(error)
 
 
