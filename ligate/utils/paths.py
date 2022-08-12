@@ -2,7 +2,7 @@ import contextlib
 import os
 from pathlib import Path
 
-from .io import GenericPath
+from .io import GenericPath, ensure_directory
 
 PATH_STACK = []
 
@@ -36,11 +36,5 @@ def resolve_path(path: GenericPath, create_parent=True) -> Path:
         return path
     path = get_active_dir().joinpath(path)
     if create_parent:
-        ensure_file_dir(path)
-    return path
-
-
-def ensure_file_dir(path: GenericPath) -> Path:
-    path = Path(path)
-    os.makedirs(path.parent, exist_ok=True)
+        ensure_directory(path)
     return path
