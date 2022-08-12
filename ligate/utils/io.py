@@ -26,6 +26,13 @@ def delete_file(path: GenericPath):
     os.unlink(path)
 
 
+def normalize_path(path: GenericPath) -> Path:
+    """
+    Makes the path absolute and resolves any links in it.
+    """
+    return Path(path).resolve()
+
+
 def ensure_directory(path: GenericPath, clear=False) -> Path:
     """
     Makes sure that the directory at `path` exists and returns an absolute path to it.
@@ -36,7 +43,7 @@ def ensure_directory(path: GenericPath, clear=False) -> Path:
     if clear and os.path.isdir(path):
         shutil.rmtree(path, ignore_errors=True)
     os.makedirs(path, exist_ok=True)
-    return Path(path).absolute()
+    return normalize_path(path)
 
 
 def copy_files(files: List[GenericPath], target_dir: GenericPath):
@@ -49,7 +56,7 @@ def copy_files(files: List[GenericPath], target_dir: GenericPath):
         shutil.copy(path, target_dir)
 
 
-def paths_in_dir(paths: List[GenericPath], dir: Path) -> List[Path]:
+def remap_paths_to_dir(paths: List[GenericPath], dir: Path) -> List[Path]:
     """
     Maps the given `paths` so that they are relative to the given `dir`.
     """
@@ -85,3 +92,26 @@ def iterate_file_lines(file: Path, skip=0) -> Iterable[str]:
             line = line.strip()
             if index >= skip:
                 yield line
+
+
+def iterate_directories(path: GenericPath) -> List[Path]:
+    """
+    Iterates through directories (non-recursively) in the given `path`.
+    The directories are sorted by their filepath.
+    """
+    path = Path(path)
+    dirs = [
+        path.absolute() / child for child in os.listdir(path) if (path / child).is_dir()
+    ]
+    return sorted(dirs)
+
+
+def check_dir_exists(path: GenericPath):
+    path = Path(path)
+    if not path.is_dir():
+        error = f"The path {path} is not an existing directory."
+        if path.is_file():
+            error += " It is a file."
+        elif not path.exists():
+            error += " It does not exist."
+        raise Exception(error)

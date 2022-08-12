@@ -9,7 +9,7 @@ from ..utils.io import (
     copy_files,
     ensure_directory,
     iterate_file_lines,
-    paths_in_dir,
+    remap_paths_to_dir,
     replace_in_place,
 )
 
@@ -35,7 +35,7 @@ class PmxInputProvider(InputProvider):
 
         # Copy PDB files to structure directory
         proteinff_dir = protein_dir / f"protein_{protein_ff(input)}"
-        structure_protein_files = paths_in_dir(
+        structure_protein_files = remap_paths_to_dir(
             structure_protein_filenames(input), proteinff_dir
         )
         copy_files(structure_protein_files, structure_dir)
@@ -45,7 +45,7 @@ class PmxInputProvider(InputProvider):
             / f"transformations_{ligand_ff(input)}"
             / mutation_name(input.mutation)
         )
-        structure_ligand_files = paths_in_dir(
+        structure_ligand_files = remap_paths_to_dir(
             STRUCTURE_LIGAND_FILENAMES, transformation_dir
         )
         copy_files(structure_ligand_files, structure_dir)
@@ -76,9 +76,12 @@ class PmxInputProvider(InputProvider):
 
         # Copy files to topology directory
         topology_protein_files = topology_protein_filenames(input)
-        copy_files(paths_in_dir(topology_protein_files, proteinff_dir), topology_dir)
         copy_files(
-            paths_in_dir(TOPOLOGY_LIGAND_FILENAMES, transformation_dir), topology_dir
+            remap_paths_to_dir(topology_protein_files, proteinff_dir), topology_dir
+        )
+        copy_files(
+            remap_paths_to_dir(TOPOLOGY_LIGAND_FILENAMES, transformation_dir),
+            topology_dir,
         )
 
         # .itp files
