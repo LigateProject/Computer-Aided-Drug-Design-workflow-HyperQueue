@@ -1,18 +1,22 @@
 import dataclasses
 import enum
-import shutil
+import logging
 from pathlib import Path
 from typing import List
 
 from .forcefields import FF, Forcefield
+from .ligconv.pose import extract_and_clean_pose
 from .utils.io import (
     GenericPath,
     check_dir_exists,
+    copy_directory,
     ensure_directory,
     iterate_directories,
+    move_file,
     normalize_path,
 )
 from .utils.paths import use_dir
+from .wrapper.babel import Babel
 from .wrapper.gmx import GMX
 
 
@@ -23,6 +27,10 @@ class LigenOutputData:
     ligand_dir: Path
     protein_ff_dir: Path
     ligands: List[Path]
+
+    def pose_file(self, ligand: str, pose_number: int) -> Path:
+        # TODO: generalize
+        return self.ligand_dir / ligand / "out_amber_pose_000001.txt"
 
 
 def load_ligen_data(
@@ -70,10 +78,14 @@ class PipelineConfiguration:
 
 
 @dataclasses.dataclass
-class PreparedWorkdir:
+class PipelineWorkdir:
     ligen_data: LigenOutputData
     configuration: PipelineConfiguration
     workdir: Path
+
+    @property
+    def forcefield_name(self) -> str:
+        return self.configuration.forcefield.to_str()
 
     # Paths
     @property
@@ -94,16 +106,15 @@ class PreparedWorkdir:
     def edge_structure_dir(self, edge: str) -> Path:
         return self.protein_dir / edge / self.forcefield_name / "structure"
 
-    @property
-    def forcefield_name(self) -> str:
-        return self.configuration.forcefield.to_str()
+    def ligand_ff_dir(self, ligand: str) -> Path:
+        return self.protein_dir / "ligands" / ligand / self.configuration.FF.to_str()
 
 
 def prepare_directories(
     ligen_data: LigenOutputData,
     workdir: GenericPath,
     configuration: PipelineConfiguration,
-) -> PreparedWorkdir:
+) -> PipelineWorkdir:
     """
     Prepares directories for the AWH pipeline into `workdir`.
     """
@@ -128,7 +139,7 @@ def prepare_directories(
         ff_dir = ensure_directory(edge_dir / configuration.forcefield.to_str())
         ensure_directory(ff_dir / "topology")
         ensure_directory(ff_dir / "structure")
-    return PreparedWorkdir(
+    return PipelineWorkdir(
         ligen_data=ligen_data, configuration=configuration, workdir=workdir
     )
 
@@ -148,23 +159,34 @@ class ProteinTopologyParams:
 
 
 def create_protein_topology(
-    gmx: GMX, prepared: PreparedWorkdir, params: ProteinTopologyParams
+    gmx: GMX, workdir: PipelineWorkdir, params: ProteinTopologyParams
 ):
-    with use_dir(prepared.protein_topology_dir):
+    with use_dir(workdir.protein_topology_dir):
         gmx.execute(
-            ["pdb2gmx", "-f", prepared.ligen_data.protein_file, "-renum", "-ignh"],
+            ["pdb2gmx", "-f", workdir.ligen_data.protein_file, "-renum", "-ignh"],
             input=f"{params.forcefield.value}\n{params.water_model.value}".encode(),
         )
-        shutil.move("conf.gro", prepared.protein_structure_dir)
+        move_file("conf.gro", workdir.protein_structure_dir)
     # Copy protein topology and structure to all edges
-    for edge in prepared.configuration.edges:
-        shutil.copytree(
-            prepared.protein_topology_dir,
-            prepared.edge_topology_dir(edge),
-            dirs_exist_ok=True,
+    for edge in workdir.configuration.edges:
+        copy_directory(
+            workdir.protein_topology_dir,
+            workdir.edge_topology_dir(edge),
         )
-        shutil.copytree(
-            prepared.protein_structure_dir,
-            prepared.edge_structure_dir(edge),
-            dirs_exist_ok=True,
+        copy_directory(
+            workdir.protein_structure_dir,
+            workdir.edge_structure_dir(edge),
         )
+
+
+def handle_poses(babel: Babel, workdir: PipelineWorkdir):
+    pose_number = workdir.configuration.pose_number
+    for ligand in workdir.ligen_data.ligands[:1]:
+        ligand_name = ligand.name
+        ligand_dir = workdir.ligand_ff_dir(ligand_name)
+        filename = f"{ligand_name}_pose{pose_number}"
+        pose_file = workdir.ligen_data.pose_file(ligand_name, pose_number)
+        destination = ligand_dir / f"{filename}_clean.mol2"
+
+        logging.debug(f"Extracting pose {pose_file}:{pose_number} into {destination}")
+        extract_and_clean_pose(pose_file, pose_number, destination, babel)

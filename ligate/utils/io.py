@@ -1,3 +1,4 @@
+import logging
 import os
 import shutil
 from pathlib import Path
@@ -42,6 +43,7 @@ def ensure_directory(path: GenericPath, clear=False) -> Path:
         path = os.path.dirname(path)
     if clear and os.path.isdir(path):
         shutil.rmtree(path, ignore_errors=True)
+    logging.debug(f"Creating directory {path}")
     os.makedirs(path, exist_ok=True)
     return normalize_path(path)
 
@@ -115,3 +117,17 @@ def check_dir_exists(path: GenericPath):
         elif not path.exists():
             error += " It does not exist."
         raise Exception(error)
+
+
+def move_file(src: GenericPath, dst: GenericPath):
+    logging.debug(f"Moving file {src} to {dst}")
+    shutil.move(src, dst)
+
+
+def copy_directory(src: GenericPath, dst: GenericPath):
+    logging.debug(f"Copying directory {src} to {dst}")
+    shutil.copytree(
+        src,
+        dst,
+        dirs_exist_ok=True,
+    )

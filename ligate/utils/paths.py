@@ -1,4 +1,5 @@
 import contextlib
+import logging
 import os
 from pathlib import Path
 
@@ -20,9 +21,11 @@ def use_dir(path: GenericPath):
     os.chdir(path)
 
     try:
+        logging.debug(f"Switching directory to {path}")
         yield path
     finally:
         os.chdir(cwd)
+        logging.debug(f"Switching directory back to {cwd}")
         PATH_STACK.pop()
 
 

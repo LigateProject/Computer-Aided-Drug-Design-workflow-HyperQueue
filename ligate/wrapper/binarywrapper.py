@@ -42,7 +42,7 @@ def execute_command(
     else:
         kwargs["stdin"] = subprocess.DEVNULL
 
-    logging.info(f"Executing `{' '.join(cmd)}` in {workdir or os.getcwd()}")
+    logging.debug(f"Executing `{' '.join(cmd)}` in {workdir or os.getcwd()}")
     result = subprocess.run(cmd, cwd=workdir, env=environment, **kwargs)
     if result.returncode != 0:
         raise Exception(

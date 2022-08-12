@@ -88,6 +88,10 @@ def join_lines(lines: List[str], separator="\n") -> str:
 
 
 def load_single_pose(path: GenericPath, pose_number: int) -> Pose:
+    """
+    Loads a single pose from the file at `path`.
+    `pose_number` is numbered from zero.
+    """
     with open(path) as file:
         pose_data = next(
             itertools.islice(iterate_poses(file), pose_number, pose_number + 1)
@@ -98,12 +102,13 @@ def load_single_pose(path: GenericPath, pose_number: int) -> Pose:
 # Extracts pose data to a mol2 file
 def extract_pose(pose_file: GenericPath, pose_number: int, output: GenericPath):
     """
-    Extract a single pose with the given number (index starting from 0) from the `pose_file`.
+    Extract a single pose with the given number (index starting from 1) from the `pose_file`.
     Writes the pose into `output`.
 
     The poses file is also cleaned with Babel.
     """
-    pose = load_single_pose(pose_file, pose_number)
+    assert pose_number >= 1
+    pose = load_single_pose(pose_file, pose_number - 1)
 
     with open(output, "w") as file:
         # Write molecule header
@@ -134,13 +139,15 @@ def extract_and_clean_pose(
     pose_file: GenericPath, pose_number: int, output: GenericPath, babel: Babel
 ):
     """
-    Extract a single pose with the given number (index starting from 0) from the `pose_file`.
+    Extract a single pose with the given number (index starting from 1) from the `pose_file`.
     Writes the pose into `output`.
 
     The poses file is also cleaned with Babel.
     """
+    assert pose_number >= 1
     with tempfile.NamedTemporaryFile(delete=False, suffix=".mol2") as tmpfile:
         temp_pose_file = tmpfile.name
     extract_pose(pose_file, pose_number, temp_pose_file)
     babel.normalize_mol2(temp_pose_file, output)
+    # TODO: remove this call and handle deletion by `NamedTemporaryFile`
     delete_file(temp_pose_file)
