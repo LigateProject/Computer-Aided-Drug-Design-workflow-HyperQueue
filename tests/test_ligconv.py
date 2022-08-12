@@ -1,6 +1,6 @@
 import pytest
 
-from ligate.forcefields import Forcefield
+from ligate.forcefields import FF
 from ligate.ligconv.gromacs import construct_additional_gromacs_files
 from ligate.ligconv.pdb import convert_pdb_to_gmx
 from ligate.ligconv.pose import extract_and_clean_pose, extract_pose, load_single_pose
@@ -15,7 +15,7 @@ def test_convert_pdb_to_gmx(gmx: GMX, tmpdir):
     convert_pdb_to_gmx(gmx, pdb_path, tmpdir)
 
 
-@pytest.mark.parametrize("pose", (0, 1, 3))
+@pytest.mark.parametrize("pose", (1, 2, 4))
 def test_extract_and_clean_pose(pose: int, tmpdir, babel):
     pose_path = data_path(
         "ligen/p38/ligands_gaff2/lig_p38a_2aa/out_amber_pose_000001.txt"
@@ -34,7 +34,7 @@ def test_extract_pose_with_dummy_atoms(tmpdir):
     )
 
     output = tmpdir / "pose.mol2"
-    extract_pose(pose_path, 0, output)
+    extract_pose(pose_path, 1, output)
     check_files_are_equal(data_path("ligen/p38/fixtures/pose-dummy-atoms.mol2"), output)
 
 
@@ -44,12 +44,12 @@ def test_extract_pose_with_dummy_bonds(tmpdir):
     )
 
     output = tmpdir / "pose.mol2"
-    extract_pose(pose_path, 0, output)
+    extract_pose(pose_path, 1, output)
     check_files_are_equal(data_path("ligen/p38/fixtures/pose-dummy-bonds.mol2"), output)
 
 
 def test_run_stage(tmpdir, stage):
-    input_path = data_path("ligen/p38/fixtures/pose0-cleaned.mol2")
+    input_path = data_path("ligen/p38/fixtures/pose1-cleaned.mol2")
 
     def compare(expected: str, actual: str, skip_lines=()):
         actual = tmpdir / actual
@@ -59,7 +59,7 @@ def test_run_stage(tmpdir, stage):
         check_files_are_equal(data_path(f"ligen/p38/fixtures/stage/{expected}"), actual)
 
     output = tmpdir / "out"
-    stage.run(input_path, str(output), Forcefield.Gaff2)
+    stage.run(input_path, str(output), FF.Gaff2)
 
     compare("out.gro", "out.gro", skip_lines=[0])
     compare("out.mol2", "out.mol2")

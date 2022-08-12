@@ -145,9 +145,7 @@ def extract_and_clean_pose(
     The poses file is also cleaned with Babel.
     """
     assert pose_number >= 1
-    with tempfile.NamedTemporaryFile(delete=False, suffix=".mol2") as tmpfile:
+    with tempfile.NamedTemporaryFile(suffix=".mol2") as tmpfile:
         temp_pose_file = tmpfile.name
-    extract_pose(pose_file, pose_number, temp_pose_file)
-    babel.normalize_mol2(temp_pose_file, output)
-    # TODO: remove this call and handle deletion by `NamedTemporaryFile`
-    delete_file(temp_pose_file)
+        extract_pose(pose_file, pose_number, temp_pose_file)
+        babel.normalize_mol2(temp_pose_file, output)

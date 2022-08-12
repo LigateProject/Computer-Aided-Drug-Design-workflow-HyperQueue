@@ -1,6 +1,6 @@
 import shutil
 
-from ..forcefields import Forcefield
+from ..forcefields import FF
 from ..utils.io import GenericPath
 from .binarywrapper import execute_command
 
@@ -11,8 +11,23 @@ class Stage:
         if self.stage_path is None:
             raise Exception("Could not find stage.py in PATH")
 
-    def run(self, input: GenericPath, output: GenericPath, forcefield: Forcefield):
-        ff = forcefield.to_str()
+    def run(self, input: GenericPath, output: GenericPath, forcefield: FF):
         return execute_command(
-            ["python3", self.stage_path, "-i", input, "-o", output, "--forcefields", ff]
+            [
+                "python3",
+                self.stage_path,
+                "-i",
+                input,
+                "-o",
+                output,
+                "--forcefields",
+                forcefield_to_str(forcefield),
+            ]
         )
+
+
+def forcefield_to_str(ff: FF) -> str:
+    if ff is FF.Gaff2:
+        return "gaff"
+    else:
+        assert False
