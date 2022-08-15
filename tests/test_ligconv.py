@@ -76,7 +76,7 @@ def test_construct_additional_gromacs_files(tmpdir):
     gro_path = data_path("ligen/p38/ligands_gaff2/lig_p38a_2aa/mol_gmx_stage.gro")
 
     out_path = tmpdir / "out.gro"
-    construct_additional_gromacs_files(pose, 0, gro_path, out_path)
+    construct_additional_gromacs_files(pose, 1, gro_path, out_path)
     check_files_are_equal(
         data_path("ligen/p38/fixtures/gromacs/lig_p38a_2aa_additional.gro"), out_path
     )

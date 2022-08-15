@@ -21,13 +21,6 @@ class Stage:
                 "-o",
                 output,
                 "--forcefields",
-                forcefield_to_str(forcefield),
+                forcefield.to_str(),
             ]
         )
-
-
-def forcefield_to_str(ff: FF) -> str:
-    if ff is FF.Gaff2:
-        return "gaff"
-    else:
-        assert False

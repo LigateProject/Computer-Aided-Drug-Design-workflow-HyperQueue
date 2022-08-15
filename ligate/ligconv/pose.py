@@ -1,9 +1,9 @@
 import dataclasses
 import itertools
 import tempfile
-from typing import List
+from typing import Iterable, List, TextIO
 
-from ..utils.io import GenericPath, delete_file
+from ..utils.io import GenericPath
 from ..utils.text import line_as_numbers
 from ..wrapper.babel import Babel
 
@@ -32,7 +32,7 @@ def split_by_prefix(lines: List[str], prefix: str) -> List[PoseSection]:
     return data
 
 
-def iterate_poses(file):
+def iterate_poses(file: TextIO) -> Iterable[List[str]]:
     pose_lines = []
 
     reading_pose = False
@@ -97,6 +97,15 @@ def load_single_pose(path: GenericPath, pose_number: int) -> Pose:
             itertools.islice(iterate_poses(file), pose_number, pose_number + 1)
         )
     return parse_pose(pose_data)
+
+
+def load_poses(path: GenericPath) -> Iterable[Pose]:
+    """
+    Loads all poses from the file at `path`.
+    """
+    with open(path) as file:
+        for pose_data in iterate_poses(file):
+            yield parse_pose(pose_data)
 
 
 # Extracts pose data to a mol2 file

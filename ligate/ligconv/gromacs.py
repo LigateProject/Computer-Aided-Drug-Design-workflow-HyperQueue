@@ -11,8 +11,11 @@ def construct_additional_gromacs_files(
 ):
     """
     Constructs a .gro file from the provided pose and Gromacs input file.
-    The `pose_number` will be stored as `pose_number + 1` into the file.
+    The `pose_number` will be stored as into the file.
+    `pose_number` should start from 1.
     """
+    assert pose_number >= 1
+
     coordinates = []
     for mol_line in pose.atoms.lines:
         values = line_as_numbers(mol_line, [2, 3, 4], float)
@@ -41,5 +44,5 @@ def construct_additional_gromacs_files(
                 elif counter == 0:
                     gromacs_out.write(line)
                 else:
-                    gromacs_out.write(f"Ligand pose {pose_number + 1:5d}\n")
+                    gromacs_out.write(f"Ligand pose {pose_number:5d}\n")
                 counter += 1

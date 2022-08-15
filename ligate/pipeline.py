@@ -5,19 +5,25 @@ from pathlib import Path
 from typing import List
 
 from .forcefields import FF, Forcefield
-from .ligconv.pose import extract_and_clean_pose
+from .ligconv.gromacs import construct_additional_gromacs_files
+from .ligconv.pose import extract_and_clean_pose, load_poses
 from .utils.io import (
     GenericPath,
     check_dir_exists,
     copy_directory,
+    delete_path,
     ensure_directory,
+    file_has_extension,
     iterate_directories,
+    iterate_files,
     move_file,
+    move_files,
     normalize_path,
 )
 from .utils.paths import use_dir
 from .wrapper.babel import Babel
 from .wrapper.gmx import GMX
+from .wrapper.stage import Stage
 
 
 @dataclasses.dataclass
@@ -179,14 +185,72 @@ def create_protein_topology(
         )
 
 
-def handle_poses(babel: Babel, workdir: PipelineWorkdir):
+def handle_poses(babel: Babel, stage: Stage, workdir: PipelineWorkdir):
     pose_number = workdir.configuration.pose_number
+    # TODO: go through all ligands
     for ligand in workdir.ligen_data.ligands[:1]:
         ligand_name = ligand.name
         ligand_dir = workdir.ligand_ff_dir(ligand_name)
-        filename = f"{ligand_name}_pose{pose_number}"
-        pose_file = workdir.ligen_data.pose_file(ligand_name, pose_number)
-        destination = ligand_dir / f"{filename}_clean.mol2"
+        with use_dir(ligand_dir):
+            filename = f"{ligand_name}_pose{pose_number}"
+            pose_file = workdir.ligen_data.pose_file(ligand_name, pose_number)
+            cleaned_mol2 = ligand_dir / f"{filename}_clean.mol2"
 
-        logging.debug(f"Extracting pose {pose_file}:{pose_number} into {destination}")
-        extract_and_clean_pose(pose_file, pose_number, destination, babel)
+            logging.debug(
+                f"Extracting pose {pose_file}:{pose_number} into {cleaned_mol2}"
+            )
+            extract_and_clean_pose(pose_file, pose_number, cleaned_mol2, babel)
+
+            stage_output = f"{filename}_stage"
+            ff = workdir.configuration.FF
+            logging.debug(
+                f"Running stage on {cleaned_mol2}, output {stage_output}, forcefield {ff}"
+            )
+            stage.run(cleaned_mol2, stage_output, ff)
+
+            pose_1_dir = ensure_directory(ligand_dir / "poses" / str(pose_number))
+            # mv *.mol2 *.gro {pose_dir}
+            files = list(
+                iterate_files(
+                    ligand_dir, filter=lambda p: file_has_extension(p, "mol2")
+                )
+            ) + list(
+                iterate_files(ligand_dir, filter=lambda p: file_has_extension(p, "gro"))
+            )
+            move_files(files, pose_1_dir)
+
+            topology_dir = ligand_dir / "topology"
+            # mv *.itp *.pkl {topology_dir}
+            files = list(
+                iterate_files(ligand_dir, filter=lambda p: file_has_extension(p, "itp"))
+            ) + list(
+                iterate_files(ligand_dir, filter=lambda p: file_has_extension(p, "pkl"))
+            )
+            move_files(files, topology_dir)
+
+            # Normalize filenames and put them into the correct directories
+            ff_dir = ligand_dir / f"{stage_output}_{ff.to_str()}"
+            move_files(iterate_files(ff_dir), topology_dir)
+            move_file(topology_dir / f"{stage_output}.itp", topology_dir / "ligand.itp")
+            move_file(
+                topology_dir / f"posre_{stage_output}.itp",
+                topology_dir / "posre_Ligand.itp",
+            )
+            move_file(pose_1_dir / f"{stage_output}.gro", pose_1_dir / "ligand.gro")
+            move_file(pose_1_dir / f"{stage_output}.mol2", pose_1_dir / "ligand.mol2")
+            delete_path(ff_dir)
+
+            pose_1_ligand_gro = pose_1_dir / "ligand.gro"
+
+            # Iterate through the remaining poses
+            # Skips the first pose, we have already processed it
+            poses = list(load_poses(pose_file))
+            for (pose_num, pose) in enumerate(poses[1:], start=2):
+                logging.debug(f"Handling pose {pose_file}:{pose_num}")
+                pose_n_dir = ensure_directory(ligand_dir / "poses" / str(pose_num))
+                extract_and_clean_pose(
+                    pose_file, pose_num, pose_n_dir / "ligand.mol2", babel
+                )
+                construct_additional_gromacs_files(
+                    pose, pose_num, pose_1_ligand_gro, pose_n_dir / "ligand.gro"
+                )

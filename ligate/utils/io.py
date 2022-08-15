@@ -2,7 +2,7 @@ import logging
 import os
 import shutil
 from pathlib import Path
-from typing import Iterable, List, Optional, Tuple, Union
+from typing import Callable, Iterable, List, Optional, Tuple, Union
 
 GenericPath = Union[Path, str]
 
@@ -96,6 +96,21 @@ def iterate_file_lines(file: Path, skip=0) -> Iterable[str]:
                 yield line
 
 
+def iterate_files(
+    directory: GenericPath, filter: Optional[Callable[[Path], bool]] = None
+) -> Iterable[Path]:
+    """
+    Iterates files in the given directory (non-recursively).
+    Optionally, you can select a filter for each file.
+    """
+    directory = Path(directory)
+    for file in os.listdir(directory):
+        full_path = directory / file
+        if full_path.is_file():
+            if filter is None or filter(full_path):
+                yield full_path
+
+
 def iterate_directories(path: GenericPath) -> List[Path]:
     """
     Iterates through directories (non-recursively) in the given `path`.
@@ -124,6 +139,11 @@ def move_file(src: GenericPath, dst: GenericPath):
     shutil.move(src, dst)
 
 
+def move_files(files: Iterable[GenericPath], dst: GenericPath):
+    for file in files:
+        move_file(file, dst)
+
+
 def copy_directory(src: GenericPath, dst: GenericPath):
     logging.debug(f"Copying directory {src} to {dst}")
     shutil.copytree(
@@ -131,3 +151,12 @@ def copy_directory(src: GenericPath, dst: GenericPath):
         dst,
         dirs_exist_ok=True,
     )
+
+
+def file_has_extension(path: GenericPath, extension: str) -> bool:
+    return Path(path).suffix.strip(".") == extension
+
+
+def delete_path(path: GenericPath):
+    logging.debug(f"Removing {path}")
+    shutil.rmtree(path, ignore_errors=True)
