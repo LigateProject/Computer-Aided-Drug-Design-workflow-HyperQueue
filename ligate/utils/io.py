@@ -12,12 +12,21 @@ def delete_file(path: GenericPath):
     """
     Deletes a file at `path`.
     """
+    logging.debug(f"Removing {path}")
     os.unlink(path)
 
 
 def delete_path(path: GenericPath):
+    """
+    Delete a file or directory at `path`, ignoring errors.
+    """
     logging.debug(f"Removing {path}")
     shutil.rmtree(path, ignore_errors=True)
+
+
+def delete_files(paths: List[GenericPath]):
+    for path in paths:
+        delete_file(path)
 
 
 # Copying

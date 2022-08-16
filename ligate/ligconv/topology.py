@@ -603,26 +603,25 @@ class TopologyMerger:
         f.write("#endif\n")
         f.close()
 
-    def generateAtomTypesFile(self):
-        f = open("ffMOL.itp", "w")
-        for i in range(len(self.atomtypes[0])):
-            f.write(self.atomtypes[0][i])
-        for i in range(len(self.atomtypes[1])):
-            if self.atomtypes[1][i] not in self.atomtypes[0]:
-                f.write(self.atomtypes[1][i])
-        for i in range(len(self.dummyAtoms)):
-            string = " "
-            for j in range(2):
-                string += self.dummyAtoms[i].ljust(9)
-            string += " "
-            for j in range(2):
-                string += "0.00000".rjust(9)
-            string += "A".rjust(4) + "  "
-            for j in range(2):
-                string += "0.00000e+00".rjust(14)
-            string += "\n"
-            f.write(string)
-        f.close()
+    def generateAtomTypesFile(self, directory: GenericPath):
+        with open(directory / "ffMOL.itp", "w") as f:
+            for i in range(len(self.atomtypes[0])):
+                f.write(self.atomtypes[0][i])
+            for i in range(len(self.atomtypes[1])):
+                if self.atomtypes[1][i] not in self.atomtypes[0]:
+                    f.write(self.atomtypes[1][i])
+            for i in range(len(self.dummyAtoms)):
+                string = " "
+                for j in range(2):
+                    string += self.dummyAtoms[i].ljust(9)
+                string += " "
+                for j in range(2):
+                    string += "0.00000".rjust(9)
+                string += "A".rjust(4) + "  "
+                for j in range(2):
+                    string += "0.00000e+00".rjust(14)
+                string += "\n"
+                f.write(string)
 
     def writeFirstGroFile(self, outputFile, groFileList):
         for i in range(len(groFileList[0]) - 1):
@@ -731,7 +730,9 @@ def merge_topologies(
     tm.createMapping(str(ligand_a_structure_mol2), str(ligand_b_structure_mol2))
     tm.mergeData()
     tm.printTopology(str(output_merged_topology))
-    tm.generateAtomTypesFile()
+    # TODO: the ffMOL.itp file has to be in the same directory as the other topologies, this is
+    # currently not enforced
+    tm.generateAtomTypesFile(output_merged_topology.parent)
     tm.mergeLigandGroFiles(
         str(ligand_a_structure_gro),
         str(ligand_b_structure_gro),
@@ -822,6 +823,32 @@ def pos_res_for_ligand_to_fix_structure(
                         elif "DUM" not in data[1]:
                             target.write(
                                 f"{int(data[0]):6}{1:6}{value:8}{value:8}{value:8}\n"
+                            )
+                elif check == -1:
+                    check = 0
+                elif len(data) > 1:
+                    if data[1] == "atoms":
+                        check = -1
+
+
+def pos_res_for_ligand(topology: GenericPath, posre_ligand: GenericPath):
+    with open(topology) as f:
+        with open(posre_ligand, "w") as target:
+            check = -2
+            target.write("""[ position_restraints ]
+; atom  type      fx      fy      fz
+""")
+
+            for line in f:
+                data = line.split()
+                if check == 0:
+                    if len(data) > 1:
+                        if data[1] == "bonds":
+                            check = -2
+                        elif 'h' not in data[1] and 'H' not in data[1]:
+                            # TODO: why 8 above and 6 here?
+                            target.write(
+                                f"{int(data[0]):6}{1:6}{1000:6}{1000:6}{1000:6}\n"
                             )
                 elif check == -1:
                     check = 0

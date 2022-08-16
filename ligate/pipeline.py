@@ -5,17 +5,18 @@ from pathlib import Path
 from typing import List
 
 from .forcefields import FF, Forcefield
-from .ligconv.gromacs import construct_additional_gromacs_files
+from .ligconv.gromacs import construct_additional_gromacs_files, shift_last_gromacs_line, \
+    write_gro_complex_structure
 from .ligconv.pose import Pose, extract_and_clean_pose, load_poses
 from .ligconv.topology import (
     merge_topologies,
-    pos_res_for_ligand_to_fix_structure,
+    pos_res_for_ligand, pos_res_for_ligand_to_fix_structure,
     write_topology_summary,
 )
 from .utils.io import (
     check_dir_exists,
     copy_directory,
-    delete_path,
+    delete_files, delete_path,
     ensure_directory,
     file_has_extension,
     iterate_directories,
@@ -42,11 +43,11 @@ class LigenOutputData:
 
 
 def load_ligen_data(
-    ligen_output_dir: GenericPath,
-    protein: str,
-    ligand: str,
-    protein_file: str,
-    protein_forcefield: str,
+        ligen_output_dir: GenericPath,
+        protein: str,
+        ligand: str,
+        protein_file: str,
+        protein_forcefield: str,
 ) -> LigenOutputData:
     """
     Loads data from a Ligen output directory.
@@ -116,22 +117,28 @@ class PipelineWorkdir:
 
     def edge_topology_dir(self, edge: Edge) -> Path:
         return (
-            self.protein_dir
-            / edge_directory_name(edge)
-            / self.forcefield_name
-            / "topology"
+                self.protein_dir
+                / edge_directory_name(edge)
+                / self.forcefield_name
+                / "topology"
         )
 
     def edge_structure_dir(self, edge: Edge) -> Path:
         return (
-            self.protein_dir
-            / edge_directory_name(edge)
-            / self.forcefield_name
-            / "structure"
+                self.protein_dir
+                / edge_directory_name(edge)
+                / self.forcefield_name
+                / "structure"
         )
 
-    def edge_structure_merged(self, edge: Edge) -> Path:
+    def edge_merged_structure_gro(self, edge: Edge) -> Path:
         return self.edge_structure_dir(edge) / "merged.gro"
+
+    def edge_topology_ligand_in_water(self, edge: Edge) -> Path:
+        return self.edge_topology_dir(edge) / "topol_ligandInWater.top"
+
+    def edge_merged_topology_gro(self, edge: Edge) -> Path:
+        return self.edge_topology_dir(edge) / "merged.itp"
 
     def ligand_ff_dir(self, ligand: str) -> Path:
         return self.protein_dir / "ligands" / ligand / self.configuration.FF.to_str()
@@ -154,9 +161,9 @@ def edge_directory_name(edge: Edge) -> str:
 
 
 def prepare_directories(
-    ligen_data: LigenOutputData,
-    workdir: GenericPath,
-    configuration: PipelineConfiguration,
+        ligen_data: LigenOutputData,
+        workdir: GenericPath,
+        configuration: PipelineConfiguration,
 ) -> PipelineWorkdir:
     """
     Prepares directories for the AWH pipeline into `workdir`.
@@ -202,7 +209,7 @@ class ProteinTopologyParams:
 
 
 def create_protein_topology_step(
-    gmx: GMX, workdir: PipelineWorkdir, params: ProteinTopologyParams
+        gmx: GMX, workdir: PipelineWorkdir, params: ProteinTopologyParams
 ):
     with use_dir(workdir.protein_topology_dir):
         gmx.execute(
@@ -331,8 +338,8 @@ def merge_topologies_step(workdir: PipelineWorkdir):
         )
 
         edge_topology_dir = workdir.edge_topology_dir(edge)
-        edge_merged_topology = edge_topology_dir / "merged.itp"
 
+        edge_merged_topology = workdir.edge_merged_topology_gro(edge)
         merge_topologies(
             workdir.ligand_topology(ligand_a),
             workdir.ligand_pose_structure_mol2(ligand_a, pose_a.id),
@@ -341,24 +348,61 @@ def merge_topologies_step(workdir: PipelineWorkdir):
             workdir.ligand_pose_structure_mol2(ligand_b, pose_b.id),
             workdir.ligand_pose_structure_gro(ligand_b, pose_b.id),
             edge_merged_topology,
-            workdir.edge_structure_merged(edge),
+            workdir.edge_merged_structure_gro(edge),
         )
 
         # TODO: generalize
         write_topology_summary(
             edge_topology_dir / "topol.top",
-            edge_topology_dir / "topol_ligandInWater.top",
+            workdir.edge_topology_ligand_in_water(edge),
             edge_topology_dir / "topol_amber.top",
             forcefield_path="amber99sb-ildn.ff",
         )
 
         pos_res_for_ligand_to_fix_structure(
-            edge_merged_topology, edge_topology_dir / "posre_Ligand.itp"
+            edge_merged_topology,
+            edge_topology_dir / "posre_Ligand.itp"
         )
 
 
-def fix_structure_step(workdir: PipelineWorkdir):
+def fix_structure_step(gmx: GMX, workdir: PipelineWorkdir, structure_mdp_file: GenericPath):
     for edge in workdir.configuration.edges:
-        structure = workdir.edge_structure_merged(edge)
-        tmp_structure = structure.parent / "merged_old.gro"
-        move_file(structure, tmp_structure)
+        structure_merged = workdir.edge_merged_structure_gro(edge)
+        structure_dir = structure_merged.parent
+        tmp_structure = structure_dir / "merged_old.gro"
+        move_file(structure_merged, tmp_structure)
+
+        shift_last_gromacs_line(tmp_structure, 10)
+
+        tpr_file = "merged.tpr"
+        with use_dir(structure_dir):
+            gmx.execute([
+                "grompp",
+                "-f",
+                structure_mdp_file,
+                "-c",
+                tmp_structure,
+                "-r",
+                tmp_structure,
+                "-p",
+                workdir.edge_topology_ligand_in_water(edge),
+                "-o",
+                tpr_file
+            ])
+            gmx.execute(["mdrun", "-deffnm", "merged"])
+            delete_files(
+                [tmp_structure, "mdout.mdp", tpr_file, "merged.trr", "merged.edr", "merged.log"])
+            shift_last_gromacs_line(structure_merged, -10)
+
+            conf_file = structure_dir / "conf.gro"
+            write_gro_complex_structure(
+                conf_file,
+                structure_merged,
+                structure_dir / "full.gro"
+            )
+
+        topology_dir = workdir.edge_topology_dir(edge)
+        pos_res_for_ligand(
+            workdir.edge_merged_topology_gro(edge),
+            topology_dir / "posre_Ligand.itp"
+        )
