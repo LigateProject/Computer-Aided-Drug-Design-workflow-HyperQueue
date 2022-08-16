@@ -105,8 +105,8 @@ def test_run_stage(tmpdir, stage):
     compare("out.gro", "out.gro", skip_lines=[0])
     compare("out.mol2", "out.mol2")
     compare("posre_out.itp", "posre_out.itp")
-    compare("out_gaff/out.itp", "out_gaff/out.itp", skip_lines=[0])
-    compare("out_gaff/out.top", "out_gaff/out.top", skip_lines=[0])
+    compare("out_gaff2/out.itp", "out_gaff2/out.itp", skip_lines=[0])
+    compare("out_gaff2/out.top", "out_gaff2/out.top", skip_lines=[0])
 
 
 def test_construct_additional_gromacs_files(tmpdir):
