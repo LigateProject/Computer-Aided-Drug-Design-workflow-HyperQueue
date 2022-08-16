@@ -737,3 +737,58 @@ def merge_topologies(
         str(ligand_b_structure_gro),
         str(output_merged_structure),
     )
+
+
+def write_topology_summary(
+        topology: GenericPath,
+        topology_ligand_in_water: GenericPath,
+        topology_amber: GenericPath,
+        forcefield_path: GenericPath
+):
+    with open(topology_ligand_in_water, "w") as f:
+        f.write(f"""; Include forcefield parameters
+#include "{forcefield_path}/forcefield.itp"
+#include "ffMOL.itp"
+
+; Include ligand topology
+#include "merged.itp"
+
+; Include water topology
+#include "{forcefield_path}/tip3p.itp"
+
+; Include topology for ions
+#include "{forcefield_path}/ions.itp"
+
+[ system ]
+; Name
+ligand in water
+
+[ molecules ]
+; Compound        #mols
+MOL 1
+""")
+
+    with open(topology) as topology_file:
+        check = False
+        counter = 0
+
+        with open(topology_amber, "w") as target:
+            for line in topology_file:
+                if line == "; Include forcefield parameters\n":
+                    check = True
+                    counter = 0
+                if line == "; Include water topology\n":
+                    target.write("""; Include ligand topology
+#include "merged.itp"
+
+""")
+                if check:
+                    if line == "Protein\n":
+                        target.write("Protein-ligand complex in water\n")
+                        continue
+                    target.write(line)
+                    counter += 1
+                    if counter == 2:
+                        target.write('#include "ffMOL.itp"\n')
+
+            target.write("MOL 1\n")
