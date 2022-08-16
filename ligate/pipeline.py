@@ -7,8 +7,11 @@ from typing import List
 from .forcefields import FF, Forcefield
 from .ligconv.gromacs import construct_additional_gromacs_files
 from .ligconv.pose import Pose, extract_and_clean_pose, load_poses
-from .ligconv.topology import merge_topologies, pos_res_for_ligand_to_fix_structure, \
-    write_topology_summary
+from .ligconv.topology import (
+    merge_topologies,
+    pos_res_for_ligand_to_fix_structure,
+    write_topology_summary,
+)
 from .utils.io import (
     check_dir_exists,
     copy_directory,
@@ -127,6 +130,9 @@ class PipelineWorkdir:
             / "structure"
         )
 
+    def edge_structure_merged(self, edge: Edge) -> Path:
+        return self.edge_structure_dir(edge) / "merged.gro"
+
     def ligand_ff_dir(self, ligand: str) -> Path:
         return self.protein_dir / "ligands" / ligand / self.configuration.FF.to_str()
 
@@ -195,7 +201,7 @@ class ProteinTopologyParams:
     water_model: ProteinTopologyWaterModel
 
 
-def create_protein_topology(
+def create_protein_topology_step(
     gmx: GMX, workdir: PipelineWorkdir, params: ProteinTopologyParams
 ):
     with use_dir(workdir.protein_topology_dir):
@@ -216,7 +222,7 @@ def create_protein_topology(
         )
 
 
-def handle_poses(babel: Babel, stage: Stage, workdir: PipelineWorkdir):
+def handle_poses_step(babel: Babel, stage: Stage, workdir: PipelineWorkdir):
     pose_number = workdir.configuration.pose_number
     for ligand in workdir.ligen_data.ligands:
         ligand_name = ligand.name
@@ -335,7 +341,7 @@ def merge_topologies_step(workdir: PipelineWorkdir):
             workdir.ligand_pose_structure_mol2(ligand_b, pose_b.id),
             workdir.ligand_pose_structure_gro(ligand_b, pose_b.id),
             edge_merged_topology,
-            workdir.edge_structure_dir(edge) / "merged.gro",
+            workdir.edge_structure_merged(edge),
         )
 
         # TODO: generalize
@@ -343,9 +349,16 @@ def merge_topologies_step(workdir: PipelineWorkdir):
             edge_topology_dir / "topol.top",
             edge_topology_dir / "topol_ligandInWater.top",
             edge_topology_dir / "topol_amber.top",
-            forcefield_path="amber99sb-ildn.ff"
+            forcefield_path="amber99sb-ildn.ff",
         )
+
         pos_res_for_ligand_to_fix_structure(
-            edge_merged_topology,
-            edge_topology_dir / "posre_Ligand.itp"
+            edge_merged_topology, edge_topology_dir / "posre_Ligand.itp"
         )
+
+
+def fix_structure_step(workdir: PipelineWorkdir):
+    for edge in workdir.configuration.edges:
+        structure = workdir.edge_structure_merged(edge)
+        tmp_structure = structure.parent / "merged_old.gro"
+        move_file(structure, tmp_structure)

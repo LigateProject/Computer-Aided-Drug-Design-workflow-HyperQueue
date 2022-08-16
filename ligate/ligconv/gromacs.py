@@ -46,3 +46,25 @@ def construct_additional_gromacs_files(
                 else:
                     gromacs_out.write(f"Ligand pose {pose_number:5d}\n")
                 counter += 1
+
+
+def shift_last_gromacs_line(path: GenericPath, value: float):
+    """
+    Shifts the numbers in the last line of the gro file at `path` by `value`.
+    The change is performed in-place.
+    """
+    line_offset = 0
+    line_content = ""
+    with open(path) as f:
+        # Find the starting offset of the last line
+        for line in f:
+            line_offset += len(line_content)
+            line_content = line
+    values = line_content.split()
+    values = [float(v) + value for v in values]
+    values = " ".join(f"{v:11.5f}" for v in values)
+
+    with open(path, "r+") as f:
+        f.truncate(line_offset)
+        f.seek(line_offset)
+        f.write(f"{values}\n")

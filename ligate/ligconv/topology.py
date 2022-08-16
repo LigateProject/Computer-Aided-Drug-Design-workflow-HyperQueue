@@ -740,13 +740,14 @@ def merge_topologies(
 
 
 def write_topology_summary(
-        topology: GenericPath,
-        topology_ligand_in_water: GenericPath,
-        topology_amber: GenericPath,
-        forcefield_path: GenericPath
+    topology: GenericPath,
+    topology_ligand_in_water: GenericPath,
+    topology_amber: GenericPath,
+    forcefield_path: GenericPath,
 ):
     with open(topology_ligand_in_water, "w") as f:
-        f.write(f"""; Include forcefield parameters
+        f.write(
+            f"""; Include forcefield parameters
 #include "{forcefield_path}/forcefield.itp"
 #include "ffMOL.itp"
 
@@ -766,7 +767,8 @@ ligand in water
 [ molecules ]
 ; Compound        #mols
 MOL 1
-""")
+"""
+        )
 
     with open(topology) as topology_file:
         check = False
@@ -778,10 +780,12 @@ MOL 1
                     check = True
                     counter = 0
                 if line == "; Include water topology\n":
-                    target.write("""; Include ligand topology
+                    target.write(
+                        """; Include ligand topology
 #include "merged.itp"
 
-""")
+"""
+                    )
                 if check:
                     if line == "Protein\n":
                         target.write("Protein-ligand complex in water\n")
@@ -795,15 +799,16 @@ MOL 1
 
 
 def pos_res_for_ligand_to_fix_structure(
-        topology: GenericPath,
-        posre_ligand: GenericPath
+    topology: GenericPath, posre_ligand: GenericPath
 ):
     with open(topology) as f:
         with open(posre_ligand, "w") as target:
             check = -2
-            target.write("""[ position_restraints ]
+            target.write(
+                """[ position_restraints ]
 ; atom  type      fx      fy      fz
-""")
+"""
+            )
 
             # I don't want any of the atoms of A to move
             value = 100000
@@ -814,8 +819,10 @@ def pos_res_for_ligand_to_fix_structure(
                     if len(data) > 1:
                         if data[1] == "bonds":
                             check = -2
-                        elif 'DUM' not in data[1]:
-                            target.write(f"{int(data[0]):6}{1:6}{value:8}{value:8}{value:8}\n")
+                        elif "DUM" not in data[1]:
+                            target.write(
+                                f"{int(data[0]):6}{1:6}{value:8}{value:8}{value:8}\n"
+                            )
                 elif check == -1:
                     check = 0
                 elif len(data) > 1:
