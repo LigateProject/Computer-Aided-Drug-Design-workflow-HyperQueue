@@ -3,7 +3,13 @@ import pytest
 from ligate.forcefields import FF
 from ligate.ligconv.gromacs import construct_additional_gromacs_files
 from ligate.ligconv.pdb import convert_pdb_to_gmx
-from ligate.ligconv.pose import extract_and_clean_pose, extract_pose, load_single_pose
+from ligate.ligconv.pose import (
+    extract_and_clean_pose,
+    extract_pose,
+    load_poses,
+    load_single_pose,
+)
+from ligate.ligconv.topology import merge_topologies
 from ligate.wrapper.gmx import GMX
 
 from .conftest import data_path
@@ -13,6 +19,41 @@ from .utils.io import check_files_are_equal, remove_lines
 def test_convert_pdb_to_gmx(gmx: GMX, tmpdir):
     pdb_path = data_path("ligen/p38/protein_amber/protein.pdb")
     convert_pdb_to_gmx(gmx, pdb_path, tmpdir)
+
+
+def test_load_poses():
+    pose_path = data_path(
+        "ligen/p38/ligands_gaff2/lig_p38a_2aa/out_amber_pose_000001.txt"
+    )
+    poses = list(load_poses(pose_path))
+    assert len(poses) == 50
+    assert list(range(1, 51)) == [pose.id for pose in poses]
+
+
+def test_load_first_pose():
+    pose_path = data_path(
+        "ligen/p38/ligands_gaff2/lig_p38a_2aa/out_amber_pose_000001.txt"
+    )
+    pose = load_single_pose(pose_path, 1)
+    assert pose.id == 1
+    assert len(pose.atoms.lines) == 43
+    assert len(pose.molecule.lines) == 4
+    assert len(pose.bonds.lines) == 45
+    assert len(pose.substructure.lines) == 1
+    assert pose.ligen_score == 5.061719
+
+
+def test_load_last_pose():
+    pose_path = data_path(
+        "ligen/p38/ligands_gaff2/lig_p38a_2aa/out_amber_pose_000001.txt"
+    )
+    pose = load_single_pose(pose_path, 50)
+    assert pose.id == 50
+    assert len(pose.atoms.lines) == 43
+    assert len(pose.molecule.lines) == 4
+    assert len(pose.bonds.lines) == 45
+    assert len(pose.substructure.lines) == 1
+    assert pose.ligen_score == 5.235692
 
 
 @pytest.mark.parametrize("pose", (1, 2, 4))
@@ -72,11 +113,33 @@ def test_construct_additional_gromacs_files(tmpdir):
     pose_path = data_path(
         "ligen/p38/ligands_gaff2/lig_p38a_2aa/out_amber_pose_000001.txt"
     )
-    pose = load_single_pose(pose_path, 0)
+    pose = load_single_pose(pose_path, 1)
     gro_path = data_path("ligen/p38/ligands_gaff2/lig_p38a_2aa/mol_gmx_stage.gro")
 
     out_path = tmpdir / "out.gro"
     construct_additional_gromacs_files(pose, 1, gro_path, out_path)
     check_files_are_equal(
         data_path("ligen/p38/fixtures/gromacs/lig_p38a_2aa_additional.gro"), out_path
+    )
+
+
+def test_merge_topologies(tmpdir):
+    root = data_path("ligen/p38/ligands_gaff2")
+
+    topology = tmpdir / "topology.itp"
+    structure = tmpdir / "structure.gro"
+
+    merge_topologies(
+        root / "lig_p38a_2aa/topology/ligand.itp",
+        root / "lig_p38a_2aa/poses/1/ligand.mol2",
+        root / "lig_p38a_2aa/poses/1/ligand.gro",
+        root / "lig_p38a_2bb/topology/ligand.itp",
+        root / "lig_p38a_2bb/poses/1/ligand.mol2",
+        root / "lig_p38a_2bb/poses/1/ligand.gro",
+        topology,
+        structure,
+    )
+    check_files_are_equal(data_path("ligen/p38/fixtures/merged/topology.itp"), topology)
+    check_files_are_equal(
+        data_path("ligen/p38/fixtures/merged/structure.gro"), structure
     )

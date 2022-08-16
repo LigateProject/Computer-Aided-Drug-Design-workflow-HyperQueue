@@ -1,7 +1,7 @@
 import shutil
 
 from ..forcefields import FF
-from ..utils.io import GenericPath
+from ..utils.paths import GenericPath
 from .binarywrapper import execute_command
 
 

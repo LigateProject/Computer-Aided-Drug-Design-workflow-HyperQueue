@@ -3,8 +3,7 @@ import os.path
 from pathlib import Path
 from typing import List
 
-from ..utils.io import GenericPath
-from ..utils.paths import use_dir
+from ..utils.paths import GenericPath, use_dir
 from ..wrapper.gmx import GMX
 
 

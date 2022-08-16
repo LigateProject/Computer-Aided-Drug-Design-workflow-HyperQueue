@@ -6,9 +6,9 @@ from typing import List
 
 from .forcefields import FF, Forcefield
 from .ligconv.gromacs import construct_additional_gromacs_files
-from .ligconv.pose import extract_and_clean_pose, load_poses
+from .ligconv.pose import Pose, extract_and_clean_pose, load_poses
+from .ligconv.topology import merge_topologies
 from .utils.io import (
-    GenericPath,
     check_dir_exists,
     copy_directory,
     delete_path,
@@ -18,9 +18,8 @@ from .utils.io import (
     iterate_files,
     move_file,
     move_files,
-    normalize_path,
 )
-from .utils.paths import use_dir
+from .utils.paths import GenericPath, normalize_path, use_dir
 from .wrapper.babel import Babel
 from .wrapper.gmx import GMX
 from .wrapper.stage import Stage
@@ -34,8 +33,7 @@ class LigenOutputData:
     protein_ff_dir: Path
     ligands: List[Path]
 
-    def pose_file(self, ligand: str, pose_number: int) -> Path:
-        # TODO: generalize
+    def pose_file(self, ligand: str) -> Path:
         return self.ligand_dir / ligand / "out_amber_pose_000001.txt"
 
 
@@ -76,11 +74,17 @@ def load_ligen_data(
 
 
 @dataclasses.dataclass
+class Edge:
+    start_ligand: str
+    end_ligand: str
+
+
+@dataclasses.dataclass
 class PipelineConfiguration:
     forcefield: Forcefield
     FF: FF
     pose_number: int
-    edges: List[str]
+    edges: List[Edge]
 
 
 @dataclasses.dataclass
@@ -106,14 +110,40 @@ class PipelineWorkdir:
     def protein_structure_dir(self) -> Path:
         return self.protein_dir / self.forcefield_name / "structure"
 
-    def edge_topology_dir(self, edge: str) -> Path:
-        return self.protein_dir / edge / self.forcefield_name / "topology"
+    def edge_topology_dir(self, edge: Edge) -> Path:
+        return (
+            self.protein_dir
+            / edge_directory_name(edge)
+            / self.forcefield_name
+            / "topology"
+        )
 
-    def edge_structure_dir(self, edge: str) -> Path:
-        return self.protein_dir / edge / self.forcefield_name / "structure"
+    def edge_structure_dir(self, edge: Edge) -> Path:
+        return (
+            self.protein_dir
+            / edge_directory_name(edge)
+            / self.forcefield_name
+            / "structure"
+        )
 
     def ligand_ff_dir(self, ligand: str) -> Path:
         return self.protein_dir / "ligands" / ligand / self.configuration.FF.to_str()
+
+    def ligand_topology(self, ligand: str) -> Path:
+        return self.ligand_ff_dir(ligand) / "topology" / "ligand.itp"
+
+    def ligand_pose_dir(self, ligand: str, pose_id: int) -> Path:
+        return self.ligand_ff_dir(ligand) / "poses" / str(pose_id)
+
+    def ligand_pose_structure_gro(self, ligand: str, pose_id: int) -> Path:
+        return self.ligand_pose_dir(ligand, pose_id) / "ligand.gro"
+
+    def ligand_pose_structure_mol2(self, ligand: str, pose_id: int) -> Path:
+        return self.ligand_pose_dir(ligand, pose_id) / "ligand.mol2"
+
+
+def edge_directory_name(edge: Edge) -> str:
+    return f"edge_{edge.start_ligand}_{edge.end_ligand}"
 
 
 def prepare_directories(
@@ -141,7 +171,7 @@ def prepare_directories(
         ensure_directory(ff_dir / "poses" / str(configuration.pose_number))
 
     for edge in configuration.edges:
-        edge_dir = ensure_directory(protein_dir / edge)
+        edge_dir = ensure_directory(protein_dir / edge_directory_name(edge))
         ff_dir = ensure_directory(edge_dir / configuration.forcefield.to_str())
         ensure_directory(ff_dir / "topology")
         ensure_directory(ff_dir / "structure")
@@ -187,13 +217,12 @@ def create_protein_topology(
 
 def handle_poses(babel: Babel, stage: Stage, workdir: PipelineWorkdir):
     pose_number = workdir.configuration.pose_number
-    # TODO: go through all ligands
-    for ligand in workdir.ligen_data.ligands[:1]:
+    for ligand in workdir.ligen_data.ligands:
         ligand_name = ligand.name
         ligand_dir = workdir.ligand_ff_dir(ligand_name)
         with use_dir(ligand_dir):
             filename = f"{ligand_name}_pose{pose_number}"
-            pose_file = workdir.ligen_data.pose_file(ligand_name, pose_number)
+            pose_file = workdir.ligen_data.pose_file(ligand_name)
             cleaned_mol2 = ligand_dir / f"{filename}_clean.mol2"
 
             logging.debug(
@@ -231,13 +260,22 @@ def handle_poses(babel: Babel, stage: Stage, workdir: PipelineWorkdir):
             # Normalize filenames and put them into the correct directories
             ff_dir = ligand_dir / f"{stage_output}_{ff.to_str()}"
             move_files(iterate_files(ff_dir), topology_dir)
-            move_file(topology_dir / f"{stage_output}.itp", topology_dir / "ligand.itp")
+            move_file(
+                topology_dir / f"{stage_output}.itp",
+                workdir.ligand_topology(ligand_name),
+            )
             move_file(
                 topology_dir / f"posre_{stage_output}.itp",
                 topology_dir / "posre_Ligand.itp",
             )
-            move_file(pose_1_dir / f"{stage_output}.gro", pose_1_dir / "ligand.gro")
-            move_file(pose_1_dir / f"{stage_output}.mol2", pose_1_dir / "ligand.mol2")
+            move_file(
+                pose_1_dir / f"{stage_output}.gro",
+                workdir.ligand_pose_structure_gro(ligand_name, 1),
+            )
+            move_file(
+                pose_1_dir / f"{stage_output}.mol2",
+                workdir.ligand_pose_structure_mol2(ligand_name, 1),
+            )
             delete_path(ff_dir)
 
             pose_1_ligand_gro = pose_1_dir / "ligand.gro"
@@ -247,10 +285,50 @@ def handle_poses(babel: Babel, stage: Stage, workdir: PipelineWorkdir):
             poses = list(load_poses(pose_file))
             for (pose_num, pose) in enumerate(poses[1:], start=2):
                 logging.debug(f"Handling pose {pose_file}:{pose_num}")
-                pose_n_dir = ensure_directory(ligand_dir / "poses" / str(pose_num))
                 extract_and_clean_pose(
-                    pose_file, pose_num, pose_n_dir / "ligand.mol2", babel
+                    pose_file,
+                    pose_num,
+                    workdir.ligand_pose_structure_mol2(ligand_name, pose_num),
+                    babel,
                 )
                 construct_additional_gromacs_files(
-                    pose, pose_num, pose_1_ligand_gro, pose_n_dir / "ligand.gro"
+                    pose,
+                    pose_num,
+                    pose_1_ligand_gro,
+                    workdir.ligand_pose_structure_gro(ligand_name, pose_num),
                 )
+        # TODO: remove
+        break
+
+
+def find_best_pose_by_score(pose_file: GenericPath) -> Pose:
+    poses = load_poses(pose_file)
+    return max(poses, key=lambda pose: pose.ligen_score)
+
+
+def format_ligand_name(ligand: str) -> str:
+    return f"lig_{ligand}"
+
+
+def merge_topologies_step(workdir: PipelineWorkdir):
+    for edge in workdir.configuration.edges:
+        logging.debug(f"Merging topologies for edge {edge}")
+        ligand_a = format_ligand_name(edge.start_ligand)
+        ligand_b = format_ligand_name(edge.end_ligand)
+        pose_a = find_best_pose_by_score(workdir.ligen_data.pose_file(ligand_a))
+        pose_b = find_best_pose_by_score(workdir.ligen_data.pose_file(ligand_b))
+
+        logging.debug(
+            f"Best poses: A(ligand={ligand_a}, pose={pose_a.id}), "
+            f"B(ligand={ligand_b}, pose={pose_b.id})"
+        )
+        merge_topologies(
+            workdir.ligand_topology(ligand_a),
+            workdir.ligand_pose_structure_mol2(ligand_a, pose_a.id),
+            workdir.ligand_pose_structure_gro(ligand_a, pose_a.id),
+            workdir.ligand_topology(ligand_b),
+            workdir.ligand_pose_structure_mol2(ligand_b, pose_b.id),
+            workdir.ligand_pose_structure_gro(ligand_b, pose_b.id),
+            workdir.edge_topology_dir(edge) / "merged.itp",
+            workdir.edge_structure_dir(edge) / "merged.gro",
+        )

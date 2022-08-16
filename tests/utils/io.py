@@ -4,7 +4,7 @@ import shutil
 from pathlib import Path
 from typing import List
 
-from ligate.utils.io import GenericPath
+from ligate.utils.paths import GenericPath
 
 from ..conftest import BlessMode, get_bless_mode
 

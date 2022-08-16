@@ -1,4 +1,4 @@
-from ..utils.io import GenericPath
+from ..utils.paths import GenericPath
 from ..utils.text import line_as_numbers
 from .pose import Pose
 

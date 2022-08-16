@@ -2,24 +2,12 @@ import logging
 import os
 import shutil
 from pathlib import Path
-from typing import Callable, Iterable, List, Optional, Tuple, Union
+from typing import Callable, Iterable, List, Optional, Tuple
 
-GenericPath = Union[Path, str]
-
-
-def replace_in_place(path: GenericPath, replacements: List[Tuple[str, str]]):
-    """
-    Replaces multiple occurences (`before`, `after`) in `path`.
-    """
-    with open(path) as f:
-        data = f.read()
-    for (src, target) in replacements:
-        data = data.replace(src, target)
-
-    with open(path, "w") as f:
-        f.write(data)
+from .paths import GenericPath, normalize_path
 
 
+# Deletion
 def delete_file(path: GenericPath):
     """
     Deletes a file at `path`.
@@ -27,27 +15,12 @@ def delete_file(path: GenericPath):
     os.unlink(path)
 
 
-def normalize_path(path: GenericPath) -> Path:
-    """
-    Makes the path absolute and resolves any links in it.
-    """
-    return Path(path).resolve()
+def delete_path(path: GenericPath):
+    logging.debug(f"Removing {path}")
+    shutil.rmtree(path, ignore_errors=True)
 
 
-def ensure_directory(path: GenericPath, clear=False) -> Path:
-    """
-    Makes sure that the directory at `path` exists and returns an absolute path to it.
-    If `clear` is True, the contents of the directory will be removed.
-    """
-    if os.path.isfile(path) and not os.path.isdir(path):
-        path = os.path.dirname(path)
-    if clear and os.path.isdir(path):
-        shutil.rmtree(path, ignore_errors=True)
-    logging.debug(f"Creating directory {path}")
-    os.makedirs(path, exist_ok=True)
-    return normalize_path(path)
-
-
+# Copying
 def copy_files(files: List[GenericPath], target_dir: GenericPath):
     """
     Copies the provided `files` to the `target_dir`.
@@ -58,11 +31,38 @@ def copy_files(files: List[GenericPath], target_dir: GenericPath):
         shutil.copy(path, target_dir)
 
 
-def remap_paths_to_dir(paths: List[GenericPath], dir: Path) -> List[Path]:
+def move_file(src: GenericPath, dst: GenericPath):
+    dst = Path(dst)
+    if dst.is_dir():
+        dst = dst / Path(src).name
+    logging.debug(f"Moving file {src} to {dst}")
+    shutil.move(src, dst)
+
+
+def move_files(files: Iterable[GenericPath], dst: GenericPath):
+    for file in files:
+        move_file(file, dst)
+
+
+def copy_directory(src: GenericPath, dst: GenericPath):
+    logging.debug(f"Copying directory {src} to {dst}")
+    shutil.copytree(
+        src,
+        dst,
+        dirs_exist_ok=True,
+    )
+
+
+# File content manipulation and reading
+def iterate_file_lines(file: Path, skip=0) -> Iterable[str]:
     """
-    Maps the given `paths` so that they are relative to the given `dir`.
+    Lazily iterates the lines of the given `file`.
     """
-    return [dir / path for path in paths]
+    with open(file) as f:
+        for (index, line) in enumerate(f):
+            line = line.strip()
+            if index >= skip:
+                yield line
 
 
 def append_lines_to(lines: Iterable[str], target: Path, until: Optional[str] = None):
@@ -85,17 +85,20 @@ def append_to(file: Path, text: str):
         file.write(text)
 
 
-def iterate_file_lines(file: Path, skip=0) -> Iterable[str]:
+def replace_in_place(path: GenericPath, replacements: List[Tuple[str, str]]):
     """
-    Lazily iterates the lines of the given `file`.
+    Replaces multiple occurences (`before`, `after`) in `path`.
     """
-    with open(file) as f:
-        for (index, line) in enumerate(f):
-            line = line.strip()
-            if index >= skip:
-                yield line
+    with open(path) as f:
+        data = f.read()
+    for (src, target) in replacements:
+        data = data.replace(src, target)
+
+    with open(path, "w") as f:
+        f.write(data)
 
 
+# File iteration
 def iterate_files(
     directory: GenericPath, filter: Optional[Callable[[Path], bool]] = None
 ) -> Iterable[Path]:
@@ -123,6 +126,7 @@ def iterate_directories(path: GenericPath) -> List[Path]:
     return sorted(dirs)
 
 
+# Querying
 def check_dir_exists(path: GenericPath):
     path = Path(path)
     if not path.is_dir():
@@ -134,29 +138,35 @@ def check_dir_exists(path: GenericPath):
         raise Exception(error)
 
 
-def move_file(src: GenericPath, dst: GenericPath):
-    logging.debug(f"Moving file {src} to {dst}")
-    shutil.move(src, dst)
-
-
-def move_files(files: Iterable[GenericPath], dst: GenericPath):
-    for file in files:
-        move_file(file, dst)
-
-
-def copy_directory(src: GenericPath, dst: GenericPath):
-    logging.debug(f"Copying directory {src} to {dst}")
-    shutil.copytree(
-        src,
-        dst,
-        dirs_exist_ok=True,
-    )
-
-
 def file_has_extension(path: GenericPath, extension: str) -> bool:
     return Path(path).suffix.strip(".") == extension
 
 
-def delete_path(path: GenericPath):
-    logging.debug(f"Removing {path}")
-    shutil.rmtree(path, ignore_errors=True)
+def check_has_extension(path: GenericPath, extension: str):
+    actual_extension = Path(path).suffix.strip(".")
+    if actual_extension != extension:
+        raise Exception(
+            f"Path {path} should have extension {extension}, but it has {actual_extension}"
+        )
+
+
+# General utility
+def remap_paths_to_dir(paths: List[GenericPath], dir: Path) -> List[Path]:
+    """
+    Maps the given `paths` so that they are relative to the given `dir`.
+    """
+    return [dir / path for path in paths]
+
+
+def ensure_directory(path: GenericPath, clear=False) -> Path:
+    """
+    Makes sure that the directory at `path` exists and returns an absolute path to it.
+    If `clear` is True, the contents of the directory will be removed.
+    """
+    if os.path.isfile(path) and not os.path.isdir(path):
+        path = os.path.dirname(path)
+    if clear and os.path.isdir(path):
+        shutil.rmtree(path, ignore_errors=True)
+    logging.debug(f"Creating directory {path}")
+    os.makedirs(path, exist_ok=True)
+    return normalize_path(path)

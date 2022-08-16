@@ -2,7 +2,7 @@ from pathlib import Path
 
 from jinja2 import Template
 
-from .utils.io import GenericPath
+from .utils.paths import GenericPath
 
 
 def load_template(path: Path) -> Template:

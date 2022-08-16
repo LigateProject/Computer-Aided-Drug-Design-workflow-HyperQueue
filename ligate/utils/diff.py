@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from .io import GenericPath
+from .paths import GenericPath
 
 
 def check_diff(path: GenericPath, workdir: GenericPath, workdir_ref: GenericPath):

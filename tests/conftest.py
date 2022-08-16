@@ -12,7 +12,7 @@ ROOT_DIR = os.path.dirname(PYTEST_DIR)
 
 sys.path.insert(0, ROOT_DIR)
 
-from ligate.utils.io import GenericPath  # noqa
+from ligate.utils.paths import GenericPath  # noqa
 from ligate.wrapper.babel import Babel  # noqa
 from ligate.wrapper.binarywrapper import BinaryWrapper  # noqa
 from ligate.wrapper.gmx import GMX  # noqa

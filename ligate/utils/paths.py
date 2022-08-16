@@ -2,8 +2,9 @@ import contextlib
 import logging
 import os
 from pathlib import Path
+from typing import Union
 
-from .io import GenericPath, ensure_directory
+GenericPath = Union[Path, str]
 
 PATH_STACK = []
 
@@ -34,6 +35,8 @@ def get_active_dir() -> Path:
 
 
 def resolve_path(path: GenericPath, create_parent=True) -> Path:
+    from .io import ensure_directory
+
     path = Path(path)
     if path.is_absolute():
         return path
@@ -41,3 +44,10 @@ def resolve_path(path: GenericPath, create_parent=True) -> Path:
     if create_parent:
         ensure_directory(path)
     return path
+
+
+def normalize_path(path: GenericPath) -> Path:
+    """
+    Makes the path absolute and resolves any links in it.
+    """
+    return Path(path).resolve()

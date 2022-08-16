@@ -4,7 +4,7 @@ import subprocess
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Union
 
-from ..utils.io import GenericPath
+from ..utils.paths import GenericPath
 
 
 class BinaryWrapper:
