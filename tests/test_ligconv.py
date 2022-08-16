@@ -9,9 +9,8 @@ from ligate.ligconv.pose import (
     load_poses,
     load_single_pose,
 )
-from ligate.ligconv.topology import merge_topologies
+from ligate.ligconv.topology import merge_topologies, pos_res_for_ligand_to_fix_structure
 from ligate.wrapper.gmx import GMX
-
 from .conftest import data_path
 from .utils.io import check_files_are_equal, remove_lines
 
@@ -142,4 +141,18 @@ def test_merge_topologies(tmpdir):
     check_files_are_equal(data_path("ligen/p38/fixtures/merged/topology.itp"), topology)
     check_files_are_equal(
         data_path("ligen/p38/fixtures/merged/structure.gro"), structure
+    )
+
+
+def test_posres_fix_structure(tmpdir):
+    output = tmpdir / "out.itp"
+
+    pos_res_for_ligand_to_fix_structure(
+        data_path("ligen/p38/ligands_gaff2/lig_p38a_2aa/edges/lig_p38a_2aa_p38a_2bb/topology"
+                  "/merged.itp"),
+        output
+    )
+    check_files_are_equal(
+        data_path("ligen/p38/fixtures/edges/lig_p38a_2aa_p38a_2bb/topology/posre_Ligand.itp"),
+        output
     )

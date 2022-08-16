@@ -7,7 +7,8 @@ from typing import List
 from .forcefields import FF, Forcefield
 from .ligconv.gromacs import construct_additional_gromacs_files
 from .ligconv.pose import Pose, extract_and_clean_pose, load_poses
-from .ligconv.topology import merge_topologies, write_topology_summary
+from .ligconv.topology import merge_topologies, pos_res_for_ligand_to_fix_structure, \
+    write_topology_summary
 from .utils.io import (
     check_dir_exists,
     copy_directory,
@@ -322,7 +323,10 @@ def merge_topologies_step(workdir: PipelineWorkdir):
             f"Best poses: A(ligand={ligand_a}, pose={pose_a.id}), "
             f"B(ligand={ligand_b}, pose={pose_b.id})"
         )
+
         edge_topology_dir = workdir.edge_topology_dir(edge)
+        edge_merged_topology = edge_topology_dir / "merged.itp"
+
         merge_topologies(
             workdir.ligand_topology(ligand_a),
             workdir.ligand_pose_structure_mol2(ligand_a, pose_a.id),
@@ -330,7 +334,7 @@ def merge_topologies_step(workdir: PipelineWorkdir):
             workdir.ligand_topology(ligand_b),
             workdir.ligand_pose_structure_mol2(ligand_b, pose_b.id),
             workdir.ligand_pose_structure_gro(ligand_b, pose_b.id),
-            edge_topology_dir / "merged.itp",
+            edge_merged_topology,
             workdir.edge_structure_dir(edge) / "merged.gro",
         )
 
@@ -340,4 +344,8 @@ def merge_topologies_step(workdir: PipelineWorkdir):
             edge_topology_dir / "topol_ligandInWater.top",
             edge_topology_dir / "topol_amber.top",
             forcefield_path="amber99sb-ildn.ff"
+        )
+        pos_res_for_ligand_to_fix_structure(
+            edge_merged_topology,
+            edge_topology_dir / "posre_Ligand.itp"
         )

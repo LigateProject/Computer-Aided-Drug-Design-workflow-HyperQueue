@@ -792,3 +792,32 @@ MOL 1
                         target.write('#include "ffMOL.itp"\n')
 
             target.write("MOL 1\n")
+
+
+def pos_res_for_ligand_to_fix_structure(
+        topology: GenericPath,
+        posre_ligand: GenericPath
+):
+    with open(topology) as f:
+        with open(posre_ligand, "w") as target:
+            check = -2
+            target.write("""[ position_restraints ]
+; atom  type      fx      fy      fz
+""")
+
+            # I don't want any of the atoms of A to move
+            value = 100000
+
+            for line in f:
+                data = line.split()
+                if check == 0:
+                    if len(data) > 1:
+                        if data[1] == "bonds":
+                            check = -2
+                        elif 'DUM' not in data[1]:
+                            target.write(f"{int(data[0]):6}{1:6}{value:8}{value:8}{value:8}\n")
+                elif check == -1:
+                    check = 0
+                elif len(data) > 1:
+                    if data[1] == "atoms":
+                        check = -1
