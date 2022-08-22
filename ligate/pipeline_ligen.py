@@ -231,6 +231,7 @@ def create_protein_topology_step(
 
 def handle_poses_step(babel: Babel, stage: Stage, workdir: PipelineWorkdir):
     pose_number = workdir.configuration.pose_number
+    # Parallelize over ligands
     for ligand in workdir.ligen_data.ligands:
         ligand_name = ligand.name
         ligand_dir = workdir.ligand_ff_dir(ligand_name)
@@ -324,7 +325,21 @@ def format_ligand_name(ligand: str) -> str:
     return f"lig_{ligand}"
 
 
+"""
+Ligand A   Ligand B
+|         /
+|        /
+|       /
+|      /
+   AB
+    |
+  merge
+    |
+  structure fix
+"""
+
 def merge_topologies_step(workdir: PipelineWorkdir):
+    # Maybe parallelize over edges
     for edge in workdir.configuration.edges:
         logging.debug(f"Merging topologies for edge {edge}")
         ligand_a = format_ligand_name(edge.start_ligand)
@@ -366,6 +381,7 @@ def merge_topologies_step(workdir: PipelineWorkdir):
 
 
 def fix_structure_step(gmx: GMX, workdir: PipelineWorkdir, structure_mdp_file: GenericPath):
+    # Maybe parallelize here
     for edge in workdir.configuration.edges:
         structure_merged = workdir.edge_merged_structure_gro(edge)
         structure_dir = structure_merged.parent
