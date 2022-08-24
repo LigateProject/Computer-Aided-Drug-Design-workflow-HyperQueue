@@ -172,8 +172,6 @@ def ensure_directory(path: GenericPath, clear=False) -> Path:
     Makes sure that the directory at `path` exists and returns an absolute path to it.
     If `clear` is True, the contents of the directory will be removed.
     """
-    if os.path.isfile(path) and not os.path.isdir(path):
-        path = os.path.dirname(path)
     if clear and os.path.isdir(path):
         shutil.rmtree(path, ignore_errors=True)
     logging.debug(f"Creating directory {path}")

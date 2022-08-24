@@ -1,28 +1,27 @@
-from pathlib import Path
-
-from . import LigConvContext, LigConvParameters, LigenOutputData
 from ...utils.io import ensure_directory, iterate_directories
 from ...utils.paths import GenericPath, normalize_path
+from . import LigConvContext, LigConvParameters, LigenOutputData
 
 
 def load_ligen_output_data(
-        protein_file: GenericPath,
-        ligand_dir: GenericPath
+    protein_file: GenericPath, ligand_dir: GenericPath
 ) -> LigenOutputData:
     """
     Loads Ligen data from a Ligen output directory.
     """
+    ligand_dir = normalize_path(ligand_dir)
     ligands = iterate_directories(ligand_dir)
     return LigenOutputData(
         protein_file=normalize_path(protein_file),
+        ligand_dir=ligand_dir,
         ligands=ligands,
     )
 
 
 def prepare_ligconv_directories(
-        ligen_data: LigenOutputData,
-        workdir: GenericPath,
-        params: LigConvParameters,
+    ligen_data: LigenOutputData,
+    workdir: GenericPath,
+    params: LigConvParameters,
 ) -> LigConvContext:
     """
     Performs a sanity check and prepares directories for the AWH pipeline into `workdir`.
@@ -38,8 +37,4 @@ def prepare_ligconv_directories(
             raise Exception(f"{edge} links ligand(s) that were not found: {missing}")
 
     workdir = ensure_directory(workdir)
-    return LigConvContext(
-        ligen_data=ligen_data,
-        params=params,
-        workdir=workdir
-    )
+    return LigConvContext(ligen_data=ligen_data, params=params, workdir=workdir)

@@ -1,6 +1,6 @@
 import pytest
 
-from ligate.forcefields import FF
+from ligate.ligconv.common import LigandForcefield
 from ligate.ligconv.pdb import convert_pdb_to_gmx
 from ligate.ligconv.pose import (
     extract_and_clean_pose,
@@ -18,9 +18,9 @@ from .conftest import data_path
 from .utils.io import check_files_are_equal, remove_lines
 
 
-def test_convert_pdb_to_gmx(gmx: GMX, tmpdir):
+def test_convert_pdb_to_gmx(gmx: GMX, tmp_path):
     pdb_path = data_path("ligen/p38/protein_amber/protein.pdb")
-    convert_pdb_to_gmx(gmx, pdb_path, tmpdir)
+    convert_pdb_to_gmx(gmx, pdb_path, tmp_path)
 
 
 def test_load_poses():
@@ -59,50 +59,50 @@ def test_load_last_pose():
 
 
 @pytest.mark.parametrize("pose", (1, 2, 4))
-def test_extract_and_clean_pose(pose: int, tmpdir, babel):
+def test_extract_and_clean_pose(pose: int, tmp_path, babel):
     pose_path = data_path(
         "ligen/p38/ligands_gaff2/lig_p38a_2aa/out_amber_pose_000001.txt"
     )
 
-    output = tmpdir / "pose.mol2"
+    output = tmp_path / "pose.mol2"
     extract_and_clean_pose(pose_path, pose, output, babel)
     check_files_are_equal(
         data_path(f"ligen/p38/fixtures/pose{pose}-cleaned.mol2"), output
     )
 
 
-def test_extract_pose_with_dummy_atoms(tmpdir):
+def test_extract_pose_with_dummy_atoms(tmp_path):
     pose_path = data_path(
         "ligen/p38/ligands_gaff2/lig_p38a_2c/out_amber_pose_000001.txt"
     )
 
-    output = tmpdir / "pose.mol2"
+    output = tmp_path / "pose.mol2"
     extract_pose(pose_path, 1, output)
     check_files_are_equal(data_path("ligen/p38/fixtures/pose-dummy-atoms.mol2"), output)
 
 
-def test_extract_pose_with_dummy_bonds(tmpdir):
+def test_extract_pose_with_dummy_bonds(tmp_path):
     pose_path = data_path(
         "ligen/p38/ligands_gaff2/lig_p38a_2c/out_amber_pose_000002.txt"
     )
 
-    output = tmpdir / "pose.mol2"
+    output = tmp_path / "pose.mol2"
     extract_pose(pose_path, 1, output)
     check_files_are_equal(data_path("ligen/p38/fixtures/pose-dummy-bonds.mol2"), output)
 
 
-def test_run_stage(tmpdir, stage):
+def test_run_stage(tmp_path, stage):
     input_path = data_path("ligen/p38/fixtures/pose1-cleaned.mol2")
 
     def compare(expected: str, actual: str, skip_lines=()):
-        actual = tmpdir / actual
+        actual = tmp_path / actual
         if skip_lines:
             remove_lines(actual, lines=list(skip_lines))
 
         check_files_are_equal(data_path(f"ligen/p38/fixtures/stage/{expected}"), actual)
 
-    output = tmpdir / "out"
-    stage.run(input_path, str(output), FF.Gaff2)
+    output = tmp_path / "out"
+    stage.run(input_path, str(output), LigandForcefield.Gaff2)
 
     compare("out.gro", "out.gro", skip_lines=[0])
     compare("out.mol2", "out.mol2")
@@ -111,11 +111,11 @@ def test_run_stage(tmpdir, stage):
     compare("out_gaff2/out.top", "out_gaff2/out.top", skip_lines=[0])
 
 
-def test_merge_topologies(tmpdir):
+def test_merge_topologies(tmp_path):
     root = data_path("ligen/p38/ligands_gaff2")
 
-    topology = tmpdir / "topology.itp"
-    structure = tmpdir / "structure.gro"
+    topology = tmp_path / "topology.itp"
+    structure = tmp_path / "structure.gro"
 
     merge_topologies(
         root / "lig_p38a_2aa/topology/ligand.itp",
@@ -133,8 +133,8 @@ def test_merge_topologies(tmpdir):
     )
 
 
-def test_posres_fix_structure(tmpdir):
-    output = tmpdir / "out.itp"
+def test_posres_fix_structure(tmp_path):
+    output = tmp_path / "out.itp"
 
     pos_res_for_ligand_to_fix_structure(
         data_path(

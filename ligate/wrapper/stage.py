@@ -1,6 +1,6 @@
 import shutil
 
-from ..forcefields import FF
+from ..ligconv.common import LigandForcefield
 from ..utils.paths import GenericPath
 from .binarywrapper import execute_command
 
@@ -11,7 +11,9 @@ class Stage:
         if self.stage_path is None:
             raise Exception("Could not find stage.py in PATH")
 
-    def run(self, input: GenericPath, output: GenericPath, forcefield: FF):
+    def run(
+        self, input: GenericPath, output: GenericPath, forcefield: LigandForcefield
+    ):
         return execute_command(
             [
                 "python3",

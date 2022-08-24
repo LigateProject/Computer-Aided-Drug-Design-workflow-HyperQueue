@@ -10,22 +10,22 @@ from .conftest import data_path
 from .utils.io import check_files_are_equal
 
 
-def test_construct_additional_gromacs_files(tmpdir):
+def test_construct_additional_gromacs_files(tmp_path):
     pose_path = data_path(
         "ligen/p38/ligands_gaff2/lig_p38a_2aa/out_amber_pose_000001.txt"
     )
     pose = load_single_pose(pose_path, 1)
     gro_path = data_path("ligen/p38/ligands_gaff2/lig_p38a_2aa/mol_gmx_stage.gro")
 
-    out_path = tmpdir / "out.gro"
+    out_path = tmp_path / "out.gro"
     construct_additional_gromacs_files(pose, 1, gro_path, out_path)
     check_files_are_equal(
         data_path("ligen/p38/fixtures/gromacs/lig_p38a_2aa_additional.gro"), out_path
     )
 
 
-def test_shift_last_gromacs_line(tmpdir):
-    path = tmpdir / "merged.gro"
+def test_shift_last_gromacs_line(tmp_path):
+    path = tmp_path / "merged.gro"
     shutil.copy(
         data_path(
             "ligen/p38/ligands_gaff2/lig_p38a_2aa/edges/lig_p38a_2aa_p38a_2bb/structure/merged.gro"

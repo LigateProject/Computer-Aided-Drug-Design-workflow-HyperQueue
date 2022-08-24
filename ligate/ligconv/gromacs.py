@@ -72,7 +72,6 @@ def shift_last_gromacs_line(path: GenericPath, value: float):
 
 
 class ComplexGroFilePrinter:
-
     def __init__(self, filenameA, filenameB):
         f1 = open(filenameA, "r")
         f2 = open(filenameB, "r")
@@ -90,21 +89,28 @@ class ComplexGroFilePrinter:
             lines = f.readlines()
             counter = 0
             for line in lines:
-                if (counter > 0):
+                if counter > 0:
                     groFilesInMemory[index].append(line.split())
-                    if (len(groFilesInMemory[index][-1]) == 1):
-                        groFilesInMemory[index][-1] = int(groFilesInMemory[index][-1][0])
-                    elif (line == lines[-1]):
-                        groFilesInMemory[index][-1] = [float(groFilesInMemory[index][-1][i]) for i in range(len(groFilesInMemory[index][-1]))]
+                    if len(groFilesInMemory[index][-1]) == 1:
+                        groFilesInMemory[index][-1] = int(
+                            groFilesInMemory[index][-1][0]
+                        )
+                    elif line == lines[-1]:
+                        groFilesInMemory[index][-1] = [
+                            float(groFilesInMemory[index][-1][i])
+                            for i in range(len(groFilesInMemory[index][-1]))
+                        ]
                     else:
-                        if (len(groFilesInMemory[index][-1]) == 6):
+                        if len(groFilesInMemory[index][-1]) == 6:
                             index2 = 0
-                        elif (len(groFilesInMemory[index][-1]) == 7):
+                        elif len(groFilesInMemory[index][-1]) == 7:
                             index2 = 1
                         listToAppend = []
                         for i in range(indices[index2][0]):
                             listToAppend.append(groFilesInMemory[index][-1][i])
-                        listToAppend.append(int(groFilesInMemory[index][-1][indices[index2][0]]))
+                        listToAppend.append(
+                            int(groFilesInMemory[index][-1][indices[index2][0]])
+                        )
                         for i in range(indices[index2][1], indices[index2][2]):
                             listToAppend.append(float(groFilesInMemory[index][-1][i]))
                         groFilesInMemory[index][-1] = listToAppend
@@ -116,7 +122,7 @@ class ComplexGroFilePrinter:
 
     def listToStringConverter(self, inputList):
         string = ""
-        if (len(inputList) == 6):
+        if len(inputList) == 6:
             indices = [2, 3, 6]
             string += inputList[0].rjust(8)
             string += inputList[1].rjust(7)
@@ -138,9 +144,9 @@ class ComplexGroFilePrinter:
         for i in range(2, len(self.proteinGro) - 1):
             f1.write(self.listToStringConverter(self.proteinGro[i]))
         for i in range(2, len(self.mergedGro) - 1):
-            if (len(self.mergedGro[i]) == 6):
+            if len(self.mergedGro[i]) == 6:
                 self.mergedGro[i][2] += self.proteinGro[1]
-            elif (len(self.mergedGro[i]) == 7):
+            elif len(self.mergedGro[i]) == 7:
                 self.mergedGro[i][3] += self.proteinGro[1]
             f1.write(self.listToStringConverter(self.mergedGro[i]))
         string = ""
@@ -155,9 +161,9 @@ class ComplexGroFilePrinter:
 
 
 def write_gro_complex_structure(
-        protein_structure: GenericPath,
-        ligand_structure: GenericPath,
-        complex_structure: GenericPath
+    protein_structure: GenericPath,
+    ligand_structure: GenericPath,
+    complex_structure: GenericPath,
 ):
     """
     Writes the complex structure from a protein and ligand structure into `complex_structure`.

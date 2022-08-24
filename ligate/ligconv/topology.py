@@ -3,9 +3,9 @@ import sys
 from rdkit import Chem
 from rdkit.Chem import rdMolAlign, rdmolops
 
-from .common import ProteinForcefield, WaterModel
 from ..utils.io import check_has_extension
 from ..utils.paths import GenericPath
+from .common import ProteinForcefield, WaterModel
 
 
 class TopologyMerger:
@@ -149,10 +149,10 @@ class TopologyMerger:
                     if line.split()[0] == "#ifdef":
                         check2 = False
                     if (
-                            check1
-                            and check2
-                            and line.split()[0] != ";"
-                            and line.split()[0] != "["
+                        check1
+                        and check2
+                        and line.split()[0] != ";"
+                        and line.split()[0] != "["
                     ):
                         indexCut = line.split().index(";")
                         self.dihedrals[index].append(line.split()[:indexCut])
@@ -273,10 +273,10 @@ class TopologyMerger:
                     indexList = [1, 6, 7]
                     for j in range(3):
                         if (
-                                self.atoms[0][i][indexList[j]]
-                                != self.atoms[1][self.indexMapping[1].index(i)][
-                            indexList[j]
-                        ]
+                            self.atoms[0][i][indexList[j]]
+                            != self.atoms[1][self.indexMapping[1].index(i)][
+                                indexList[j]
+                            ]
                         ):
                             checkCount += 1
                     if checkCount > 0:
@@ -295,22 +295,22 @@ class TopologyMerger:
                     resultString += self.atoms[0][i][7].rjust(11)
             else:
                 if (
-                        "DUM_" + self.atoms[1][self.indexMapping[1].index(i)][1]
-                        not in self.dummyAtoms
+                    "DUM_" + self.atoms[1][self.indexMapping[1].index(i)][1]
+                    not in self.dummyAtoms
                 ):
                     self.dummyAtoms.append(
                         "DUM_" + self.atoms[1][self.indexMapping[1].index(i)][1]
                     )
                 resultString += str(i + 1).rjust(6)
                 resultString += (
-                        "DUM_" + self.atoms[1][self.indexMapping[1].index(i)][1]
+                    "DUM_" + self.atoms[1][self.indexMapping[1].index(i)][1]
                 ).rjust(12)
                 for j in range(2, 4):
                     resultString += self.atoms[1][self.indexMapping[1].index(i)][
                         j
                     ].rjust(justificationList[j], " ")
                 resultString += (
-                        "D" + self.atoms[1][self.indexMapping[1].index(i)][4]
+                    "D" + self.atoms[1][self.indexMapping[1].index(i)][4]
                 ).rjust(justificationList[4], " ")
                 resultString += str(i + 1).rjust(justificationList[5], " ")
                 resultString += "0.000000".rjust(11)
@@ -322,8 +322,8 @@ class TopologyMerger:
                     12
                 )
                 for j in range(
-                        len(self.atoms[1][self.indexMapping[1].index(i)]) - 2,
-                        len(self.atoms[1][self.indexMapping[1].index(i)]),
+                    len(self.atoms[1][self.indexMapping[1].index(i)]) - 2,
+                    len(self.atoms[1][self.indexMapping[1].index(i)]),
                 ):
                     resultString += self.atoms[1][self.indexMapping[1].index(i)][
                         j
@@ -472,9 +472,9 @@ class TopologyMerger:
         for i in range(len(alreadySeen)):
             resultString = ""
             resultString += (
-                    alreadySeen[i][0][0].rjust(justificationList[0])
-                    + alreadySeen[i][0][1].rjust(justificationList[1])
-                    + alreadySeen[i][0][2].rjust(justificationList[2])
+                alreadySeen[i][0][0].rjust(justificationList[0])
+                + alreadySeen[i][0][1].rjust(justificationList[1])
+                + alreadySeen[i][0][2].rjust(justificationList[2])
             )
             resultString += alreadySeen[i][1].rjust(justificationList[3])
             for j in range(2, len(alreadySeen[i])):
@@ -537,22 +537,22 @@ class TopologyMerger:
             self.dihedrals[-1].append(resultString)
             check = False
             if ("DUM" in self.atoms[-1][int(alreadySeen[i][0][0]) + 1]) or (
-                    "DUM" in self.atoms[-1][int(alreadySeen[i][0][3]) + 1]
+                "DUM" in self.atoms[-1][int(alreadySeen[i][0][3]) + 1]
             ):
                 check = True
             if check:
                 if (
-                        (i < len(self.dihedrals[0]))
-                        and (int(alreadySeen[i][1]) == 4)
-                        and (float(alreadySeen[i][3]) > 0)
-                        and (float(alreadySeen[i][6]) == 0)
+                    (i < len(self.dihedrals[0]))
+                    and (int(alreadySeen[i][1]) == 4)
+                    and (float(alreadySeen[i][3]) > 0)
+                    and (float(alreadySeen[i][6]) == 0)
                 ):
                     alreadySeen[i][3] = "0"  # why?
                 elif (
-                        (i >= len(self.dihedrals[0]))
-                        and (int(alreadySeen[i][1]) == 4)
-                        and (float(alreadySeen[i][3]) == 0)
-                        and (float(alreadySeen[i][6]) > 0)
+                    (i >= len(self.dihedrals[0]))
+                    and (int(alreadySeen[i][1]) == 4)
+                    and (float(alreadySeen[i][3]) == 0)
+                    and (float(alreadySeen[i][6]) > 0)
                 ):
                     alreadySeen[i][6] = "0"  # why?
                 else:
@@ -710,14 +710,14 @@ class TopologyMerger:
 
 
 def merge_topologies(
-        ligand_a_topology: GenericPath,
-        ligand_a_structure_mol2: GenericPath,
-        ligand_a_structure_gro: GenericPath,
-        ligand_b_topology: GenericPath,
-        ligand_b_structure_mol2: GenericPath,
-        ligand_b_structure_gro: GenericPath,
-        output_merged_topology: GenericPath,
-        output_merged_structure: GenericPath,
+    ligand_a_topology: GenericPath,
+    ligand_a_structure_mol2: GenericPath,
+    ligand_a_structure_gro: GenericPath,
+    ligand_b_topology: GenericPath,
+    ligand_b_structure_mol2: GenericPath,
+    ligand_b_structure_gro: GenericPath,
+    output_merged_topology: GenericPath,
+    output_merged_structure: GenericPath,
 ):
     check_has_extension(ligand_a_topology, "itp")
     check_has_extension(ligand_a_structure_mol2, "mol2")
@@ -742,10 +742,10 @@ def merge_topologies(
 
 
 def write_topology_summary(
-        topology: GenericPath,
-        topology_ligand_in_water: GenericPath,
-        topology_amber: GenericPath,
-        forcefield_path: GenericPath,
+    topology: GenericPath,
+    topology_ligand_in_water: GenericPath,
+    topology_amber: GenericPath,
+    forcefield_path: GenericPath,
 ):
     with open(topology_ligand_in_water, "w") as f:
         f.write(
@@ -801,7 +801,7 @@ MOL 1
 
 
 def pos_res_for_ligand_to_fix_structure(
-        topology: GenericPath, posre_ligand: GenericPath
+    topology: GenericPath, posre_ligand: GenericPath
 ):
     with open(topology) as f:
         with open(posre_ligand, "w") as target:
@@ -836,9 +836,11 @@ def pos_res_for_ligand(topology: GenericPath, posre_ligand: GenericPath):
     with open(topology) as f:
         with open(posre_ligand, "w") as target:
             check = -2
-            target.write("""[ position_restraints ]
+            target.write(
+                """[ position_restraints ]
 ; atom  type      fx      fy      fz
-""")
+"""
+            )
 
             for line in f:
                 data = line.split()
@@ -846,7 +848,7 @@ def pos_res_for_ligand(topology: GenericPath, posre_ligand: GenericPath):
                     if len(data) > 1:
                         if data[1] == "bonds":
                             check = -2
-                        elif 'h' not in data[1] and 'H' not in data[1]:
+                        elif "h" not in data[1] and "H" not in data[1]:
                             # TODO: why 8 above and 6 here?
                             target.write(
                                 f"{int(data[0]):6}{1:6}{1000:6}{1000:6}{1000:6}\n"
