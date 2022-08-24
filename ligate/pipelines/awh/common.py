@@ -2,8 +2,8 @@ import dataclasses
 import enum
 from pathlib import Path
 
-from ..input import ComputationTriple
-from ..input.properties import protein_ff
+from ...input import ComputationTriple
+from ...input.properties import protein_ff
 
 
 class LigandOrProtein(enum.Enum):

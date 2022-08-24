@@ -1,9 +1,9 @@
 from pathlib import Path
 from typing import List
 
-from ..input import ComputationTriple, ForceField, InputProvider, Mutation, Protein
-from ..input.properties import protein_ff
-from ..utils.io import (
+from ...input import ComputationTriple, ForceField, InputProvider, Mutation, Protein
+from ...input.properties import protein_ff
+from ...utils.io import (
     append_lines_to,
     append_to,
     copy_files,

@@ -5,12 +5,12 @@ from pathlib import Path
 from hyperqueue.job import Job
 from hyperqueue.task.task import Task
 
-from ..ctx import Context
-from ..input import ComputationTriple
-from ..input.properties import get_cl, get_na
-from ..mdp import render_mdp
-from ..utils.io import delete_file, replace_in_place
-from ..utils.paths import GenericPath
+from ...ctx import Context
+from ...input import ComputationTriple
+from ...input.properties import get_cl, get_na
+from ...mdp import render_mdp
+from ...utils.io import delete_file, replace_in_place
+from ...utils.paths import GenericPath
 from .common import LigandOrProtein, LopWorkload, get_topname, topology_path
 
 

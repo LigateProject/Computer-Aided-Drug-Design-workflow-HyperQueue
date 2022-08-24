@@ -5,9 +5,9 @@ from typing import Tuple
 from hyperqueue.job import Job
 from hyperqueue.task.task import Task
 
-from ..ctx import Context
-from ..input import ComputationTriple
-from ..mdp import render_mdp
+from ...ctx import Context
+from ...input import ComputationTriple
+from ...mdp import render_mdp
 from .common import LigandOrProtein, LopWorkload, get_topname, topology_path
 from .solvate_minimize import MinimizationOutput
 

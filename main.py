@@ -20,11 +20,11 @@ def pipeline():
     from ligate.ctx import Context
     from ligate.wrapper.gmx import GMX
     from ligate.input import ComputationTriple, ForceField, Protein
-    from ligate.steps.analyze import analyze
-    from ligate.steps.awh import AWHParams, awh
-    from ligate.steps.equilibrate import EquilibrateParams, equilibrate
-    from ligate.steps.pmx_input import PmxInputProvider
-    from ligate.steps.solvate_minimize import MinimizationParams, solvate_prepare
+    from ligate.pipelines.awh.analyze import analyze
+    from ligate.pipelines.awh.awh import AWHParams, awh
+    from ligate.pipelines.awh.equilibrate import EquilibrateParams, equilibrate
+    from ligate.pipelines.awh.pmx_input import PmxInputProvider
+    from ligate.pipelines.awh.solvate_minimize import MinimizationParams, solvate_prepare
 
     mdpdir = Path("mdp")
     workdir = Path("awh-job")

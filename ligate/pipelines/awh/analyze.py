@@ -6,7 +6,7 @@ from typing import List, Optional
 import numpy as np
 from hyperqueue.job import Job
 
-from ..ctx import Context
+from ...ctx import Context
 from .awh import AWHOutput, AWHPartOutput
 from .common import LigandOrProtein
 
