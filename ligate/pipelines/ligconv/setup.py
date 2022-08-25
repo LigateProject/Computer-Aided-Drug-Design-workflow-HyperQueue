@@ -1,6 +1,6 @@
-from ...utils.io import ensure_directory, iterate_directories
+from ...utils.io import ensure_directory
 from ...utils.paths import GenericPath, normalize_path
-from . import LigConvContext, LigConvParameters, LigenOutputData
+from .common import LigConvContext, LigConvParameters, LigenOutputData
 
 
 def load_ligen_output_data(
@@ -10,11 +10,9 @@ def load_ligen_output_data(
     Loads Ligen data from a Ligen output directory.
     """
     ligand_dir = normalize_path(ligand_dir)
-    ligands = iterate_directories(ligand_dir)
     return LigenOutputData(
         protein_file=normalize_path(protein_file),
         ligand_dir=ligand_dir,
-        ligands=ligands,
     )
 
 
@@ -26,13 +24,14 @@ def prepare_ligconv_directories(
     """
     Performs a sanity check and prepares directories for the AWH pipeline into `workdir`.
     """
-    ligand_names = [ligen_data.ligand_name(ligand) for ligand in ligen_data.ligands]
     for edge in params.edges:
         missing = []
-        if edge.start_ligand_name() not in ligand_names:
-            missing.append(edge.start_ligand_name())
-        if edge.end_ligand_name() not in ligand_names:
-            missing.append(edge.end_ligand_name())
+        start = edge.start_ligand_name()
+        if not ligen_data.has_ligand(start):
+            missing.append(start)
+        end = edge.end_ligand_name()
+        if not ligen_data.has_ligand(end):
+            missing.append(end)
         if missing:
             raise Exception(f"{edge} links ligand(s) that were not found: {missing}")
 

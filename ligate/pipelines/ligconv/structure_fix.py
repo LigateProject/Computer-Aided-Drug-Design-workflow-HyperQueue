@@ -5,7 +5,7 @@ from ...ligconv.topology import pos_res_for_ligand
 from ...utils.io import delete_files, move_file
 from ...utils.paths import GenericPath, use_dir
 from ...wrapper.gmx import GMX
-from . import Edge, LigConvContext, LigConvEdgeTaskState
+from .common import Edge, LigConvContext, LigConvEdgeTaskState
 
 
 def fix_edge_structure_task(
@@ -14,15 +14,17 @@ def fix_edge_structure_task(
     edge_tasks: LigConvEdgeTaskState,
     ctx: LigConvContext,
     gmx: GMX,
-):
+) -> LigConvEdgeTaskState:
+    state = {}
     for edge in ctx.params.edges:
         dependency = edge_tasks.get_edge_task(edge)
-        job.function(
+        state[edge] = job.function(
             fix_edge_structure,
             args=(edge, ctx, gmx, structure_mdp_file),
             deps=[dependency],
             name=f"fix_structure_edge_{edge.start_ligand}_{edge.end_ligand}",
         )
+    return LigConvEdgeTaskState(edge_to_task=state)
 
 
 def fix_edge_structure(

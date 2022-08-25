@@ -1,7 +1,6 @@
 import logging
 import os
 import shutil
-from pathlib import Path
 
 import click
 
@@ -9,69 +8,6 @@ import click
 @click.group()
 def cli():
     pass
-
-
-@cli.command()
-def pipeline():
-    from hyperqueue.cluster import LocalCluster, WorkerConfig
-    from hyperqueue.job import Job
-    from hyperqueue.visualization import visualize_job
-
-    from ligate.ctx import Context
-    from ligate.wrapper.gmx import GMX
-    from ligate.input import ComputationTriple, ForceField, Protein
-    from ligate.pipelines.awh.analyze import analyze
-    from ligate.pipelines.awh.awh import AWHParams, awh
-    from ligate.pipelines.awh.equilibrate import EquilibrateParams, equilibrate
-    from ligate.pipelines.awh.pmx_input import PmxInputProvider
-    from ligate.pipelines.awh.solvate_minimize import MinimizationParams, solvate_prepare
-
-    mdpdir = Path("mdp")
-    workdir = Path("awh-job")
-    gmx = GMX(Path("../libs/gromacs-2021.3/build/install/bin/gmx"))
-
-    triple = ComputationTriple(
-        protein=Protein.Bace,
-        mutation="edge_CAT-13a_CAT-13m",
-        forcefield=ForceField.Amber,
-    )
-
-    ctx = Context(
-        workdir=workdir,
-        mdpdir=mdpdir,
-        gmx=gmx
-    )
-
-    with LocalCluster() as cluster:
-        cluster.start_worker(WorkerConfig(cores=4))
-        client = cluster.client()
-
-        shutil.rmtree(workdir, ignore_errors=True)
-
-        # Step 1: generate input files into `workdir`
-        pmx_path = Path("../libs/pmx")
-        pmx_provider = PmxInputProvider(pmx_path)
-        pmx_provider.provide_input(triple, workdir)
-
-        # Step 2: solvate minimize
-        job = Job(workdir, default_env=dict(HQ_PYLOG="DEBUG"))
-        minimization_params = MinimizationParams(steps=100)
-        minimization_output = solvate_prepare(ctx, triple, minimization_params, job)
-
-        # Step 3: equilibrate
-        equilibrate_params = EquilibrateParams(steps=100)
-        equilibrate_output = equilibrate(ctx, triple, equilibrate_params, minimization_output, job)
-
-        # Step 4: AWH
-        awh_params = AWHParams(steps=5000, diffusion=0.005, replicates=3)
-        awh_output = awh(ctx, triple, awh_params, equilibrate_output, job)
-
-        # Step 5: analyze
-        analyze(ctx, awh_output, job)
-
-        visualize_job(job, "job.dot")
-        submitted_job = client.submit(job)
-        client.wait_for_jobs([submitted_job])
 
 
 def print_availability_status(prefix: str, available: bool, ok="found", notok="not found"):

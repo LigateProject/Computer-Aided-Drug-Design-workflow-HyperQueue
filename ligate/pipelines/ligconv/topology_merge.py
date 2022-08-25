@@ -9,7 +9,7 @@ from ...ligconv.topology import (
     write_topology_summary,
 )
 from ...utils.paths import GenericPath
-from . import Edge, LigConvContext, LigConvEdgeTaskState, LigConvLigandTaskState
+from .common import Edge, LigConvContext, LigConvEdgeTaskState, LigConvLigandTaskState
 
 logger = logging.getLogger(__name__)
 

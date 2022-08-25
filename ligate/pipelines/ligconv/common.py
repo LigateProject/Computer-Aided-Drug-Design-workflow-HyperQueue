@@ -18,14 +18,18 @@ class LigenOutputData:
     protein_file: Path
     # Directory containing the ligands
     ligand_dir: Path
-    # Ligands produced by Ligen
-    ligands: List[Path]
 
     def pose_file(self, ligand_name: str) -> Path:
-        return self.ligand_dir / ligand_name / "out_amber_pose_000001.txt"
+        return self.ligand_path(ligand_name) / "out_amber_pose_000001.txt"
 
     def ligand_name(self, ligand: Path) -> str:
         return ligand.name
+
+    def ligand_path(self, ligand_name: str) -> Path:
+        return self.ligand_dir / ligand_name
+
+    def has_ligand(self, ligand_name: str) -> bool:
+        return self.ligand_path(ligand_name).is_dir()
 
 
 @dataclasses.dataclass(frozen=True)

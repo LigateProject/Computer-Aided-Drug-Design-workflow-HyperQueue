@@ -1,3 +1,4 @@
+import itertools
 import logging
 from pathlib import Path
 from typing import List
@@ -17,7 +18,7 @@ from ...utils.io import (
 from ...utils.paths import use_dir
 from ...wrapper.babel import Babel
 from ...wrapper.stage import Stage
-from . import LigConvContext, LigConvLigandTaskState
+from .common import LigConvContext, LigConvLigandTaskState
 
 logger = logging.getLogger(__name__)
 
@@ -26,8 +27,16 @@ def prepare_ligand_poses_task(
     job: Job, deps: List[Task], babel: Babel, stage: Stage, ctx: LigConvContext
 ) -> LigConvLigandTaskState:
     task_state = {}
-    for ligand in ctx.ligen_data.ligands:
-        ligand_name = ctx.ligen_data.ligand_name(ligand)
+
+    ligands = set(
+        itertools.chain.from_iterable(
+            (edge.start_ligand_name(), edge.end_ligand_name())
+            for edge in ctx.params.edges
+        )
+    )
+
+    for ligand_name in ligands:
+        ligand = ctx.ligen_data.ligand_path(ligand_name)
         task = job.function(
             prepare_ligand_poses,
             args=(ligand, babel, stage, ctx),
