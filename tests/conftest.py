@@ -19,6 +19,22 @@ from ligate.wrapper.gmx import GMX  # noqa
 from ligate.wrapper.stage import Stage  # noqa
 
 
+# Pytest configuration
+def pytest_collection_modifyitems(config, items):
+    """
+    Skip tests that are marked with `skipmarks`, but for which `-m <skipmark>` was not passed.
+    """
+    skipmarks = ("slow", )
+    markexpr = config.option.markexpr
+    for skipmark in skipmarks:
+        if skipmark == markexpr:
+            continue
+        skipper = pytest.mark.skip(reason=f"Only run when -m {skipmark} is given")
+        for item in items:
+            if skipmark in item.keywords:
+                item.add_marker(skipper)
+
+
 # Utility functions
 def data_path(path: GenericPath) -> Path:
     return (Path(PYTEST_DIR) / "data" / path).absolute()

@@ -91,6 +91,7 @@ def test_extract_pose_with_dummy_bonds(tmp_path):
     check_files_are_equal(data_path("ligen/p38/fixtures/pose-dummy-bonds.mol2"), output)
 
 
+@pytest.mark.slow
 def test_run_stage(tmp_path, stage):
     input_path = data_path("ligen/p38/fixtures/pose1-cleaned.mol2")
 
