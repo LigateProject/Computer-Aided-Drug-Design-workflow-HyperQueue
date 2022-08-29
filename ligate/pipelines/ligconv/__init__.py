@@ -6,10 +6,11 @@ from hyperqueue import Job
 from ...wrapper.babel import Babel
 from ...wrapper.gmx import GMX
 from ...wrapper.stage import Stage
-from .common import LigConvEdgeTaskState, LigConvParameters, LigenOutputData
+from ..taskmapping import EdgeTaskMapping
+from .common import LigConvContext
 from .pose import prepare_ligand_poses_task
 from .protein_topology import ProteinTopologyParams, create_protein_topology_task
-from .setup import prepare_ligconv_directories
+from .setup import sanity_check_ligconv
 from .structure_fix import fix_edge_structure_task
 from .topology_merge import merge_topologies_task
 
@@ -20,33 +21,25 @@ class LigConvPipelineParameters:
     babel: Babel
     stage: Stage
 
-    workdir: Path
-
-    parameters: LigConvParameters
-    ligen_data: LigenOutputData
+    ctx: LigConvContext
 
 
-def ligconv_pipeline(
-    job: Job, params: LigConvPipelineParameters
-) -> LigConvEdgeTaskState:
-    ligconv_ctx = prepare_ligconv_directories(
-        params.ligen_data, params.workdir, params.parameters
-    )
+def ligconv_pipeline(job: Job, params: LigConvPipelineParameters) -> EdgeTaskMapping:
+    ctx = params.ctx
+    sanity_check_ligconv(ctx)
 
-    protein_topology_params = ProteinTopologyParams(
-        forcefield=params.parameters.protein_ff
-    )
+    protein_topology_params = ProteinTopologyParams(forcefield=ctx.params.protein_ff)
     task = create_protein_topology_task(
-        job, ligconv_ctx, protein_topology_params, gmx=params.gmx
+        job, ctx, protein_topology_params, gmx=params.gmx
     )
     ligand_tasks = prepare_ligand_poses_task(
-        job, [task], babel=params.babel, stage=params.stage, ctx=ligconv_ctx
+        job, [task], babel=params.babel, stage=params.stage, ctx=ctx
     )
-    edge_tasks = merge_topologies_task(job, ligconv_ctx, ligand_tasks)
+    edge_tasks = merge_topologies_task(job, ctx, ligand_tasks)
     return fix_edge_structure_task(
         job,
         Path("ligen/scripts/fixStructureOfHybridLigand.mdp").absolute(),
         edge_tasks=edge_tasks,
-        ctx=ligconv_ctx,
+        ctx=ctx,
         gmx=params.gmx,
     )

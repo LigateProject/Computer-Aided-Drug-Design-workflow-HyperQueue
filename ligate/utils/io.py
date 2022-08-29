@@ -174,6 +174,7 @@ def ensure_directory(path: GenericPath, clear=False) -> Path:
     """
     if clear and os.path.isdir(path):
         shutil.rmtree(path, ignore_errors=True)
-    logging.debug(f"Creating directory {path}")
+    if not os.path.isdir(path):
+        logging.debug(f"Creating directory {path}")
     os.makedirs(path, exist_ok=True)
     return normalize_path(path)

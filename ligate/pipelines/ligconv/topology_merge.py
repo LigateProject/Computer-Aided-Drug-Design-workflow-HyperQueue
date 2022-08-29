@@ -9,14 +9,15 @@ from ...ligconv.topology import (
     write_topology_summary,
 )
 from ...utils.paths import GenericPath
-from .common import Edge, LigConvContext, LigConvEdgeTaskState, LigConvLigandTaskState
+from ..taskmapping import EdgeTaskMapping, LigandTaskMapping
+from .common import Edge, LigConvContext
 
 logger = logging.getLogger(__name__)
 
 
 def merge_topologies_task(
-    job: Job, ctx: LigConvContext, task_state: LigConvLigandTaskState
-) -> LigConvEdgeTaskState:
+    job: Job, ctx: LigConvContext, task_state: LigandTaskMapping
+) -> EdgeTaskMapping:
     edge_to_task = {}
 
     for edge in ctx.params.edges:
@@ -30,7 +31,7 @@ def merge_topologies_task(
             name=f"merge_topologies_edge_{edge.start_ligand}_{edge.end_ligand}",
         )
         edge_to_task[edge] = task
-    return LigConvEdgeTaskState(edge_to_task=edge_to_task)
+    return EdgeTaskMapping(edge_to_task=edge_to_task)
 
 
 def merge_edge_topologies(edge: Edge, ctx: LigConvContext):

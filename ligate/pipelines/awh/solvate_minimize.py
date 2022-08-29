@@ -9,8 +9,11 @@ from ...ctx import Context
 from ...input import ComputationTriple
 from ...input.properties import get_cl, get_na
 from ...mdp import render_mdp
-from ...utils.io import delete_file, replace_in_place
+from ...utils.io import delete_file, ensure_directory, replace_in_place
 from ...utils.paths import GenericPath
+from ...wrapper.gmx import GMX
+from ..ligconv import LigConvContext
+from ..ligconv.common import Edge
 from .common import LigandOrProtein, LopWorkload, get_topname, topology_path
 
 
@@ -152,14 +155,14 @@ def add_ions(
 
 
 def energy_minimize(
-    ctx: Context,
+    ctx: LigConvContext,
     input: LopWorkload,
-    triple: ComputationTriple,
+    edge: Edge,
     prepared: MinimizationPreparedData,
 ):
-    logging.info(f"Running energy_minimize step on {input}, {triple}")
+    logging.info(f"Running energy_minimize step on {input}, {edge}")
 
-    topname = get_topname(input.lop, triple)
+    topname = get_topname(input.lop, edge)
     ctx.gmx.execute(
         [
             "grompp",
@@ -180,58 +183,74 @@ def energy_minimize(
     ctx.gmx.execute(["mdrun", "-v", "-deffnm", "EM"], workdir=input.directory)
 
 
-def editconf_task(ctx: Context, input_ligand: LopWorkload, input_protein: LopWorkload):
+def editconf_task(
+    ctx: LigConvContext,
+    gmx: GMX,
+    edge: Edge,
+    input_ligand: LopWorkload,
+    input_protein: LopWorkload,
+):
+    def editconf(input: Path, output: Path):
+        return gmx.execute(
+            [
+                "editconf",
+                "-f",
+                input,
+                "-o",
+                output,
+                "-bt",
+                "dodecahedron",
+                "-d",
+                "1.5",
+            ]
+        )
+
     # Place the molecule of interest in a rhombic dodecahedron of the desired size (1.5 nm
     # distance to the edges)
     logging.info(f"Running editconf step on {input_ligand} and {input_protein}")
-    ctx.gmx.editconf(
-        ctx.workdir / "structure/mergedA.pdb", corrected_box_path(input_ligand)
-    )
-    ctx.gmx.editconf(
-        ctx.workdir / "structure/full.pdb", corrected_box_path(input_protein)
-    )
+    editconf(ctx.edge_merged_structure_gro(edge), corrected_box_path(input_ligand))
+    editconf(ctx.edge_full_structure_gro(edge), corrected_box_path(input_protein))
     modify_grofile_inplace(corrected_box_path(input_protein))
 
 
 def energy_minimization_task(
-    ctx: Context,
+    ctx: LigConvContext,
+    edge: Edge,
     input: LopWorkload,
-    triple: ComputationTriple,
     params: MinimizationParams,
 ):
-    solvate(ctx, input, triple)
-    prepared = add_ions(ctx, input, triple, params)
-    energy_minimize(ctx, input, triple, prepared)
+    solvate(ctx, input, edge)
+    prepared = add_ions(ctx, input, edge, params)
+    energy_minimize(ctx, input, edge, prepared)
 
 
 def solvate_prepare(
-    ctx: Context, triple: ComputationTriple, params: MinimizationParams, job: Job
+    ctx: LigConvContext, edge: Edge, params: MinimizationParams, job: Job, gmx: GMX
 ) -> MinimizationOutput:
-    ligand_dir = ctx.workdir / "ligand"
-    ligand_dir.mkdir(exist_ok=True)
+    edge_dir = ctx.edge_dir(edge)
 
-    protein_dir = ctx.workdir / "protein"
-    protein_dir.mkdir(exist_ok=True)
+    ligand_dir = ensure_directory(edge_dir / "ligand")
+    protein_dir = ensure_directory(edge_dir / "protein")
 
     ligand_workload = LopWorkload(lop=LigandOrProtein.Ligand, directory=ligand_dir)
     protein_workload = LopWorkload(lop=LigandOrProtein.Protein, directory=protein_dir)
     task = job.function(
         editconf_task,
-        args=(ctx, ligand_workload, protein_workload),
-        name="minimize-editconf",
+        args=(ctx, gmx, edge, ligand_workload, protein_workload),
+        name=f"minimize-editconf-{edge.name()}",
     )
 
     ligand_task = job.function(
         energy_minimization_task,
-        args=(ctx, ligand_workload, triple, params),
+        args=(ctx, edge, ligand_workload, params),
         deps=[task],
-        name="minimize-ligand",
+        name=f"minimize-ligand-{edge.name()}",
     )
     protein_task = job.function(
         energy_minimization_task,
-        args=(ctx, protein_workload, triple, params),
+        args=(ctx, edge, protein_workload, params),
         deps=[task],
-        name="minimize-protein",
+        name=f"minimize-protein-{edge.name()}",
     )
 
     return MinimizationOutput(

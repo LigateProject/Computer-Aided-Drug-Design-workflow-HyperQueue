@@ -5,16 +5,17 @@ from ...ligconv.topology import pos_res_for_ligand
 from ...utils.io import delete_files, move_file
 from ...utils.paths import GenericPath, use_dir
 from ...wrapper.gmx import GMX
-from .common import Edge, LigConvContext, LigConvEdgeTaskState
+from ..taskmapping import EdgeTaskMapping
+from .common import Edge, LigConvContext
 
 
 def fix_edge_structure_task(
     job: Job,
     structure_mdp_file: GenericPath,
-    edge_tasks: LigConvEdgeTaskState,
+    edge_tasks: EdgeTaskMapping,
     ctx: LigConvContext,
     gmx: GMX,
-) -> LigConvEdgeTaskState:
+) -> EdgeTaskMapping:
     state = {}
     for edge in ctx.params.edges:
         dependency = edge_tasks.get_edge_task(edge)
@@ -24,7 +25,7 @@ def fix_edge_structure_task(
             deps=[dependency],
             name=f"fix_structure_edge_{edge.start_ligand}_{edge.end_ligand}",
         )
-    return LigConvEdgeTaskState(edge_to_task=state)
+    return EdgeTaskMapping(edge_to_task=state)
 
 
 def fix_edge_structure(
@@ -69,7 +70,7 @@ def fix_edge_structure(
 
         conf_file = structure_dir / "conf.gro"
         write_gro_complex_structure(
-            conf_file, structure_merged, structure_dir / "full.gro"
+            conf_file, structure_merged, ctx.edge_full_structure_gro(edge)
         )
 
     topology_dir = ctx.edge_topology_dir(edge)

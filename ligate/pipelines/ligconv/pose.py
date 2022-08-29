@@ -18,14 +18,15 @@ from ...utils.io import (
 from ...utils.paths import use_dir
 from ...wrapper.babel import Babel
 from ...wrapper.stage import Stage
-from .common import LigConvContext, LigConvLigandTaskState
+from ..taskmapping import LigandTaskMapping
+from .common import LigConvContext
 
 logger = logging.getLogger(__name__)
 
 
 def prepare_ligand_poses_task(
     job: Job, deps: List[Task], babel: Babel, stage: Stage, ctx: LigConvContext
-) -> LigConvLigandTaskState:
+) -> LigandTaskMapping:
     task_state = {}
 
     ligands = set(
@@ -44,7 +45,7 @@ def prepare_ligand_poses_task(
             name=f"prepare_ligand_poses_{ligand_name}",
         )
         task_state[ligand_name] = task
-    return LigConvLigandTaskState(ligand_to_task=task_state)
+    return LigandTaskMapping(ligand_to_task=task_state)
 
 
 def prepare_ligand_poses(ligand: Path, babel: Babel, stage: Stage, ctx: LigConvContext):

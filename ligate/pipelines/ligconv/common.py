@@ -1,8 +1,6 @@
 import dataclasses
 from pathlib import Path
-from typing import Dict, List
-
-from hyperqueue.task.task import Task
+from typing import List
 
 from ...ligconv.common import LigandForcefield, ProteinForcefield
 from ...utils.io import ensure_directory
@@ -47,6 +45,9 @@ class Edge:
     def end_ligand_name(self) -> str:
         return f"lig_{self.end_ligand}"
 
+    def name(self) -> str:
+        return f"{self.start_ligand}-{self.end_ligand}"
+
 
 @dataclasses.dataclass
 class LigConvParameters:
@@ -64,6 +65,9 @@ class LigConvContext:
     ligen_data: LigenOutputData
     params: LigConvParameters
     workdir: Path
+
+    def __post_init__(self):
+        self.workdir = self.workdir.resolve()
 
     @property
     def protein_ff_name(self) -> str:
@@ -83,21 +87,16 @@ class LigConvContext:
     def protein_structure_dir(self) -> Path:
         return ensure_directory(self.protein_dir / self.protein_ff_name / "structure")
 
-    def edge_topology_dir(self, edge: Edge) -> Path:
+    def edge_dir(self, edge: Edge) -> Path:
         return ensure_directory(
-            self.protein_dir
-            / edge_directory_name(edge)
-            / self.protein_ff_name
-            / "topology"
+            self.protein_dir / edge_directory_name(edge) / self.protein_ff_name
         )
 
+    def edge_topology_dir(self, edge: Edge) -> Path:
+        return self.edge_dir(edge) / "topology"
+
     def edge_structure_dir(self, edge: Edge) -> Path:
-        return ensure_directory(
-            self.protein_dir
-            / edge_directory_name(edge)
-            / self.protein_ff_name
-            / "structure"
-        )
+        return self.edge_dir(edge) / "structure"
 
     def ligand_dir(self, ligand_name: str) -> Path:
         return ensure_directory(
@@ -122,6 +121,9 @@ class LigConvContext:
     def edge_merged_structure_gro(self, edge: Edge) -> Path:
         return self.edge_structure_dir(edge) / "merged.gro"
 
+    def edge_full_structure_gro(self, edge: Edge) -> Path:
+        return self.edge_structure_dir(edge) / "full.gro"
+
     def edge_topology_ligand_in_water(self, edge: Edge) -> Path:
         return self.edge_topology_dir(edge) / "topol_ligandInWater.top"
 
@@ -131,19 +133,3 @@ class LigConvContext:
 
 def edge_directory_name(edge: Edge) -> str:
     return f"edge_{edge.start_ligand}_{edge.end_ligand}"
-
-
-@dataclasses.dataclass
-class LigConvLigandTaskState:
-    ligand_to_task: Dict[str, Task]
-
-    def get_ligand_task(self, ligand_name: str) -> Task:
-        return self.ligand_to_task[ligand_name]
-
-
-@dataclasses.dataclass
-class LigConvEdgeTaskState:
-    edge_to_task: Dict[Edge, Task]
-
-    def get_edge_task(self, edge: Edge) -> Task:
-        return self.edge_to_task[edge]
