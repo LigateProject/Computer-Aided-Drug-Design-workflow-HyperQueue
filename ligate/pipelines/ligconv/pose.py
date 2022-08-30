@@ -48,7 +48,7 @@ def prepare_ligand_poses_task(
 
 def prepare_ligand_poses(ligand: Path, ctx: LigConvContext):
     ligand_name = ctx.ligen_data.ligand_name(ligand)
-    ligand_dir = ctx.ligand_dir(ligand_name)
+    ligand_dir = ctx.protein_dir.ligand_dir(ligand_name).path
     with use_dir(ligand_dir):
         # First, run stage to extract the topology of the first pose
         pose_number = 1
@@ -66,7 +66,7 @@ def prepare_ligand_poses(ligand: Path, ctx: LigConvContext):
         )
         ctx.tools.stage.run(cleaned_mol2, stage_output, ligand_ff)
 
-        pose_1_dir = ctx.ligand_pose_dir(ligand_name, pose_number)
+        pose_1_dir = ctx.protein_dir.ligand_dir(ligand_name).pose_dir(pose_number).path
         # mv *.mol2 *.gro {pose_dir}
         files = list(
             iterate_files(ligand_dir, filter=lambda p: file_has_extension(p, "mol2"))
@@ -75,7 +75,7 @@ def prepare_ligand_poses(ligand: Path, ctx: LigConvContext):
         )
         move_files(files, pose_1_dir)
 
-        topology_dir = ctx.ligand_topology_dir(ligand_name)
+        topology_dir = ctx.protein_dir.ligand_dir(ligand_name).topology_dir
         # mv *.itp *.pkl {topology_dir}
         files = list(
             iterate_files(ligand_dir, filter=lambda p: file_has_extension(p, "itp"))
@@ -89,7 +89,7 @@ def prepare_ligand_poses(ligand: Path, ctx: LigConvContext):
         move_files(iterate_files(ligand_ff_dir), topology_dir)
         move_file(
             topology_dir / f"{stage_output}.itp",
-            ctx.ligand_topology_itp(ligand_name),
+            ctx.protein_dir.ligand_dir(ligand_name).topology_itp,
         )
         move_file(
             topology_dir / f"posre_{stage_output}.itp",
@@ -97,11 +97,11 @@ def prepare_ligand_poses(ligand: Path, ctx: LigConvContext):
         )
         move_file(
             pose_1_dir / f"{stage_output}.gro",
-            ctx.ligand_pose_structure_gro(ligand_name, 1),
+            ctx.protein_dir.ligand_dir(ligand_name).pose_dir(1).structure_gro,
         )
         move_file(
             pose_1_dir / f"{stage_output}.mol2",
-            ctx.ligand_pose_structure_mol2(ligand_name, 1),
+            ctx.protein_dir.ligand_dir(ligand_name).pose_dir(1).structure_mol2,
         )
         delete_path(ligand_ff_dir)
 
@@ -115,12 +115,16 @@ def prepare_ligand_poses(ligand: Path, ctx: LigConvContext):
             extract_and_clean_pose(
                 pose_file,
                 pose_num,
-                ctx.ligand_pose_structure_mol2(ligand_name, pose_num),
+                ctx.protein_dir.ligand_dir(ligand_name)
+                .pose_dir(pose_num)
+                .structure_mol2,
                 ctx.tools.babel,
             )
             construct_additional_gromacs_files(
                 pose,
                 pose_num,
                 pose_1_ligand_gro,
-                ctx.ligand_pose_structure_gro(ligand_name, pose_num),
+                ctx.protein_dir.ligand_dir(ligand_name)
+                .pose_dir(pose_num)
+                .structure_gro,
             )

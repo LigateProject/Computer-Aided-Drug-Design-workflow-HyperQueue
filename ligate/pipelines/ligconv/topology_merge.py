@@ -51,12 +51,12 @@ def merge_edge_topologies(edge: Edge, ctx: LigConvContext):
 
     edge_merged_topology = ctx.protein_dir.edge_dir(edge).merged_topology_itp
     merge_topologies(
-        ctx.ligand_topology_itp(ligand_a),
-        ctx.ligand_pose_structure_mol2(ligand_a, pose_a.id),
-        ctx.ligand_pose_structure_gro(ligand_a, pose_a.id),
-        ctx.ligand_topology_itp(ligand_b),
-        ctx.ligand_pose_structure_mol2(ligand_b, pose_b.id),
-        ctx.ligand_pose_structure_gro(ligand_b, pose_b.id),
+        ctx.protein_dir.ligand_dir(ligand_a).topology_itp,
+        ctx.protein_dir.ligand_dir(ligand_a).pose_dir(pose_a.id).structure_mol2,
+        ctx.protein_dir.ligand_dir(ligand_a).pose_dir(pose_a.id).structure_gro,
+        ctx.protein_dir.ligand_dir(ligand_b).topology_itp,
+        ctx.protein_dir.ligand_dir(ligand_b).pose_dir(pose_b.id).structure_mol2,
+        ctx.protein_dir.ligand_dir(ligand_b).pose_dir(pose_b.id).structure_gro,
         edge_merged_topology,
         ctx.protein_dir.edge_dir(edge).merged_structure_gro,
     )

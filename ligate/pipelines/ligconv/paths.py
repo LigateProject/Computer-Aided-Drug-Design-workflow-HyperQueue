@@ -30,7 +30,9 @@ class PathProvider:
         """
         Returns a path to a file within this `self.root`.
         """
-        return self.root / path
+        file_path = self.root / path
+        ensure_directory(file_path.parent)
+        return file_path
 
 
 class LigConvProteinDir(PathProvider):
@@ -62,6 +64,11 @@ class LigConvProteinDir(PathProvider):
             self.dir_path(Path(edge_directory_name(edge)) / self.forcefield_name)
         )
 
+    def ligand_dir(self, ligand_name: str) -> "LigConvLigandDir":
+        return LigConvLigandDir(
+            self.dir_path(Path("ligands") / ligand_name / self.forcefield_name)
+        )
+
 
 def edge_directory_name(edge: Edge) -> str:
     return f"edge_{edge.start_ligand}_{edge.end_ligand}"
@@ -91,3 +98,26 @@ class LigConvEdgeDir(PathProvider):
     @property
     def full_structure_gro(self) -> Path:
         return self.structure_dir / "full.gro"
+
+
+class LigConvLigandDir(PathProvider):
+    @property
+    def topology_dir(self) -> Path:
+        return self.dir_path("topology")
+
+    @property
+    def topology_itp(self) -> Path:
+        return self.topology_dir / "ligand.itp"
+
+    def pose_dir(self, pose_id: int) -> "LigConvPoseDir":
+        return LigConvPoseDir(self.dir_path(Path("poses") / str(pose_id)))
+
+
+class LigConvPoseDir(PathProvider):
+    @property
+    def structure_gro(self) -> Path:
+        return self.file_path("ligand.gro")
+
+    @property
+    def structure_mol2(self) -> Path:
+        return self.file_path("ligand.mol2")
