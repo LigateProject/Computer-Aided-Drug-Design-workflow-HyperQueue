@@ -1,3 +1,4 @@
+import dataclasses
 from pathlib import Path
 
 from hyperqueue import Job
@@ -9,6 +10,10 @@ from .protein_topology import ProteinTopologyParams, create_protein_topology_tas
 from .structure_fix import fix_edge_structure_task
 from .topology_merge import merge_topologies_task
 
+DATA_DIR = Path(__file__).absolute().parent / "data"
+
+FIX_STRUCTURE_MDP_FILE = DATA_DIR / "fixStructureOfHybridLigand.mdp"
+
 
 def ligconv_pipeline(job: Job, ctx: LigConvContext) -> EdgeTaskMapping:
     sanity_check_ligconv(ctx)
@@ -19,7 +24,7 @@ def ligconv_pipeline(job: Job, ctx: LigConvContext) -> EdgeTaskMapping:
     edge_tasks = merge_topologies_task(job, ctx, ligand_tasks)
     return fix_edge_structure_task(
         job,
-        Path("ligen/scripts/fixStructureOfHybridLigand.mdp").absolute(),
+        FIX_STRUCTURE_MDP_FILE,
         edge_tasks=edge_tasks,
         ctx=ctx,
     )
