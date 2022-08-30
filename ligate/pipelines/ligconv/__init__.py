@@ -3,7 +3,7 @@ from pathlib import Path
 from hyperqueue import Job
 
 from ..taskmapping import EdgeTaskMapping
-from .common import LigConvContext
+from .ctx import LigConvContext
 from .pose import prepare_ligand_poses_task
 from .protein_topology import ProteinTopologyParams, create_protein_topology_task
 from .structure_fix import fix_edge_structure_task

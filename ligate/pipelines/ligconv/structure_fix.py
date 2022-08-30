@@ -5,7 +5,8 @@ from ...ligconv.topology import pos_res_for_ligand
 from ...utils.io import delete_files, move_file
 from ...utils.paths import GenericPath, use_dir
 from ..taskmapping import EdgeTaskMapping
-from .common import Edge, LigConvContext
+from . import LigConvContext
+from .common import Edge
 
 
 def fix_edge_structure_task(
@@ -29,7 +30,7 @@ def fix_edge_structure_task(
 def fix_edge_structure(
     edge: Edge, ctx: LigConvContext, structure_mdp_file: GenericPath
 ):
-    structure_merged = ctx.edge_merged_structure_gro(edge)
+    structure_merged = ctx.protein_dir.edge_dir(edge).merged_structure_gro
     structure_dir = structure_merged.parent
     tmp_structure = structure_dir / "merged_old.gro"
     move_file(structure_merged, tmp_structure)
@@ -48,7 +49,7 @@ def fix_edge_structure(
                 "-r",
                 tmp_structure,
                 "-p",
-                ctx.edge_topology_ligand_in_water(edge),
+                ctx.protein_dir.edge_dir(edge).topology_ligand_in_water,
                 "-o",
                 tpr_file,
             ]
@@ -68,10 +69,13 @@ def fix_edge_structure(
 
         conf_file = structure_dir / "conf.gro"
         write_gro_complex_structure(
-            conf_file, structure_merged, ctx.edge_full_structure_gro(edge)
+            conf_file,
+            structure_merged,
+            ctx.protein_dir.edge_dir(edge).full_structure_gro,
         )
 
-    topology_dir = ctx.edge_topology_dir(edge)
+    topology_dir = ctx.protein_dir.edge_dir(edge).topology_dir
     pos_res_for_ligand(
-        ctx.edge_merged_topology_gro(edge), topology_dir / "posre_Ligand.itp"
+        ctx.protein_dir.edge_dir(edge).merged_topology_itp,
+        topology_dir / "posre_Ligand.itp",
     )

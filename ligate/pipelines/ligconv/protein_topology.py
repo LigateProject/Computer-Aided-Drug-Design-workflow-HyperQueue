@@ -7,7 +7,7 @@ from ...ligconv.common import ProteinForcefield, WaterModel
 from ...ligconv.topology import protein_ff_gromacs_code, water_model_gromacs_code
 from ...utils.io import copy_directory, move_file
 from ...utils.paths import use_dir
-from .common import LigConvContext
+from . import LigConvContext
 
 
 @dataclasses.dataclass
@@ -39,9 +39,9 @@ def create_protein_topology(
     for edge in ctx.params.edges:
         copy_directory(
             ctx.protein_dir.topology_dir,
-            ctx.edge_topology_dir(edge),
+            ctx.protein_dir.edge_dir(edge).topology_dir,
         )
         copy_directory(
             ctx.protein_dir.structure_dir,
-            ctx.edge_structure_dir(edge),
+            ctx.protein_dir.edge_dir(edge).structure_dir,
         )

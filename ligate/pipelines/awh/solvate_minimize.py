@@ -208,8 +208,14 @@ def editconf_task(
     # Place the molecule of interest in a rhombic dodecahedron of the desired size (1.5 nm
     # distance to the edges)
     logging.info(f"Running editconf step on {input_ligand} and {input_protein}")
-    editconf(ctx.edge_merged_structure_gro(edge), corrected_box_path(input_ligand))
-    editconf(ctx.edge_full_structure_gro(edge), corrected_box_path(input_protein))
+    editconf(
+        ctx.protein_dir.edge_dir(edge).merged_structure_gro,
+        corrected_box_path(input_ligand),
+    )
+    editconf(
+        ctx.protein_dir.edge_dir(edge).full_structure_gro,
+        corrected_box_path(input_protein),
+    )
     modify_grofile_inplace(corrected_box_path(input_protein))
 
 
@@ -227,6 +233,7 @@ def energy_minimization_task(
 def solvate_prepare(
     ctx: LigConvContext, edge: Edge, params: MinimizationParams, job: Job, gmx: GMX
 ) -> MinimizationOutput:
+    raise NotImplementedError
     edge_dir = ctx.edge_dir(edge)
 
     ligand_dir = ensure_directory(edge_dir / "ligand")

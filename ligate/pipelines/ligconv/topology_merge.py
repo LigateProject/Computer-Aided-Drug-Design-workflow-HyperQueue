@@ -10,7 +10,8 @@ from ...ligconv.topology import (
 )
 from ...utils.paths import GenericPath
 from ..taskmapping import EdgeTaskMapping, LigandTaskMapping
-from .common import Edge, LigConvContext
+from . import LigConvContext
+from .common import Edge
 
 logger = logging.getLogger(__name__)
 
@@ -46,9 +47,9 @@ def merge_edge_topologies(edge: Edge, ctx: LigConvContext):
         f"B(ligand={ligand_b}, pose={pose_b.id})"
     )
 
-    edge_topology_dir = ctx.edge_topology_dir(edge)
+    edge_topology_dir = ctx.protein_dir.edge_dir(edge).topology_dir
 
-    edge_merged_topology = ctx.edge_merged_topology_gro(edge)
+    edge_merged_topology = ctx.protein_dir.edge_dir(edge).merged_topology_itp
     merge_topologies(
         ctx.ligand_topology_itp(ligand_a),
         ctx.ligand_pose_structure_mol2(ligand_a, pose_a.id),
@@ -57,13 +58,13 @@ def merge_edge_topologies(edge: Edge, ctx: LigConvContext):
         ctx.ligand_pose_structure_mol2(ligand_b, pose_b.id),
         ctx.ligand_pose_structure_gro(ligand_b, pose_b.id),
         edge_merged_topology,
-        ctx.edge_merged_structure_gro(edge),
+        ctx.protein_dir.edge_dir(edge).merged_structure_gro,
     )
 
     # TODO: generalize path to forcefield and topol_amber filename
     write_topology_summary(
         edge_topology_dir / "topol.top",
-        ctx.edge_topology_ligand_in_water(edge),
+        ctx.protein_dir.edge_dir(edge).topology_ligand_in_water,
         edge_topology_dir / "topol_amber.top",
         forcefield_path="amber99sb-ildn.ff",
     )

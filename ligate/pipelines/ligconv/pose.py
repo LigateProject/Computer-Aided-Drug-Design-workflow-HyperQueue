@@ -17,7 +17,7 @@ from ...utils.io import (
 )
 from ...utils.paths import use_dir
 from ..taskmapping import LigandTaskMapping
-from .common import LigConvContext
+from . import LigConvContext
 
 logger = logging.getLogger(__name__)
 

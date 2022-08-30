@@ -6,8 +6,8 @@ from hyperqueue.cluster import WorkerConfig
 from hyperqueue.visualization import visualize_job
 
 from ligate.ligconv.common import LigandForcefield, ProteinForcefield
-from ligate.pipelines.ligconv import ligconv_pipeline
-from ligate.pipelines.ligconv.common import Edge, LigConvContext, LigConvParameters, LigConvTools, \
+from ligate.pipelines.ligconv import LigConvContext, ligconv_pipeline
+from ligate.pipelines.ligconv.common import Edge, LigConvParameters, LigConvTools, \
     LigenOutputData
 from ligate.wrapper.babel import Babel
 from ligate.wrapper.gmx import GMX
