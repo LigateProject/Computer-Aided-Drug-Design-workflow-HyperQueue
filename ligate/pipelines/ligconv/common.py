@@ -2,6 +2,7 @@ import dataclasses
 from pathlib import Path
 from typing import List
 
+from .paths import ProteinDirProvider
 from ...ligconv.common import LigandForcefield, ProteinForcefield
 from ...utils.io import ensure_directory
 from ...utils.paths import normalize_path
@@ -70,6 +71,9 @@ class LigConvParameters:
 
 @dataclasses.dataclass
 class LigConvTools:
+    """
+    Tools required to perform the LigConv pipeline.
+    """
     gmx: GMX
     babel: Babel
     stage: Stage
@@ -77,6 +81,10 @@ class LigConvTools:
 
 @dataclasses.dataclass
 class LigConvContext:
+    """
+    Context that holds all required inputs and tools for the LigConv pipeline.
+    Based on `workdir`, it provides paths to various file locations.
+    """
     tools: LigConvTools
     ligen_data: LigenOutputData
     params: LigConvParameters
@@ -91,21 +99,17 @@ class LigConvContext:
 
     # Paths
     @property
-    def protein_dir(self) -> Path:
+    def protein_dir(self) -> ProteinDirProvider:
         # TODO: change to some general name, like protein
+        return ProteinDirProvider(self.workdir / "p38", self.params.protein_ff)
+
+    @property
+    def protein_dir_legacy(self) -> Path:
         return ensure_directory(self.workdir / "p38")
-
-    @property
-    def protein_topology_dir(self) -> Path:
-        return ensure_directory(self.protein_dir / self.protein_ff_name / "topology")
-
-    @property
-    def protein_structure_dir(self) -> Path:
-        return ensure_directory(self.protein_dir / self.protein_ff_name / "structure")
 
     def edge_dir(self, edge: Edge) -> Path:
         return ensure_directory(
-            self.protein_dir / edge_directory_name(edge) / self.protein_ff_name
+            self.protein_dir_legacy / edge_directory_name(edge) / self.protein_ff_name
         )
 
     def edge_topology_dir(self, edge: Edge) -> Path:
@@ -116,7 +120,7 @@ class LigConvContext:
 
     def ligand_dir(self, ligand_name: str) -> Path:
         return ensure_directory(
-            self.protein_dir / "ligands" / ligand_name / self.protein_ff_name
+            self.protein_dir_legacy / "ligands" / ligand_name / self.protein_ff_name
         )
 
     def ligand_topology_dir(self, ligand_name: str) -> Path:

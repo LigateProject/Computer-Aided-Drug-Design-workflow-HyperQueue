@@ -28,20 +28,20 @@ def create_protein_topology(
     ctx: LigConvContext,
     params: ProteinTopologyParams,
 ):
-    with use_dir(ctx.protein_topology_dir):
+    with use_dir(ctx.protein_dir.topology_dir):
         ctx.tools.gmx.execute(
             ["pdb2gmx", "-f", ctx.ligen_data.protein_file, "-renum", "-ignh"],
             input=f"{protein_ff_gromacs_code(params.forcefield)}\n"
             f"{water_model_gromacs_code(params.water_model)}".encode(),
         )
-        move_file("conf.gro", ctx.protein_structure_dir)
+        move_file("conf.gro", ctx.protein_dir.structure_dir)
     # Copy protein topology and structure to all edges
     for edge in ctx.params.edges:
         copy_directory(
-            ctx.protein_topology_dir,
+            ctx.protein_dir.topology_dir,
             ctx.edge_topology_dir(edge),
         )
         copy_directory(
-            ctx.protein_structure_dir,
+            ctx.protein_dir.structure_dir,
             ctx.edge_structure_dir(edge),
         )
