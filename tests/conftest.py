@@ -24,7 +24,7 @@ def pytest_collection_modifyitems(config, items):
     """
     Skip tests that are marked with `skipmarks`, but for which `-m <skipmark>` was not passed.
     """
-    skipmarks = ("slow", )
+    skipmarks = ("slow",)
     markexpr = config.option.markexpr
     for skipmark in skipmarks:
         if skipmark == markexpr:

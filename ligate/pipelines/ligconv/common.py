@@ -4,6 +4,10 @@ from typing import List
 
 from ...ligconv.common import LigandForcefield, ProteinForcefield
 from ...utils.io import ensure_directory
+from ...utils.paths import normalize_path
+from ...wrapper.babel import Babel
+from ...wrapper.gmx import GMX
+from ...wrapper.stage import Stage
 
 
 @dataclasses.dataclass
@@ -16,6 +20,10 @@ class LigenOutputData:
     protein_file: Path
     # Directory containing the ligands
     ligand_dir: Path
+
+    def __post_init__(self):
+        self.protein_file = normalize_path(self.protein_file)
+        self.ligand_dir = normalize_path(self.ligand_dir)
 
     def pose_file(self, ligand_name: str) -> Path:
         return self.ligand_path(ligand_name) / "out_amber_pose_000001.txt"
@@ -61,13 +69,21 @@ class LigConvParameters:
 
 
 @dataclasses.dataclass
+class LigConvTools:
+    gmx: GMX
+    babel: Babel
+    stage: Stage
+
+
+@dataclasses.dataclass
 class LigConvContext:
+    tools: LigConvTools
     ligen_data: LigenOutputData
     params: LigConvParameters
     workdir: Path
 
     def __post_init__(self):
-        self.workdir = self.workdir.resolve()
+        self.workdir = ensure_directory(normalize_path(self.workdir))
 
     @property
     def protein_ff_name(self) -> str:

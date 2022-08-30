@@ -16,8 +16,6 @@ from ...utils.io import (
     move_files,
 )
 from ...utils.paths import use_dir
-from ...wrapper.babel import Babel
-from ...wrapper.stage import Stage
 from ..taskmapping import LigandTaskMapping
 from .common import LigConvContext
 
@@ -25,7 +23,7 @@ logger = logging.getLogger(__name__)
 
 
 def prepare_ligand_poses_task(
-    job: Job, deps: List[Task], babel: Babel, stage: Stage, ctx: LigConvContext
+    job: Job, deps: List[Task], ctx: LigConvContext
 ) -> LigandTaskMapping:
     task_state = {}
 
@@ -40,7 +38,7 @@ def prepare_ligand_poses_task(
         ligand = ctx.ligen_data.ligand_path(ligand_name)
         task = job.function(
             prepare_ligand_poses,
-            args=(ligand, babel, stage, ctx),
+            args=(ligand, ctx),
             deps=deps,
             name=f"prepare_ligand_poses_{ligand_name}",
         )
@@ -48,7 +46,7 @@ def prepare_ligand_poses_task(
     return LigandTaskMapping(ligand_to_task=task_state)
 
 
-def prepare_ligand_poses(ligand: Path, babel: Babel, stage: Stage, ctx: LigConvContext):
+def prepare_ligand_poses(ligand: Path, ctx: LigConvContext):
     ligand_name = ctx.ligen_data.ligand_name(ligand)
     ligand_dir = ctx.ligand_dir(ligand_name)
     with use_dir(ligand_dir):
@@ -59,14 +57,14 @@ def prepare_ligand_poses(ligand: Path, babel: Babel, stage: Stage, ctx: LigConvC
         cleaned_mol2 = ligand_dir / f"{filename}_clean.mol2"
 
         logger.debug(f"Extracting pose {pose_file}:{pose_number} into {cleaned_mol2}")
-        extract_and_clean_pose(pose_file, pose_number, cleaned_mol2, babel)
+        extract_and_clean_pose(pose_file, pose_number, cleaned_mol2, ctx.tools.babel)
 
         stage_output = f"{filename}_stage"
         ligand_ff = ctx.params.ligand_ff
         logging.debug(
             f"Running stage on {cleaned_mol2}, output {stage_output}, ligand forcefield {ligand_ff}"
         )
-        stage.run(cleaned_mol2, stage_output, ligand_ff)
+        ctx.tools.stage.run(cleaned_mol2, stage_output, ligand_ff)
 
         pose_1_dir = ctx.ligand_pose_dir(ligand_name, pose_number)
         # mv *.mol2 *.gro {pose_dir}
@@ -118,7 +116,7 @@ def prepare_ligand_poses(ligand: Path, babel: Babel, stage: Stage, ctx: LigConvC
                 pose_file,
                 pose_num,
                 ctx.ligand_pose_structure_mol2(ligand_name, pose_num),
-                babel,
+                ctx.tools.babel,
             )
             construct_additional_gromacs_files(
                 pose,

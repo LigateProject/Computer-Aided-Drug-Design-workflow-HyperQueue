@@ -4,7 +4,6 @@ from ...ligconv.gromacs import shift_last_gromacs_line, write_gro_complex_struct
 from ...ligconv.topology import pos_res_for_ligand
 from ...utils.io import delete_files, move_file
 from ...utils.paths import GenericPath, use_dir
-from ...wrapper.gmx import GMX
 from ..taskmapping import EdgeTaskMapping
 from .common import Edge, LigConvContext
 
@@ -14,14 +13,13 @@ def fix_edge_structure_task(
     structure_mdp_file: GenericPath,
     edge_tasks: EdgeTaskMapping,
     ctx: LigConvContext,
-    gmx: GMX,
 ) -> EdgeTaskMapping:
     state = {}
     for edge in ctx.params.edges:
         dependency = edge_tasks.get_edge_task(edge)
         state[edge] = job.function(
             fix_edge_structure,
-            args=(edge, ctx, gmx, structure_mdp_file),
+            args=(edge, ctx, structure_mdp_file),
             deps=[dependency],
             name=f"fix_structure_edge_{edge.start_ligand}_{edge.end_ligand}",
         )
@@ -29,7 +27,7 @@ def fix_edge_structure_task(
 
 
 def fix_edge_structure(
-    edge: Edge, ctx: LigConvContext, gmx: GMX, structure_mdp_file: GenericPath
+    edge: Edge, ctx: LigConvContext, structure_mdp_file: GenericPath
 ):
     structure_merged = ctx.edge_merged_structure_gro(edge)
     structure_dir = structure_merged.parent
@@ -40,7 +38,7 @@ def fix_edge_structure(
 
     tpr_file = "merged.tpr"
     with use_dir(structure_dir):
-        gmx.execute(
+        ctx.tools.gmx.execute(
             [
                 "grompp",
                 "-f",
@@ -55,7 +53,7 @@ def fix_edge_structure(
                 tpr_file,
             ]
         )
-        gmx.execute(["mdrun", "-deffnm", "merged"])
+        ctx.tools.gmx.execute(["mdrun", "-deffnm", "merged"])
         delete_files(
             [
                 tmp_structure,

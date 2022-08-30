@@ -7,7 +7,6 @@ from ...ligconv.common import ProteinForcefield, WaterModel
 from ...ligconv.topology import protein_ff_gromacs_code, water_model_gromacs_code
 from ...utils.io import copy_directory, move_file
 from ...utils.paths import use_dir
-from ...wrapper.gmx import GMX
 from .common import LigConvContext
 
 
@@ -21,18 +20,16 @@ def create_protein_topology_task(
     job: Job,
     ctx: LigConvContext,
     params: ProteinTopologyParams,
-    gmx: GMX,
 ) -> Task:
-    return job.function(create_protein_topology, args=(ctx, params, gmx))
+    return job.function(create_protein_topology, args=(ctx, params))
 
 
 def create_protein_topology(
     ctx: LigConvContext,
     params: ProteinTopologyParams,
-    gmx: GMX,
 ):
     with use_dir(ctx.protein_topology_dir):
-        gmx.execute(
+        ctx.tools.gmx.execute(
             ["pdb2gmx", "-f", ctx.ligen_data.protein_file, "-renum", "-ignh"],
             input=f"{protein_ff_gromacs_code(params.forcefield)}\n"
             f"{water_model_gromacs_code(params.water_model)}".encode(),
