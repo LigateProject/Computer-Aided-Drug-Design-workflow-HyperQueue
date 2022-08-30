@@ -1,22 +1,9 @@
 import difflib
-import os
-import shutil
-from pathlib import Path
 from typing import List
 
 from ligate.utils.paths import GenericPath
 
-from ..conftest import BlessMode, get_bless_mode
-
-
-def bless_file(expected: GenericPath, actual: GenericPath, mode: BlessMode):
-    os.makedirs(Path(expected).parent, exist_ok=True)
-    shutil.copyfile(actual, expected)
-
-    if mode == BlessMode.Overwrite:
-        print(f"Bless: overwriting file {expected} with contents of {actual}")
-    elif mode == BlessMode.Create:
-        print(f"Bless: creating file {expected} with contents of {actual}")
+from .bless import BlessMode, bless_file, get_bless_mode
 
 
 def check_files_are_equal(expected: GenericPath, actual: GenericPath):

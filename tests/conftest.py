@@ -1,5 +1,3 @@
-import contextlib
-import enum
 import os
 import subprocess
 import sys
@@ -35,72 +33,12 @@ def pytest_collection_modifyitems(config, items):
                 item.add_marker(skipper)
 
 
-# Utility functions
-def data_path(path: GenericPath) -> Path:
-    return (Path(PYTEST_DIR) / "data" / path).absolute()
-
-
-class BlessMode(enum.Enum):
-    """
-    Test files will not be blessed
-    """
-
-    NoBless = enum.auto()
-    """
-    Test files will be created if they do not exist
-    """
-    Create = enum.auto()
-    """
-    Test files will be created if they do not exist or overwritten
-    if they exist
-    """
-    Overwrite = enum.auto()
-
-    def can_create(self) -> bool:
-        return self == BlessMode.Create or self == BlessMode.Overwrite
-
-
-def get_bless_mode() -> BlessMode:
-    bless_mode = os.environ.get("BLESS")
-    if bless_mode is None:
-        return BlessMode.NoBless
-    elif bless_mode == "create":
-        return BlessMode.Create
-    elif bless_mode == "overwrite":
-        return BlessMode.Overwrite
-    else:
-        raise Exception(
-            f"Invalid bless mode {bless_mode}. Use `create` or `overwrite`."
-        )
-
-
-@contextlib.contextmanager
-def change_workdir(workdir: GenericPath):
-    cwd = os.getcwd()
-    try:
-        os.chdir(workdir)
-        yield
-    finally:
-        os.chdir(cwd)
-
-
-def wrapper_sanity_check(wrapper: BinaryWrapper, name: str, env_var: str):
-    try:
-        subprocess.run(
-            [str(wrapper.binary_path)],
-            stdout=subprocess.DEVNULL,
-            stderr=subprocess.DEVNULL,
-            check=True,
-        )
-    except BaseException as e:
-        raise Exception(
-            f"It was not possible to execute {name}\n{e}\nIf {name} is not "
-            f"available globally, provide a path to it in environment variable "
-            f"`{env_var}`."
-        )
-
-
 # Fixtures
+@pytest.fixture(scope="session")
+def data_dir() -> Path:
+    return (Path(PYTEST_DIR) / "data").absolute()
+
+
 @pytest.fixture(scope="function")
 def gmx() -> GMX:
     gmx_path = os.environ.get("GMX_PATH")
@@ -120,3 +58,19 @@ def babel() -> Babel:
 @pytest.fixture(scope="function")
 def stage() -> Stage:
     return Stage()
+
+
+def wrapper_sanity_check(wrapper: BinaryWrapper, name: str, env_var: str):
+    try:
+        subprocess.run(
+            [str(wrapper.binary_path)],
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+            check=True,
+        )
+    except BaseException as e:
+        raise Exception(
+            f"It was not possible to execute {name}\n{e}\nIf {name} is not "
+            f"available globally, provide a path to it in environment variable "
+            f"`{env_var}`."
+        )
