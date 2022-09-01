@@ -4,6 +4,13 @@ from pathlib import Path
 
 from ...input import ComputationTriple
 from ...input.properties import protein_ff
+from ...wrapper.gmx import GMX
+
+DATA_DIR = Path(__file__).absolute().parent / "data"
+
+EM_L0_MDP = DATA_DIR / "em_l0.mdp"
+EQ_NVT_L0_MDP = DATA_DIR / "eq_nvt_l0.mdp"
+PRODUCTION_MDP = DATA_DIR / "production.mdp"
 
 
 class LigandOrProtein(enum.Enum):
@@ -35,3 +42,8 @@ def get_topname(lop: LigandOrProtein, triple: ComputationTriple) -> TopName:
         LigandOrProtein.Ligand: "ligandInWater",
         LigandOrProtein.Protein: protein_ff(triple),
     }[lop]
+
+
+@dataclasses.dataclass
+class AWHTools:
+    gmx: GMX

@@ -2,9 +2,8 @@ import dataclasses
 from pathlib import Path
 
 from ...utils.io import ensure_directory
-from ...utils.paths import normalize_path
 from .common import Edge, LigConvParameters, LigConvTools, LigenOutputData
-from .paths import LigConvProteinDir
+from .providers import LigConvProteinDir
 
 
 @dataclasses.dataclass
@@ -20,7 +19,7 @@ class LigConvContext:
     workdir: Path
 
     def __post_init__(self):
-        self.workdir = ensure_directory(normalize_path(self.workdir))
+        self.workdir = ensure_directory(self.workdir)
 
     @property
     def protein_dir(self) -> LigConvProteinDir:

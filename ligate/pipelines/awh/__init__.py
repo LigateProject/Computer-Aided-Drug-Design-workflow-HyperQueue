@@ -1,14 +1,15 @@
+from typing import List
+
 from hyperqueue import Job
+from hyperqueue.task.task import Task
 
-from ...wrapper.gmx import GMX
-from ..ligconv import LigConvContext
-from ..ligconv.common import Edge
+from .ctx import AWHContext
+from .solvate_minimize import MinimizationParams, solvate_prepare_task
 
 
-def awh_pipeline(job: Job, ctx: LigConvContext, edge: Edge, gmx: GMX):
-    pass
-    # minimization_params = MinimizationParams(steps=100)
-    # minimization_output = solvate_prepare(ctx, edge, minimization_params, job, gmx)
+def awh_pipeline(job: Job, deps: List[Task], ctx: AWHContext):
+    minimization_params = MinimizationParams(steps=100)
+    solvate_prepare_task(job, deps, ctx, minimization_params)
 
     # equilibrate_params = EquilibrateParams(steps=100)
     # equilibrate_output = equilibrate(ctx, triple, equilibrate_params, minimization_output, job)

@@ -12,6 +12,7 @@ from ligate.ligconv.topology import (
     merge_topologies,
     pos_res_for_ligand_to_fix_structure,
 )
+from ligate.utils.paths import use_dir
 from ligate.wrapper.gmx import GMX
 
 from .utils.io import check_files_are_equal, remove_lines
@@ -101,14 +102,15 @@ def test_run_stage(data_dir, tmp_path, stage):
 
         check_files_are_equal(data_dir / f"ligen/p38/fixtures/stage/{expected}", actual)
 
-    output = tmp_path / "out"
-    stage.run(input_path, str(output), LigandForcefield.Gaff2)
+    with use_dir(tmp_path):
+        output = tmp_path / "out"
+        stage.run(input_path, str(output), LigandForcefield.Gaff2)
 
-    compare("out.gro", "out.gro", skip_lines=[0])
-    compare("out.mol2", "out.mol2")
-    compare("posre_out.itp", "posre_out.itp")
-    compare("out_gaff2/out.itp", "out_gaff2/out.itp", skip_lines=[0])
-    compare("out_gaff2/out.top", "out_gaff2/out.top", skip_lines=[0])
+        compare("out.gro", "out.gro", skip_lines=[0])
+        compare("out.mol2", "out.mol2")
+        compare("posre_out.itp", "posre_out.itp")
+        compare("out_gaff2/out.itp", "out_gaff2/out.itp", skip_lines=[0])
+        compare("out_gaff2/out.top", "out_gaff2/out.top", skip_lines=[0])
 
 
 def test_merge_topologies(data_dir, tmp_path):

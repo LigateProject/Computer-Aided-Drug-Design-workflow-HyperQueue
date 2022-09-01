@@ -1,20 +1,18 @@
 import dataclasses
 import logging
 from pathlib import Path
+from typing import List
 
 from hyperqueue.job import Job
 from hyperqueue.task.task import Task
 
-from ...ctx import Context
-from ...input import ComputationTriple
-from ...input.properties import get_cl, get_na
+from ...ligconv.common import ProteinForcefield
 from ...mdp import render_mdp
-from ...utils.io import delete_file, ensure_directory, replace_in_place
+from ...utils.io import delete_file, replace_in_place
 from ...utils.paths import GenericPath
-from ...wrapper.gmx import GMX
-from ..ligconv import LigConvContext
-from ..ligconv.common import Edge
-from .common import LigandOrProtein, LopWorkload, get_topname, topology_path
+from . import AWHContext
+from .common import EM_L0_MDP, LopWorkload
+from .providers import AWHLigandOrProtein
 
 
 @dataclasses.dataclass
@@ -30,9 +28,7 @@ class MinimizationPreparedData:
 @dataclasses.dataclass
 class MinimizationOutput:
     ligand_task: Task
-    ligand_directory: Path
     protein_task: Task
-    protein_directory: Path
 
 
 def modify_grofile_inplace(path: GenericPath):
@@ -75,123 +71,9 @@ def corrected_box_path(input: LopWorkload) -> Path:
     return input.directory / "correctBox.gro"
 
 
-def solvate(ctx: Context, input: LopWorkload, triple: ComputationTriple):
-    logging.info(f"Running solvate step on {input}, {triple}")
-
-    solvated = solvated_path(input)
-    topname = get_topname(input.lop, triple)
-
-    ctx.gmx.execute(
-        [
-            "solvate",
-            "-cp",
-            corrected_box_path(input),
-            "-cs",
-            "spc216.gro",
-            "-p",
-            ctx.workdir / topology_path(topname),
-            "-o",
-            solvated,
-        ]
-    )
-    delete_file(ctx.workdir / f"topology/#topol_{topname}.top.1#")
-    replace_in_place(solvated, [("HOH", "SOL")])
-
-
-def add_ions(
-    ctx: Context,
-    input: LopWorkload,
-    triple: ComputationTriple,
-    params: MinimizationParams,
-) -> MinimizationPreparedData:
-    logging.info(f"Running add_ions step on {input}, {triple}")
-
-    topname = get_topname(input.lop, triple)
-    topology = ctx.workdir / topology_path(topname)
-    add_ions = input.directory / "addIons.tpr"
-
-    generated_mdp = "generated_em_l0.mdp"
-    render_mdp(ctx.mdpdir / "em_l0.mdp", generated_mdp, nsteps=params.steps)
-
-    ctx.gmx.execute(
-        [
-            "grompp",
-            "-f",
-            generated_mdp,
-            "-c",
-            solvated_path(input),
-            "-p",
-            topology,
-            "-o",
-            add_ions,
-            "-maxwarn",
-            "2",
-        ]
-    )
-    delete_file("mdout.mdp")
-    ctx.gmx.execute(
-        [
-            "genion",
-            "-s",
-            add_ions,
-            "-o",
-            input.directory / "ions.gro",
-            "-p",
-            topology,
-            "-pname",
-            get_na(triple),
-            "-nname",
-            get_cl(triple),
-            "-conc",
-            "0.15",
-            "-neutral",
-        ],
-        input=b"SOL\n",
-    )
-    delete_file(ctx.workdir / f"topology/#topol_{topname}.top.1#")
-    delete_file(add_ions)
-
-    return MinimizationPreparedData(mdp=Path(generated_mdp))
-
-
-def energy_minimize(
-    ctx: LigConvContext,
-    input: LopWorkload,
-    edge: Edge,
-    prepared: MinimizationPreparedData,
-):
-    logging.info(f"Running energy_minimize step on {input}, {edge}")
-
-    topname = get_topname(input.lop, edge)
-    ctx.gmx.execute(
-        [
-            "grompp",
-            "-f",
-            prepared.mdp,
-            "-c",
-            input.directory / "ions.gro",
-            "-p",
-            ctx.workdir / topology_path(topname),
-            "-o",
-            input.directory / "EM.tpr",
-            "-po",
-            input.directory / "EMout.mdp",
-            "-maxwarn",
-            "2",
-        ]
-    )
-    ctx.gmx.execute(["mdrun", "-v", "-deffnm", "EM"], workdir=input.directory)
-
-
-def editconf_task(
-    ctx: LigConvContext,
-    gmx: GMX,
-    edge: Edge,
-    input_ligand: LopWorkload,
-    input_protein: LopWorkload,
-):
+def editconf_task(ctx: AWHContext):
     def editconf(input: Path, output: Path):
-        return gmx.execute(
+        return ctx.tools.gmx.execute(
             [
                 "editconf",
                 "-f",
@@ -205,64 +87,170 @@ def editconf_task(
             ]
         )
 
+    ligand = ctx.edge_dir.ligand_dir
+    protein = ctx.edge_dir.protein_dir
+
     # Place the molecule of interest in a rhombic dodecahedron of the desired size (1.5 nm
     # distance to the edges)
-    logging.info(f"Running editconf step on {input_ligand} and {input_protein}")
+    logging.debug("Running editconf step")
     editconf(
-        ctx.protein_dir.edge_dir(edge).merged_structure_gro,
-        corrected_box_path(input_ligand),
+        ctx.edge_dir.merged_structure_gro,
+        ligand.corrected_box_gro,
     )
-    editconf(
-        ctx.protein_dir.edge_dir(edge).full_structure_gro,
-        corrected_box_path(input_protein),
-    )
-    modify_grofile_inplace(corrected_box_path(input_protein))
+    editconf(ctx.edge_dir.full_structure_gro, protein.corrected_box_gro)
+    modify_grofile_inplace(protein.corrected_box_gro)
 
 
-def energy_minimization_task(
-    ctx: LigConvContext,
-    edge: Edge,
-    input: LopWorkload,
+def solvate(ctx: AWHContext, workload: AWHLigandOrProtein):
+    solvated = workload.solvated_gro
+    logging.debug(
+        f"Running solvate step on {workload}, output will be written to {solvated}"
+    )
+
+    topology_file = workload.get_topology_file(ctx.edge_dir, ctx.protein_forcefield)
+    ctx.tools.gmx.execute(
+        [
+            "solvate",
+            "-cp",
+            workload.corrected_box_gro,
+            "-cs",
+            "spc216.gro",
+            "-p",
+            topology_file,
+            "-o",
+            solvated,
+        ]
+    )
+    replace_in_place(solvated, [("HOH", "SOL")])
+
+
+def na_name(forcefield: ProteinForcefield) -> str:
+    return {ProteinForcefield.Amber99SB_ILDN: "NA"}[forcefield]
+
+
+def cl_name(forcefield: ProteinForcefield) -> str:
+    return {ProteinForcefield.Amber99SB_ILDN: "CL"}[forcefield]
+
+
+def add_ions(
+    ctx: AWHContext,
+    workload: AWHLigandOrProtein,
+    params: MinimizationParams,
+) -> MinimizationPreparedData:
+    logging.debug(f"Running add_ions step on {workload}")
+
+    add_ions_output = workload.file_path("addIons.tpr")
+
+    generated_mdp = ctx.workdir / "generated_em_l0.mdp"
+    render_mdp(EM_L0_MDP, generated_mdp, nsteps=params.steps)
+
+    topology_file = workload.get_topology_file(ctx.edge_dir, ctx.protein_forcefield)
+    ctx.tools.gmx.execute(
+        [
+            "grompp",
+            "-f",
+            generated_mdp,
+            "-c",
+            workload.solvated_gro,
+            "-p",
+            topology_file,
+            "-o",
+            add_ions_output,
+            "-maxwarn",
+            "2",
+        ]
+    )
+    delete_file("mdout.mdp")
+
+    ctx.tools.gmx.execute(
+        [
+            "genion",
+            "-s",
+            add_ions_output,
+            "-o",
+            workload.ions_gro,
+            "-p",
+            topology_file,
+            "-pname",
+            na_name(ctx.protein_forcefield),
+            "-nname",
+            cl_name(ctx.protein_forcefield),
+            "-conc",
+            "0.15",
+            "-neutral",
+        ],
+        input=b"SOL\n",
+    )
+    delete_file(add_ions_output)
+    return MinimizationPreparedData(mdp=generated_mdp)
+
+
+def energy_minimize(
+    ctx: AWHContext,
+    workload: AWHLigandOrProtein,
+    prepared: MinimizationPreparedData,
+):
+    logging.info(f"Running energy_minimize step on {workload}")
+
+    ctx.tools.gmx.execute(
+        [
+            "grompp",
+            "-f",
+            prepared.mdp,
+            "-c",
+            workload.ions_gro,
+            "-p",
+            workload.get_topology_file(ctx.edge_dir, ctx.protein_forcefield),
+            "-o",
+            workload.em_tpr,
+            "-po",
+            workload.em_out_mdp,
+            "-maxwarn",
+            "2",
+        ]
+    )
+    ctx.tools.gmx.execute(
+        ["mdrun", "-v", "-deffnm", "EM", "-ntmpi", "4"], workdir=workload.path
+    )
+
+
+def energy_minimization_task_fn(
+    ctx: AWHContext,
+    workload: AWHLigandOrProtein,
     params: MinimizationParams,
 ):
-    solvate(ctx, input, edge)
-    prepared = add_ions(ctx, input, edge, params)
-    energy_minimize(ctx, input, edge, prepared)
+    solvate(ctx, workload)
+    prepared = add_ions(ctx, workload, params)
+    energy_minimize(ctx, workload, prepared)
 
 
-def solvate_prepare(
-    ctx: LigConvContext, edge: Edge, params: MinimizationParams, job: Job, gmx: GMX
+def solvate_prepare_task(
+    job: Job,
+    deps: List[Task],
+    ctx: AWHContext,
+    params: MinimizationParams,
 ) -> MinimizationOutput:
-    raise NotImplementedError
-    edge_dir = ctx.edge_dir(edge)
-
-    ligand_dir = ensure_directory(edge_dir / "ligand")
-    protein_dir = ensure_directory(edge_dir / "protein")
-
-    ligand_workload = LopWorkload(lop=LigandOrProtein.Ligand, directory=ligand_dir)
-    protein_workload = LopWorkload(lop=LigandOrProtein.Protein, directory=protein_dir)
     task = job.function(
         editconf_task,
-        args=(ctx, gmx, edge, ligand_workload, protein_workload),
-        name=f"minimize-editconf-{edge.name()}",
+        args=(ctx,),
+        name=f"minimize-editconf-{ctx.edge_name()}",
+        deps=deps,
     )
 
     ligand_task = job.function(
-        energy_minimization_task,
-        args=(ctx, edge, ligand_workload, params),
+        energy_minimization_task_fn,
+        args=(ctx, ctx.edge_dir.ligand_dir, params),
         deps=[task],
-        name=f"minimize-ligand-{edge.name()}",
+        name=f"minimize-ligand-{ctx.edge_name()}",
     )
     protein_task = job.function(
-        energy_minimization_task,
-        args=(ctx, edge, protein_workload, params),
+        energy_minimization_task_fn,
+        args=(ctx, ctx.edge_dir.protein_dir, params),
         deps=[task],
-        name=f"minimize-protein-{edge.name()}",
+        name=f"minimize-protein-{ctx.edge_name()}",
     )
 
     return MinimizationOutput(
         ligand_task=ligand_task,
-        ligand_directory=ligand_dir,
         protein_task=protein_task,
-        protein_directory=protein_dir,
     )

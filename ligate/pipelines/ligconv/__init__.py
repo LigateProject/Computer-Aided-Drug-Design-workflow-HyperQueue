@@ -1,4 +1,3 @@
-import dataclasses
 from pathlib import Path
 
 from hyperqueue import Job
