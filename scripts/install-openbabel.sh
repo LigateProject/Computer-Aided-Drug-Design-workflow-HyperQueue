@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# Usage: ./install-openbabel.sh <build-dir> <install-dir>
+
 set -e
 
 TARGET_DIR=${1:-build}

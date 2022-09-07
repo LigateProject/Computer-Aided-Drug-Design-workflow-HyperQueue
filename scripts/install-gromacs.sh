@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# Usage: ./install-gromacs.sh <build-dir> <install-dir>
+
 set -e
 
 GROMACS_VERSION=gromacs-2022

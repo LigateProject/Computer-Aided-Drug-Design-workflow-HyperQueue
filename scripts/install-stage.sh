@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# Usage: ./install-stage.sh <build-dir>
+
 set -e
 
 COMMIT=ligate
