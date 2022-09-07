@@ -10,7 +10,7 @@ from ...ligconv.common import ProteinForcefield
 from ...mdp import render_mdp
 from ...utils.io import delete_file, replace_in_place
 from ...utils.paths import GenericPath
-from . import AWHContext
+from .ctx import AWHContext
 from .common import EM_L0_MDP
 from .providers import AWHLigandOrProtein
 

@@ -1,11 +1,10 @@
 import dataclasses
-from pathlib import Path
 
 from hyperqueue.job import Job
 from hyperqueue.task.task import Task
 
 from ...mdp import render_mdp
-from . import AWHContext
+from .ctx import AWHContext
 from .common import EQ_NVT_L0_MDP
 from .providers import AWHLigandOrProtein, AWHProteinDir
 from .solvate_minimize import MinimizationOutput
@@ -14,12 +13,6 @@ from .solvate_minimize import MinimizationOutput
 @dataclasses.dataclass
 class EquilibrateParams:
     steps: int = 100
-
-
-@dataclasses.dataclass
-class EquilibratePartOutput:
-    directory: Path
-    equi_directory: Path
 
 
 @dataclasses.dataclass

@@ -56,12 +56,18 @@ class AWHLigandOrProtein(PathProvider):
     def equi_dir(self) -> "AWHEquiDir":
         return AWHEquiDir(self.dir_path("equi_NVT"))
 
+    def is_ligand(self) -> bool:
+        raise NotImplementedError
+
 
 class AWHLigandDir(AWHLigandOrProtein):
     def get_topology_file(
         self, edge_dir: AWHEdgeDir, protein_forcefield: ProteinForcefield
     ):
         return edge_dir.topology_ligand_in_water
+
+    def is_ligand(self) -> bool:
+        return True
 
 
 class AWHProteinDir(AWHLigandOrProtein):
@@ -70,11 +76,18 @@ class AWHProteinDir(AWHLigandOrProtein):
     ):
         return edge_dir.topology_forcefield(protein_forcefield)
 
+    def is_ligand(self) -> bool:
+        return False
+
 
 class AWHEquiDir(PathProvider):
     @property
     def equi_nvt_tpr(self) -> Path:
         return self.file_path("equi_NVT.tpr")
+
+    @property
+    def equi_nvt_gro(self) -> Path:
+        return self.file_path("equi_NVT.gro")
 
     @property
     def equi_nvtout_mdp(self) -> Path:
