@@ -48,6 +48,14 @@ class AWHLigandOrProtein(PathProvider):
     def em_out_mdp(self) -> Path:
         return self.file_path("EMout.mdp")
 
+    @property
+    def em_gro(self) -> Path:
+        return self.file_path("EM.gro")
+
+    @property
+    def equi_dir(self) -> "AWHEquiDir":
+        return AWHEquiDir(self.dir_path("equi_NVT"))
+
 
 class AWHLigandDir(AWHLigandOrProtein):
     def get_topology_file(
@@ -63,5 +71,11 @@ class AWHProteinDir(AWHLigandOrProtein):
         return edge_dir.topology_forcefield(protein_forcefield)
 
 
-class AWHOutputDir(PathProvider):
-    pass
+class AWHEquiDir(PathProvider):
+    @property
+    def equi_nvt_tpr(self) -> Path:
+        return self.file_path("equi_NVT.tpr")
+
+    @property
+    def equi_nvtout_mdp(self) -> Path:
+        return self.file_path("equi_NVTOUT.mdp")

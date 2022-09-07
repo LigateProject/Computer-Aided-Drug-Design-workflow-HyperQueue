@@ -11,7 +11,7 @@ from ...mdp import render_mdp
 from ...utils.io import delete_file, replace_in_place
 from ...utils.paths import GenericPath
 from . import AWHContext
-from .common import EM_L0_MDP, LopWorkload
+from .common import EM_L0_MDP
 from .providers import AWHLigandOrProtein
 
 
@@ -61,14 +61,6 @@ def modify_grofile_inplace(path: GenericPath):
             ("HOH     H2", "HOH    HW2"),
         ],
     )
-
-
-def solvated_path(input: LopWorkload) -> Path:
-    return input.directory / "solvated.gro"
-
-
-def corrected_box_path(input: LopWorkload) -> Path:
-    return input.directory / "correctBox.gro"
 
 
 def editconf_task(ctx: AWHContext):

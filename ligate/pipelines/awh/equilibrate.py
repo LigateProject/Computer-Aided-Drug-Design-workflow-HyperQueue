@@ -1,14 +1,13 @@
 import dataclasses
 from pathlib import Path
-from typing import Tuple
 
 from hyperqueue.job import Job
 from hyperqueue.task.task import Task
 
-from ...ctx import Context
-from ...input import ComputationTriple
 from ...mdp import render_mdp
-from .common import LigandOrProtein, LopWorkload, get_topname, topology_path
+from . import AWHContext
+from .common import EQ_NVT_L0_MDP
+from .providers import AWHLigandOrProtein, AWHProteinDir
 from .solvate_minimize import MinimizationOutput
 
 
@@ -25,49 +24,43 @@ class EquilibratePartOutput:
 
 @dataclasses.dataclass
 class EquilibrateOutput:
-    # Tasks are stored separately from the output to avoid passing task references
-    # as arguments to downstream tasks.
     ligand_task: Task
-    ligand_output: EquilibratePartOutput
     protein_task: Task
-    protein_output: EquilibratePartOutput
 
 
-def equilibrate_task(
-    ctx: Context,
-    workload: LopWorkload,
-    triple: ComputationTriple,
-    equi_dir: Path,
+def equilibrate_task_fn(
+    ctx: AWHContext,
+    workload: AWHLigandOrProtein,
     params: EquilibrateParams,
 ):
-    generated_mdp = "generated_eq_nvt_l0.mdp"
-    render_mdp(ctx.mdpdir / "eq_nvt_l0.mdp", generated_mdp, nsteps=params.steps)
+    generated_mdp = ctx.workdir / "generated_eq_nvt_l0.mdp"
+    render_mdp(EQ_NVT_L0_MDP, generated_mdp, nsteps=params.steps)
 
-    ctx.gmx.execute(
+    ctx.tools.gmx.execute(
         [
             "grompp",
             "-f",
             generated_mdp,
             "-c",
-            workload.directory / "EM.gro",
+            workload.em_gro,
             "-p",
-            ctx.workdir / topology_path(get_topname(workload.lop, triple)),
+            workload.get_topology_file(ctx.edge_dir, ctx.protein_forcefield),
             "-o",
-            equi_dir / "equi_NVT.tpr",
+            workload.equi_dir.equi_nvt_tpr,
             "-po",
-            equi_dir / "equi_NVTout.mdp",
+            workload.equi_dir.equi_nvtout_mdp,
             "-maxwarn",
             "2",
         ]
     )
 
     mpi_procs = 1
-    if workload.lop == LigandOrProtein.Protein:
+    if isinstance(AWHLigandOrProtein, AWHProteinDir):
         mpi_procs = 4
     omp_procs = 4  # TODO
 
     # TODO: GPU requirements
-    ctx.gmx.execute(
+    ctx.tools.gmx.execute(
         [
             "mdrun",
             "-deffnm",
@@ -79,53 +72,34 @@ def equilibrate_task(
             "-ntomp",
             str(omp_procs),
         ],
-        workdir=equi_dir,
+        workdir=workload.equi_dir.path,
         env={"OMP_NUM_THREADS": str(omp_procs)},
     )
 
 
-def equilibrate(
-    ctx: Context,
-    triple: ComputationTriple,
+def equilibrate_task(
+    job: Job,
+    ctx: AWHContext,
     params: EquilibrateParams,
     minimization_output: MinimizationOutput,
-    job: Job,
 ) -> EquilibrateOutput:
-    def create_task(
-        workload: LopWorkload, dependency: Task, name: str
-    ) -> Tuple[Task, Path]:
-        equi_dir = workload.directory / "equi_NVT"
-        equi_dir.mkdir(parents=True, exist_ok=True)
-        return (
-            job.function(
-                equilibrate_task,
-                args=(ctx, workload, triple, equi_dir, params),
-                deps=[dependency],
-                name=name,
-            ),
-            equi_dir,
+    def create_task(workload: AWHLigandOrProtein, dependency: Task, name: str) -> Task:
+        return job.function(
+            equilibrate_task_fn,
+            args=(ctx, workload, params),
+            deps=[dependency],
+            name=name,
         )
 
-    ligand_workload = LopWorkload(
-        lop=LigandOrProtein.Ligand, directory=minimization_output.ligand_directory
-    )
-    protein_workload = LopWorkload(
-        lop=LigandOrProtein.Protein, directory=minimization_output.protein_directory
-    )
-
-    ligand_task, ligand_equi_dir = create_task(
-        ligand_workload, minimization_output.ligand_task, "equilibrate-ligand"
-    )
-    protein_task, protein_equi_dir = create_task(
-        protein_workload, minimization_output.protein_task, "equilibrate-protein"
-    )
     return EquilibrateOutput(
-        ligand_task=ligand_task,
-        ligand_output=EquilibratePartOutput(
-            directory=ligand_workload.directory, equi_directory=ligand_equi_dir
+        ligand_task=create_task(
+            ctx.edge_dir.ligand_dir,
+            minimization_output.ligand_task,
+            f"equilibrate-ligand-{ctx.edge_name()}",
         ),
-        protein_task=protein_task,
-        protein_output=EquilibratePartOutput(
-            directory=protein_workload.directory, equi_directory=protein_equi_dir
+        protein_task=create_task(
+            ctx.edge_dir.protein_dir,
+            minimization_output.protein_task,
+            f"equilibrate-protein-{ctx.edge_name()}",
         ),
     )

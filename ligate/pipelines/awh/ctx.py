@@ -5,7 +5,7 @@ from ...ligconv.common import ProteinForcefield
 from ...utils.io import copy_directory, ensure_directory
 from ..ligconv.providers import LigConvEdgeDir
 from .common import AWHTools
-from .providers import AWHEdgeDir, AWHOutputDir
+from .providers import AWHEdgeDir
 
 
 @dataclasses.dataclass
@@ -40,10 +40,6 @@ class AWHContext:
 
     def __post_init__(self):
         self.workdir = ensure_directory(self.workdir)
-
-    @property
-    def output_dir(self) -> AWHOutputDir:
-        return AWHOutputDir(self.workdir)
 
     def edge_name(self) -> str:
         return self.edge_dir.edge.name()

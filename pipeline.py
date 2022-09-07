@@ -1,8 +1,8 @@
 import multiprocessing
-import os
 import shutil
 from pathlib import Path
 
+import click
 from hyperqueue import Job, LocalCluster
 from hyperqueue.cluster import WorkerConfig
 from hyperqueue.visualization import visualize_job
@@ -22,6 +22,12 @@ from ligate.wrapper.stage import Stage
 edge = Edge("p38a_2aa", "p38a_2bb")
 
 
+@click.group()
+def cli():
+    pass
+
+
+@cli.command()
 def ligconv():
     gmx = GMX()
     babel = Babel()
@@ -65,6 +71,7 @@ def ligconv():
         client.wait_for_jobs([submitted_job])
 
 
+@cli.command()
 def awh():
     workdir = Path("experiment/awh-hq")
     shutil.rmtree(workdir, ignore_errors=True)
@@ -75,7 +82,7 @@ def awh():
         gmx=GMX()
     ),
         edge_dir=LigConvEdgeDir(
-            Path("experiment/workdir-hq/p38/edge_p38a_2aa_p38a_2bb/amber"),
+            Path("experiment/ligconv-hq/p38/edge_p38a_2aa_p38a_2bb/amber"),
             edge
         ),
         protein_ff=ProteinForcefield.Amber99SB_ILDN,
@@ -92,5 +99,5 @@ def awh():
         client.wait_for_jobs([submitted_job])
 
 
-awh()
-# ligconv()
+if __name__ == "__main__":
+    cli()
