@@ -1,8 +1,11 @@
 import logging
-import os
-import shutil
+from pathlib import Path
 
 import click
+
+from ligate.env.check import check_binary_exists, check_env_exists, check_openbabel_import, \
+    check_python_package, check_tmbed_model, check_gmxmmpba_import
+from ligate.env.install import install_native_deps
 
 
 @click.group()
@@ -10,76 +13,46 @@ def cli():
     pass
 
 
-def print_availability_status(prefix: str, available: bool, ok="found", notok="not found"):
-    if available:
-        click.echo(f"{prefix} {click.style(f'[{ok}]', fg='green')}")
-    else:
-        click.echo(f"{prefix} {click.style(f'[{notok}]', fg='red')}")
-
-
-def check_binary_exists(binary: str) -> bool:
-    prefix = f"Checking availability of executable `{binary}`:"
-    if shutil.which(binary):
-        print_availability_status(prefix, True)
-        return True
-    else:
-        print_availability_status(prefix, False)
-        return False
-
-
-def check_env_exists(env: str) -> bool:
-    prefix = f"Checking existence of environment variable `{env}`:"
-    if env in os.environ:
-        print_availability_status(prefix, True)
-        return True
-    else:
-        print_availability_status(prefix, False)
-        return False
-
-
-def check_babel_import() -> bool:
-    prefix = f"Checking if `openbabel` can be imported:"
-    try:
-        import openbabel
-        print_availability_status(prefix, True, ok="OK", notok="error")
-        return True
-    except BaseException as error:
-        print_availability_status(prefix, False, ok="OK", notok="error")
-        logging.error(error)
-    return False
-
-
-def check_rdkit_import() -> bool:
-    prefix = f"Checking if `rdkit` can be imported:"
-    try:
-        import rdkit
-        print_availability_status(prefix, True, ok="OK", notok="error")
-        return True
-    except BaseException as error:
-        print_availability_status(prefix, False, ok="OK", notok="error")
-        logging.error(error)
-    return False
-
-
 @cli.command()
 def check_env():
     """
     Performs a quick smoke test to check if the required binaries and libraries were found.
     """
+
     ok = True
     ok &= check_binary_exists("gmx")
     ok &= check_env_exists("GMXLIB")
-    ok &= check_binary_exists("acpype")
-    ok &= check_binary_exists("babel")
-    ok &= check_babel_import()
+    ok &= check_gmxmmpba_import()
+    ok &= check_openbabel_import()
+    ok &= check_binary_exists("obabel")
     ok &= check_binary_exists("stage.py")
-    ok &= check_rdkit_import()
+    ok &= check_python_package("rdkit", "2023.3.1")
+    ok &= check_python_package("biopython", "1.81")
+    ok &= check_python_package("rmsd", "1.5.1")
+    ok &= check_python_package("pdb-tools", "2.5.0")
+    ok &= check_python_package("parmed", "3.4.3+11.g41cc9ab1")
+    ok &= check_python_package("acpype", "2022.7.21")
+    ok &= check_binary_exists("acpype")
+    ok &= check_python_package("tmbed", "1.0.0")
+    ok &= check_tmbed_model()
 
     if ok:
         click.echo(click.style("All environment dependencies were found!", fg="green"))
     else:
         click.echo(click.style("Some environment dependencies were not found!", fg="red"))
         exit(1)
+
+
+@cli.command()
+@click.argument("build-dir", default="build")
+def install(build_dir: str):
+    env = install_native_deps(Path(build_dir))
+    env_script = "awh-env.sh"
+    with open("awh-env.sh", "w") as f:
+        f.write(f"""
+export PATH=$PATH:{':'.join(str(dir) for dir in env.binary_dirs)}
+""".lstrip())
+    print(f"Environment variables written into {env_script}. Run `source {env_script}` to load the environment.")
 
 
 if __name__ == "__main__":

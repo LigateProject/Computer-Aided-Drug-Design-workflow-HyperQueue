@@ -1,10 +1,10 @@
 #!/bin/bash
 
-# Usage: ./install-gromacs.sh <build-dir> <install-dir>
+# Usage: ./gromacs-2023.1.sh <build-dir> <install-dir>
 
 set -e
 
-GROMACS_VERSION=gromacs-2022
+GROMACS_VERSION=gromacs-2023.1
 TARGET_DIR=${1:-build}
 TARGET_DIR=$(realpath "${TARGET_DIR}")
 

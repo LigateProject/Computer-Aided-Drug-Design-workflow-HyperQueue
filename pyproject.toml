@@ -6,11 +6,20 @@ authors = ["Jakub Beránek <jakub.beranek@vsb.cz>"]
 license = "MIT"
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = "^3.11"
 Jinja2 = "^3.1.1"
 numpy = "1.23"
 click = "^8.1.3"
-rdkit = "^2022.3.5"
+rdkit = "2023.3.1"
+biopython = "^1.81"
+tmbed = { git = "https://github.com/BernhoferM/TMbed.git" }
+accelerate = "^0.20.3" # For tmbed
+openbabel-wheel = "^3.1.1"
+rmsd = "1.5.1"
+pdb-tools = "2.5.0"
+parmEd = { git = "https://github.com/Valdes-Tresanco-MS/ParmEd.git", branch = "v3.4" }
+gmx-mmpbsa = "1.5.6"
+acpype = "2022.7.21"
 
 [tool.poetry.dev-dependencies]
 pytest = "^7.1.2"

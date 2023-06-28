@@ -10,17 +10,9 @@ RUN apt-get update && \
 WORKDIR /deps
 
 # Install Gromacs
-COPY scripts/install-gromacs.sh scripts/
+COPY deps/gromacs-2023.1.sh scripts/
 RUN ./scripts/install-gromacs.sh build /usr/local
 
-# Install OpenBabel
-COPY scripts/install-openbabel.sh scripts/
-RUN ./scripts/install-openbabel.sh build /usr/local
-
-# Install AcPype
-COPY scripts/install-acpype.sh scripts/
-RUN ./scripts/install-acpype.sh
-
 # Install Stage
-COPY scripts/install-stage.sh scripts/
+COPY deps/stage.sh scripts/
 RUN ./scripts/install-stage.sh build

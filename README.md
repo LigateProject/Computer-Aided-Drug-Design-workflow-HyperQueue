@@ -9,6 +9,10 @@ a task graph.
 
 ## Installation
 
+### C packages
+- CPython development headers (`python-dev`)
+- MPI implementation (for compiling `mpi4py`)
+
 ### External dependencies
 - Gromacs 2022
 - OpenBabel 2.4.1 (branch `ligate` from `https://github.com/kobzol/openbabel`)
@@ -20,7 +24,7 @@ in the `scripts` directory. There is also a `Dockerfile` which installs all
 of these dependencies into a Docker image.
 
 ### Python dependencies
-Minimum supported Python version is `3.8`.
+Python version has to be `3.11`.
 
 1) Create a virtual environment
     ```bash
@@ -36,6 +40,10 @@ Minimum supported Python version is `3.8`.
     ```bash
     $ poetry install 
     ```
+4) Download `tmbed` model
+   ```bash
+   $ tmbed download
+   ```
 
 Once you install the dependencies, you also need to set up your environment properly.
 If you installed the dependencies globally into your system, it should work automatically. If not,
