@@ -24,17 +24,17 @@ class InstalledEnv:
 def install_native_deps(build_dir: Path) -> InstalledEnv:
     env = InstalledEnv()
 
-    if not tmbed_model_exists:
+    if not tmbed_model_exists():
         run_command("Downloading tmbed model", ["tmbed", "download"])
 
-    install_dep("stage", DEPS_DIR / "stage.sh", build_dir, env)
+    install_dep("stage", DEPS_DIR / "stage.sh", build_dir)
     env.add_bin_dir(get_module_directory("openbabel") / "bin")
+    env.add_bin_dir(build_dir / "stage" / "build" / "bin")
     return env
 
 
-def install_dep(name: str, script: Path, build_dir: Path, env: InstalledEnv):
-    with run_command(f"Installing {click.style(name, fg='blue')}", [str(script), str(build_dir)]):
-        env.add_bin_dir(build_dir / "stage" / "build" / "bin")
+def install_dep(name: str, script: Path, build_dir: Path):
+    run_command(f"Installing {click.style(name, fg='blue')}", [str(script), str(build_dir)])
 
 
 @contextlib.contextmanager
@@ -42,7 +42,6 @@ def run_command(text: str, args: List[str]):
     click.echo(f"{text}...")
     try:
         subprocess.check_output(args)
-        yield
         click.echo(f"{text} {click.style('succeeded', fg='green')}")
     except BaseException:
         click.echo(f"{text} {click.style('failed', fg='red')}")
