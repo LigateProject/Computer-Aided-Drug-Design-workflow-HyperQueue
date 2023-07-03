@@ -18,7 +18,7 @@ mkdir -p "${TARGET_DIR}"
 cd "${TARGET_DIR}"
 
 if [ ! -f "${AMBERTOOLS_ARCHIVE}" ] ; then
-  echo "Please download AmberTools23 from https://ambermd.org/GetAmber.php#ambertools"
+  echo "Please download AmberTools23 from https://ambermd.org/GetAmber.php#ambertools and put it into the deps directory."
   exit 1
 fi
 

@@ -16,6 +16,7 @@ Before starting to setup anything, you should have at least the following packag
 - CMake
 - CPython development headers (`python-dev`)
 - MPI implementation (for compiling `mpi4py`)
+  - Preferably OpenMPI, AmberTools seems to have some issue with MPICH
 
 ### External dependencies
 - Gromacs 2022
