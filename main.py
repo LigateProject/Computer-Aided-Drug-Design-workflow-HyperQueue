@@ -3,7 +3,8 @@ from pathlib import Path
 
 import click
 
-from ligate.env.check import check_binary_exists, check_env_exists, check_openbabel_import, \
+from ligate.env.check import check_ambertools, check_binary_exists, check_env_exists, \
+    check_openbabel_import, \
     check_python_package, check_tmbed_model, check_gmxmmpba_import
 from ligate.env.install import install_native_deps
 
@@ -35,6 +36,7 @@ def check_env():
     ok &= check_binary_exists("acpype")
     ok &= check_python_package("tmbed", "1.0.0")
     ok &= check_tmbed_model()
+    ok &= check_ambertools()
 
     if ok:
         click.echo(click.style("All environment dependencies were found!", fg="green"))

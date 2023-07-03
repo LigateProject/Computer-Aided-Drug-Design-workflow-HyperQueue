@@ -66,6 +66,13 @@ def check_gmxmmpba_import() -> bool:
     return False
 
 
+def check_ambertools() -> bool:
+    prefix = f"Checking if `AmberTools` is available:"
+    antechamber_available = shutil.which("antechamber") is not None
+    print_availability_status(prefix, antechamber_available, ok="OK", notok="antechamber not found")
+    return antechamber_available
+
+
 def check_python_package(name: str, expected_version: str) -> bool:
     prefix = f"Checking if `{name}` is installed:"
     try:
