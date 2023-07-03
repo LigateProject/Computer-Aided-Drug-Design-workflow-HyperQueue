@@ -24,7 +24,7 @@ in the `scripts` directory. There is also a `Dockerfile` which installs all
 of these dependencies into a Docker image.
 
 ### Python dependencies
-Python version has to be `3.11`.
+Python version has to be at least `3.10`.
 
 1) Create a virtual environment
     ```bash
