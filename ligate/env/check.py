@@ -32,14 +32,18 @@ def check_binary_exists(binary: str) -> bool:
         return False
 
 
-def check_env_exists(env: str) -> bool:
+def check_env_exists(env: str, notok="missing") -> bool:
     prefix = f"Checking existence of environment variable `{env}`:"
-    if env in os.environ:
-        print_availability_status(prefix, True)
-        return True
-    else:
-        print_availability_status(prefix, False)
-        return False
+    env_ok = env in os.environ
+    print_availability_status(prefix, env_ok, notok=notok)
+    return env_ok
+
+
+def check_gromacs_env_exists() -> bool:
+    return check_env_exists(
+        "GMXLIB",
+        notok="GMXLIB missing. Set it to <GROMACS_INSTALL_DIR>/share/gromacs/top"
+    )
 
 
 def check_openbabel_import() -> bool:

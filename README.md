@@ -9,19 +9,21 @@ a task graph.
 
 ## Installation
 
-### C packages
+### Build environment
+Before starting to setup anything, you should have at least the following packages available:
+
+- C/C++ compiler
+- CMake
 - CPython development headers (`python-dev`)
 - MPI implementation (for compiling `mpi4py`)
 
 ### External dependencies
 - Gromacs 2022
-- OpenBabel 2.4.1 (branch `ligate` from `https://github.com/kobzol/openbabel`)
-- acpype 2022.6.6 (branch `ligate` from `https://github.com/kobzol/acpype`)
 - stage (branch `ligate` from `https://gitlab.com/kobzol/stage`)
 
-The external dependencies can be installed using `install-*` scripts located
-in the `scripts` directory. There is also a `Dockerfile` which installs all
-of these dependencies into a Docker image.
+The external dependencies can be installed using scripts located
+in the `deps` directory, or (preferably) using the `python3 main.py install` command.
+There is also a `Dockerfile` which installs all of these dependencies into a Docker image.
 
 ### Python dependencies
 Python version has to be at least `3.10`.
@@ -36,42 +38,24 @@ Python version has to be at least `3.10`.
     ```bash
     $ python3 -m pip install poetry 
     ```
-3) Python Install dependencies
+3) Install Python dependencies
     ```bash
     $ poetry install 
     ```
-4) Download `tmbed` model
+4) Install native dependencies
    ```bash
-   $ tmbed download
+   $ python3 main.py install
+   ```
+   The installation step will generate a `awh-env.sh` file, which you should load before using this
+   package (and before executing the `check-env` command):
+   ```bash
+   $ source awh-env.sh
    ```
 
-Once you install the dependencies, you also need to set up your environment properly.
-If you installed the dependencies globally into your system, it should work automatically. If not,
-you can use e.g. something similar to put Gromacs, OpenBabel and Stage files into `PATH` and `PYTHONPATH`:
-
-```bash
-# Gromacs
-GROMACS_DIR=${PWD}/build/gromacs-2022/install
-source "${GROMACS_DIR}"/bin/GMXRC
-export GMXLIB=${GMXDATA}/top
-
-# OpenBabel
-OPENBABEL_DIR=${PWD}/build/openbabel-ligate/install
-export PATH=${PATH}:${OPENBABEL_DIR}/bin
-export PYTHONPATH=${PYTHONPATH}:${OPENBABEL_DIR}/lib/python3.10/site-packages/
-
-# Stage
-STAGE_DIR=${PWD}/build/stage-ligate/build
-export PATH=${PATH}:${STAGE_DIR}/bin
-```
-The script above sets paths that are used by default by the `install*` scripts. It also assumes
-Python `3.10`.
-
-### Environment check
-To check whether your environment is set up correctly, run the following command:
-```bash
-$ python3 main.py check-env
-```
+5) Check if everything has been installed correctly
+   ```bash
+   $ python3 main.py check-env
+   ```
 
 ## Running the pipeline
 ```bash

@@ -4,7 +4,7 @@ from pathlib import Path
 import click
 
 from ligate.env.check import check_ambertools, check_binary_exists, check_env_exists, \
-    check_openbabel_import, \
+    check_gromacs_env_exists, check_openbabel_import, \
     check_python_package, check_tmbed_model, check_gmxmmpba_import
 from ligate.env.install import install_native_deps
 
@@ -22,7 +22,7 @@ def check_env():
 
     ok = True
     ok &= check_binary_exists("gmx")
-    ok &= check_env_exists("GMXLIB")
+    ok &= check_gromacs_env_exists()
     ok &= check_gmxmmpba_import()
     ok &= check_openbabel_import()
     ok &= check_binary_exists("obabel")
