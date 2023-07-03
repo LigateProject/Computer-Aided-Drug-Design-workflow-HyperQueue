@@ -95,7 +95,10 @@ def get_module_directory(module: str) -> Path:
 
 
 def tmbed_model_exists() -> bool:
-    path = get_module_directory("tmbed") / "models" / "t5" / "pytorch_model.bin"
+    try:
+        path = get_module_directory("tmbed") / "models" / "t5" / "pytorch_model.bin"
+    except ModuleNotFoundError:
+        return False
     return path.is_file()
 
 
