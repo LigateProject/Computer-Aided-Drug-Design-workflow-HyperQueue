@@ -16,7 +16,7 @@ if [ ! -d "stage" ] ; then
 fi
 
 cd stage
-git checkout 27140bbd888e49e97beba7b8f75b7f484c766197
-mkdir -p build
-cd build
-cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_DOCS=OFF ..
+mkdir -p build && cd build
+cmake -DCMAKE_BUILD_TYPE=Release \
+      -DBUILD_DOCS=OFF \
+      ..

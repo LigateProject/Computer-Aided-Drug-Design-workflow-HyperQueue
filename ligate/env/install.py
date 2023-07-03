@@ -52,6 +52,10 @@ def install_native_deps(build_dir: Path) -> InstalledEnv:
         env.add_env_var("GMXLIB", str(install_dir / "share" / "gromacs" / "top"))
         env.add_source(install_dir / "bin" / "GMXRC")
 
+    # Ambertools
+    if click.confirm("Do you want to install AmberTools? (Choose no if you have your own version)"):
+        install_dep("AmberTools", DEPS_DIR / "ambertools-23.sh", build_dir)
+
     return env
 
 
