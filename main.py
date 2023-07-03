@@ -48,12 +48,16 @@ def check_env():
 @cli.command()
 @click.argument("build-dir", default="build")
 def install(build_dir: str):
-    env = install_native_deps(Path(build_dir))
+    env = install_native_deps(Path(build_dir).absolute())
     env_script = "awh-env.sh"
     with open("awh-env.sh", "w") as f:
-        f.write(f"""
-export PATH=$PATH:{':'.join(str(dir) for dir in env.binary_dirs)}
-""".lstrip())
+        print(f"export PATH=${{PATH}}:{':'.join(str(dir) for dir in env.binary_dirs)}", file=f)
+        for source in env.sources:
+            print(f"source {source}", file=f)
+
+        for (key, value) in env.env_vars.items():
+            print(f'export {key}="{value}"', file=f)
+
     print(f"Environment variables written into {env_script}. Run `source {env_script}` to load the environment.")
 
 

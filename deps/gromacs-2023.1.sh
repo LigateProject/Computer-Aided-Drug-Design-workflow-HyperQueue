@@ -14,11 +14,16 @@ mkdir -p "${TARGET_DIR}"
 
 cd "${TARGET_DIR}"
 
-wget https://ftp.gromacs.org/gromacs/${GROMACS_VERSION}.tar.gz
+if [ ! -f "${GROMACS_VERSION}.tar.gz" ] ; then
+  echo "Downloading GROMACS"
+  wget https://ftp.gromacs.org/gromacs/${GROMACS_VERSION}.tar.gz
+fi
+echo "Unzipping GROMACS"
 tar -xvf ${GROMACS_VERSION}.tar.gz
 
 cd ${GROMACS_VERSION}
 
+echo "Building GROMACS"
 mkdir -p build && cd build
 cmake -DCMAKE_BUILD_TYPE=Release \
   -DGMX_BUILD_OWN_FFTW=ON \
