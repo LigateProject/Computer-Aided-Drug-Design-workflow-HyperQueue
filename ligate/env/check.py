@@ -77,6 +77,13 @@ def check_ambertools() -> bool:
     return antechamber_available
 
 
+def check_promod3() -> bool:
+    prefix = f"Checking if `ProMod3` is available:"
+    promod_available = shutil.which("pm") is not None
+    print_availability_status(prefix, promod_available, ok="OK", notok="pm not found")
+    return promod_available
+
+
 def check_python_package(name: str, expected_version: str) -> bool:
     prefix = f"Checking if `{name}` is installed:"
     try:

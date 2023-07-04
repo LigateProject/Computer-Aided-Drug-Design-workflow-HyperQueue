@@ -3,10 +3,13 @@ from pathlib import Path
 
 import click
 
-from ligate.env.check import check_ambertools, check_binary_exists, check_env_exists, \
-    check_gromacs_env_exists, check_openbabel_import, \
-    check_python_package, check_tmbed_model, check_gmxmmpba_import
+from ligate.env.check import check_ambertools, check_binary_exists, check_gmxmmpba_import, \
+    check_gromacs_env_exists, check_openbabel_import, check_promod3, check_python_package, \
+    check_tmbed_model
 from ligate.env.install import install_native_deps
+
+ROOT_DIR = Path(__file__).absolute().parent
+BUILD_DIR = ROOT_DIR / "build"
 
 
 @click.group()
@@ -37,6 +40,7 @@ def check_env():
     ok &= check_python_package("tmbed", "1.0.0")
     ok &= check_tmbed_model()
     ok &= check_ambertools()
+    ok &= check_promod3()
 
     if ok:
         click.echo(click.style("All environment dependencies were found!", fg="green"))
@@ -49,8 +53,8 @@ def check_env():
 @click.argument("build-dir", default="build")
 def install(build_dir: str):
     env = install_native_deps(Path(build_dir).absolute())
-    env_script = "awh-env.sh"
-    with open("awh-env.sh", "w") as f:
+    env_script = Path("awh-env.sh").absolute()
+    with open(env_script, "w") as f:
         print(f"export PATH=${{PATH}}:{':'.join(str(dir) for dir in env.binary_dirs)}", file=f)
         for source in env.sources:
             print(f"source {source}", file=f)
@@ -58,7 +62,13 @@ def install(build_dir: str):
         for (key, value) in env.env_vars.items():
             print(f'export {key}="{value}"', file=f)
 
-    print(f"Environment variables written into {env_script}. Run `source {env_script}` to load the environment.")
+    print(
+        f"Environment variables written into {env_script}. Run `source {env_script}` to load the environment.")
+
+    exec_script = Path("awh-exec.sh").absolute()
+    with open(exec_script, "w") as f:
+        print(f"source {env_script}", file=f)
+        print(f'singularity exec {BUILD_DIR}/promod3.img "$@"', file=f)
 
 
 if __name__ == "__main__":
