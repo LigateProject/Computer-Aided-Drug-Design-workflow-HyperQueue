@@ -1,0 +1,1826 @@
+@<TRIPOS>MOLECULE
+CN(c1ccc(cc1)c2nnn(CC(=O)Nc3ccc4nc(oc4c3)c5ccccc5Cl)n2)c6cc(C)c(N)cn6
+	65	70	1	0	0
+SMALL
+GAST_HUCK
+# @<LIGEN>YAML
+# smiles: CN(c1ccc(cc1)c2nnn(CC(=O)Nc3ccc4nc(oc4c3)c5ccccc5Cl)n2)c6cc(C)c(N)cn6
+# force_field: mmff94
+# rings:
+#   - - 7
+#     - 6
+#     - 5
+#     - 4
+#     - 3
+#     - 2
+#   - - 23
+#     - 22
+#     - 21
+#     - 20
+#     - 19
+#   - - 24
+#     - 23
+#     - 19
+#     - 18
+#     - 17
+#     - 16
+#   - - 30
+#     - 29
+#     - 28
+#     - 27
+#     - 26
+#     - 25
+#   - - 32
+#     - 11
+#     - 10
+#     - 9
+#     - 8
+#   - - 40
+#     - 39
+#     - 37
+#     - 35
+#     - 34
+#     - 33
+# minimization:
+#   method: bfgs
+#   maxiter: 10000
+#   ftol: 1e-06
+#   gtol: 1e-14
+#   gmax: 1e-14
+#   mu: 0.0001
+#   eta: 0.9
+# 
+@<TRIPOS>ATOM
+      1 C            6.2406   4.1699  -0.3504 C.3                        1 **** 0.0 # 1 Alkyl Carbon
+      2 N            5.3118   4.6280  -1.3918 N.pl3                      1 **** 0.0 # 40 N-C=C or N-C=N
+      3 C            4.0051   4.1131  -1.1829 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+      4 C            3.1990   4.6530  -0.1712 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+      5 C            1.9057   4.1683   0.0551 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+      6 C            1.3861   3.1274  -0.7262 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+      7 C            2.1910   2.5817  -1.7351 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+      8 C            3.4841   3.0691  -1.9597 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+      9 C            0.0385   2.6198  -0.4982 C.ar                       1 **** 0.0 # 64 5-Arom Beta N,O,S
+     10 N           -0.5109   1.5922  -1.2361 N.ar                       1 **** 0.0 # 66 5-Arom Beta N,O,S
+     11 N           -1.7373   1.3959  -0.7767 N.ar                       1 **** 0.0 # 65 5-Arom Alpha N,O,S
+     12 N           -1.8716   2.2904   0.2192 N.3                        1 **** 0.0 # 39 Pyrrole Nitrogen
+     13 C           -3.1016   2.3934   0.9664 C.3                        1 **** 0.0 # 1 Alkyl Carbon
+     14 C           -3.2720   1.2465   1.9385 C.2                        1 **** 0.0 # 3 Carbonyl Carbon
+     15 O           -3.5617   1.4784   3.1107 O.2                        1 **** 0.0 # 7 Carbonyl Oxygen
+     16 N           -3.1628  -0.0162   1.3694 N.am                       1 **** 0.0 # 10 Amide Nitrogen
+     17 C           -3.3259  -1.2715   2.0010 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     18 C           -3.7033  -1.4249   3.3450 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     19 C           -3.8543  -2.6958   3.9319 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     20 C           -3.6192  -3.8226   3.1392 C.ar                       1 **** 0.0 # 64 5-Arom Beta N,O,S
+     21 N           -3.6897  -5.1623   3.4212 N.ar                       1 **** 0.0 # 66 5-Arom Beta N,O,S
+     22 C           -3.3366  -5.7450   2.2866 C.ar                       1 **** 0.0 # 63 5-Arom Alpha N,O,S
+     23 O           -3.0847  -4.8710   1.2592 O.3                        1 **** 0.0 # 59 Furan Oxygen
+     24 C           -3.2514  -3.6396   1.8196 C.ar                       1 **** 0.0 # 63 5-Arom Alpha N,O,S
+     25 C           -3.0907  -2.4036   1.2023 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     26 C           -3.2721  -7.1746   1.9858 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     27 C           -4.1315  -8.0266   2.7080 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     28 C           -4.1421  -9.4066   2.4920 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     29 C           -3.2880  -9.9653   1.5488 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     30 C           -2.4218  -9.1439   0.8286 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     31 C           -2.4038  -7.7582   1.0453 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     32 Cl          -1.2343  -6.8567   0.1341 Cl                         1 **** 0.0 # 12 Chlorine
+     33 N           -0.8124   3.0885   0.4341 N.ar                       1 **** 0.0 # 65 5-Arom Alpha N,O,S
+     34 C            5.9382   4.7507  -2.6637 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     35 C            5.1992   5.2601  -3.7383 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     36 C            5.7792   5.4146  -5.0090 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     37 C            4.9443   5.9531  -6.1356 C.3                        1 **** 0.0 # 1 Alkyl Carbon
+     38 C            7.1296   5.0992  -5.1734 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     39 N            7.7460   5.0998  -6.4324 N.pl3                      1 **** 0.0 # 40 N-C=C or N-C=N
+     40 C            7.7764   4.5593  -4.0623 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     41 N            7.2357   4.4172  -2.8276 N.ar                       1 **** 0.0 # 38 Pyridine Nitrogen
+     42 H            6.5424   3.1276  -0.5135 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     43 H            5.7962   4.2356   0.6504 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     44 H            7.1385   4.7994  -0.3147 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     45 H            3.5739   5.4713   0.4394 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     46 H            1.3070   4.6157   0.8465 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     47 H            1.8242   1.7686  -2.3587 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     48 H            4.0887   2.6132  -2.7409 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     49 H           -3.0882   3.3416   1.5137 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     50 H           -3.9359   2.4068   0.2580 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     51 H           -2.8656  -0.0591   0.3937 H                          1 **** 0.0 # 28 Amide Hydrogen
+     52 H           -3.8929  -0.5660   3.9829 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     53 H           -4.1440  -2.8005   4.9717 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     54 H           -2.7942  -2.3439   0.1624 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     55 H           -4.8065  -7.6076   3.4548 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     56 H           -4.8169 -10.0404   3.0628 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     57 H           -3.2915 -11.0387   1.3760 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     58 H           -1.7527  -9.5919   0.0970 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     59 H            4.1634   5.5475  -3.5797 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     60 H            3.8976   6.0775  -5.8382 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     61 H            5.3205   6.9316  -6.4505 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     62 H            4.9605   5.2646  -6.9867 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     63 H            8.7598   5.1512  -6.3955 H                          1 **** 0.0 # 28 Amide Hydrogen
+     64 H            7.3570   5.7741  -7.0834 H                          1 **** 0.0 # 28 Amide Hydrogen
+     65 H            8.8002   4.2037  -4.1392 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+@<TRIPOS>BOND
+      1   1    2 1
+     47   1   42 1
+     48   1   43 1
+     49   1   44 1
+      2   2    3 1
+     38   2   34 1
+      3   3    4 1
+      8   3    8 2
+      4   4    5 2
+     50   4   45 1
+      5   5    6 1
+     51   5   46 1
+      6   6    7 2
+      9   6    9 1
+      7   7    8 1
+     52   7   47 1
+     53   8   48 1
+     10   9   10 1
+     37   9   33 2
+     11  10   11 2
+     12  11   12 1
+     13  12   13 1
+     36  12   33 1
+     14  13   14 1
+     54  13   49 1
+     55  13   50 1
+     15  14   15 2
+     16  14   16 1
+     17  16   17 1
+     56  16   51 1
+     18  17   18 1
+     27  17   25 2
+     19  18   19 2
+     57  18   52 1
+     20  19   20 1
+     58  19   53 1
+     21  20   21 1
+     25  20   24 2
+     22  21   22 2
+     23  22   23 1
+     28  22   26 1
+     24  23   24 1
+     26  24   25 1
+     59  25   54 1
+     29  26   27 1
+     34  26   31 2
+     30  27   28 2
+     60  27   55 1
+     31  28   29 1
+     61  28   56 1
+     32  29   30 2
+     62  29   57 1
+     33  30   31 1
+     63  30   58 1
+     35  31   32 1
+     39  34   35 1
+     46  34   41 2
+     40  35   36 2
+     64  35   59 1
+     41  36   37 1
+     42  36   38 1
+     65  37   60 1
+     66  37   61 1
+     67  37   62 1
+     43  38   39 1
+     44  38   40 2
+     68  39   63 1
+     69  39   64 1
+     45  40   41 1
+     70  40   65 1
+@<TRIPOS>SUBSTRUCTURE
+     1 UNKNOWN     1
+@<TRIPOS>MOLECULE
+Nc1cc(Nc2ccc(cc2)c3nnn(CC(=O)Nc4ccc5nc(oc5c4)c6ccccc6Cl)n3)ncc1C(=O)O
+	62	67	1	0	0
+SMALL
+GAST_HUCK
+# @<LIGEN>YAML
+# smiles: Nc1cc(Nc2ccc(cc2)c3nnn(CC(=O)Nc4ccc5nc(oc5c4)c6ccccc6Cl)n3)ncc1C(=O)O
+# force_field: mmff94
+# rings:
+#   - - 10
+#     - 9
+#     - 8
+#     - 7
+#     - 6
+#     - 5
+#   - - 26
+#     - 25
+#     - 24
+#     - 23
+#     - 22
+#   - - 27
+#     - 26
+#     - 22
+#     - 21
+#     - 20
+#     - 19
+#   - - 33
+#     - 32
+#     - 31
+#     - 30
+#     - 29
+#     - 28
+#   - - 35
+#     - 14
+#     - 13
+#     - 12
+#     - 11
+#   - - 38
+#     - 37
+#     - 36
+#     - 3
+#     - 2
+#     - 1
+# minimization:
+#   method: bfgs
+#   maxiter: 10000
+#   ftol: 1e-06
+#   gtol: 1e-14
+#   gmax: 1e-14
+#   mu: 0.0001
+#   eta: 0.9
+# 
+@<TRIPOS>ATOM
+      1 N           -4.9983  -9.0170  -3.5423 N.pl3                      1 **** 0.0 # 40 N-C=C or N-C=N
+      2 C           -3.9371  -8.1005  -3.7361 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+      3 C           -4.1921  -6.7269  -3.6514 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+      4 C           -3.1489  -5.8023  -3.7688 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+      5 N           -3.4799  -4.4284  -3.6767 N.pl3                      1 **** 0.0 # 40 N-C=C or N-C=N
+      6 C           -2.6110  -3.3223  -3.5315 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+      7 C           -1.3696  -3.4100  -2.8937 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+      8 C           -0.5664  -2.2767  -2.7083 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+      9 C           -0.9995  -1.0160  -3.1346 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     10 C           -2.2573  -0.9151  -3.7417 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     11 C           -3.0549  -2.0518  -3.9261 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     12 C           -0.1647   0.1622  -2.9365 C.ar                       1 **** 0.0 # 64 5-Arom Beta N,O,S
+     13 N            1.0757   0.1113  -2.3351 N.ar                       1 **** 0.0 # 66 5-Arom Beta N,O,S
+     14 N            1.5506   1.3473  -2.3180 N.ar                       1 **** 0.0 # 65 5-Arom Alpha N,O,S
+     15 N            0.5846   2.0878  -2.8912 N.3                        1 **** 0.0 # 39 Pyrrole Nitrogen
+     16 C            0.7361   3.5140  -3.0500 C.3                        1 **** 0.0 # 1 Alkyl Carbon
+     17 C            0.5568   4.2533  -1.7416 C.2                        1 **** 0.0 # 3 Carbonyl Carbon
+     18 O           -0.1723   5.2425  -1.6960 O.2                        1 **** 0.0 # 7 Carbonyl Oxygen
+     19 N            1.3307   3.7737  -0.6920 N.am                       1 **** 0.0 # 10 Amide Nitrogen
+     20 C            1.4192   4.2803   0.6257 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     21 C            0.7605   5.4417   1.0605 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     22 C            0.8797   5.9091   2.3832 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     23 C            1.6795   5.1848   3.2714 C.ar                       1 **** 0.0 # 64 5-Arom Beta N,O,S
+     24 N            1.9838   5.3887   4.5910 N.ar                       1 **** 0.0 # 66 5-Arom Beta N,O,S
+     25 C            2.7767   4.3789   4.9022 C.ar                       1 **** 0.0 # 63 5-Arom Alpha N,O,S
+     26 O            3.0276   3.5219   3.8525 O.3                        1 **** 0.0 # 59 Furan Oxygen
+     27 C            2.3156   4.0467   2.8145 C.ar                       1 **** 0.0 # 63 5-Arom Alpha N,O,S
+     28 C            2.2250   3.5518   1.5177 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     29 C            3.4331   4.0456   6.1684 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     30 C            4.6192   3.2826   6.1509 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     31 C            5.2887   2.9454   7.3305 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     32 C            4.7861   3.3644   8.5562 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     33 C            3.6150   4.1186   8.6002 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     34 C            2.9385   4.4587   7.4194 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     35 Cl           1.4735   5.3672   7.6118 Cl                         1 **** 0.0 # 12 Chlorine
+     36 N           -0.5008   1.4129  -3.3053 N.ar                       1 **** 0.0 # 65 5-Arom Alpha N,O,S
+     37 N           -1.8772  -6.2089  -3.9477 N.ar                       1 **** 0.0 # 38 Pyridine Nitrogen
+     38 C           -1.6261  -7.5402  -3.9726 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     39 C           -2.6023  -8.5117  -3.8224 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     40 C           -2.1587  -9.9171  -3.7302 C.2                        1 **** 0.0 # 3 Carbonyl Carbon
+     41 O           -1.1392 -10.3280  -4.2564 O.2                        1 **** 0.0 # 7 Carbonyl Oxygen
+     42 O           -2.9713 -10.6903  -2.9759 O.3                        1 **** 0.0 # 6 Divalent Oxygen
+     43 H           -5.9173  -8.5937  -3.6774 H                          1 **** 0.0 # 28 Amide Hydrogen
+     44 H           -4.9187  -9.8367  -4.1538 H                          1 **** 0.0 # 28 Amide Hydrogen
+     45 H           -5.2032  -6.3664  -3.4888 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     46 H           -4.2377  -4.2208  -4.3179 H                          1 **** 0.0 # 28 Amide Hydrogen
+     47 H           -1.0054  -4.3655  -2.5249 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     48 H            0.3978  -2.3973  -2.2183 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     49 H           -2.6323   0.0518  -4.0723 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     50 H           -4.0316  -1.9276  -4.3869 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     51 H            1.7339   3.7124  -3.4539 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     52 H           -0.0124   3.8558  -3.7723 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     53 H            1.8547   2.9138  -0.8601 H                          1 **** 0.0 # 28 Amide Hydrogen
+     54 H            0.1340   6.0240   0.3906 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     55 H            0.3645   6.8062   2.7090 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     56 H            2.7517   2.6487   1.2356 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     57 H            5.0408   2.9458   5.2047 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     58 H            6.2027   2.3575   7.2876 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     59 H            5.3029   3.1060   9.4772 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     60 H            3.2279   4.4423   9.5640 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     61 H           -0.5765  -7.8035  -4.0858 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     62 H           -3.7194 -10.1861  -2.5796 H                          1 **** 0.0 # 24 Carboxyl Hydrogen
+@<TRIPOS>BOND
+      1   1    2 1
+     48   1   43 1
+     49   1   44 1
+      2   2    3 1
+     44   2   39 2
+      3   3    4 2
+     50   3   45 1
+      4   4    5 1
+     41   4   37 1
+      5   5    6 1
+     51   5   46 1
+      6   6    7 1
+     11   6   11 2
+      7   7    8 2
+     52   7   47 1
+      8   8    9 1
+     53   8   48 1
+      9   9   10 2
+     12   9   12 1
+     10  10   11 1
+     54  10   49 1
+     55  11   50 1
+     13  12   13 1
+     40  12   36 2
+     14  13   14 2
+     15  14   15 1
+     16  15   16 1
+     39  15   36 1
+     17  16   17 1
+     56  16   51 1
+     57  16   52 1
+     18  17   18 2
+     19  17   19 1
+     20  19   20 1
+     58  19   53 1
+     21  20   21 1
+     30  20   28 2
+     22  21   22 2
+     59  21   54 1
+     23  22   23 1
+     60  22   55 1
+     24  23   24 1
+     28  23   27 2
+     25  24   25 2
+     26  25   26 1
+     31  25   29 1
+     27  26   27 1
+     29  27   28 1
+     61  28   56 1
+     32  29   30 1
+     37  29   34 2
+     33  30   31 2
+     62  30   57 1
+     34  31   32 1
+     63  31   58 1
+     35  32   33 2
+     64  32   59 1
+     36  33   34 1
+     65  33   60 1
+     38  34   35 1
+     42  37   38 2
+     43  38   39 1
+     66  38   61 1
+     45  39   40 1
+     46  40   41 2
+     47  40   42 1
+     67  42   62 1
+@<TRIPOS>SUBSTRUCTURE
+     1 UNKNOWN     1
+@<TRIPOS>MOLECULE
+CN(c1ccc(cc1)c2nnn(CC(=O)Nc3ccc4nc(oc4c3)c5ccccc5Cl)n2)c6ccc(cn6)C(=O)O
+	63	68	1	0	0
+SMALL
+GAST_HUCK
+# @<LIGEN>YAML
+# smiles: CN(c1ccc(cc1)c2nnn(CC(=O)Nc3ccc4nc(oc4c3)c5ccccc5Cl)n2)c6ccc(cn6)C(=O)O
+# force_field: mmff94
+# rings:
+#   - - 7
+#     - 6
+#     - 5
+#     - 4
+#     - 3
+#     - 2
+#   - - 23
+#     - 22
+#     - 21
+#     - 20
+#     - 19
+#   - - 24
+#     - 23
+#     - 19
+#     - 18
+#     - 17
+#     - 16
+#   - - 30
+#     - 29
+#     - 28
+#     - 27
+#     - 26
+#     - 25
+#   - - 32
+#     - 11
+#     - 10
+#     - 9
+#     - 8
+#   - - 38
+#     - 37
+#     - 36
+#     - 35
+#     - 34
+#     - 33
+# minimization:
+#   method: bfgs
+#   maxiter: 10000
+#   ftol: 1e-06
+#   gtol: 1e-14
+#   gmax: 1e-14
+#   mu: 0.0001
+#   eta: 0.9
+# 
+@<TRIPOS>ATOM
+      1 C           -2.2455  -4.3479   5.1143 C.3                        1 **** 0.0 # 1 Alkyl Carbon
+      2 N           -2.9624  -3.0726   5.2476 N.pl3                      1 **** 0.0 # 40 N-C=C or N-C=N
+      3 C           -2.6223  -2.1783   4.1997 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+      4 C           -1.4074  -1.4819   4.2518 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+      5 C           -1.0448  -0.5905   3.2358 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+      6 C           -1.8894  -0.3784   2.1380 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+      7 C           -3.1022  -1.0792   2.0803 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+      8 C           -3.4641  -1.9679   3.0994 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+      9 C           -1.5099   0.5501   1.0800 C.ar                       1 **** 0.0 # 64 5-Arom Beta N,O,S
+     10 N           -0.3421   1.2831   1.1077 N.ar                       1 **** 0.0 # 66 5-Arom Beta N,O,S
+     11 N           -0.3231   2.0256   0.0113 N.ar                       1 **** 0.0 # 65 5-Arom Alpha N,O,S
+     12 N           -1.4547   1.6971  -0.6390 N.3                        1 **** 0.0 # 39 Pyrrole Nitrogen
+     13 C           -1.8106   2.3326  -1.8846 C.3                        1 **** 0.0 # 1 Alkyl Carbon
+     14 C           -0.9321   1.8693  -3.0254 C.2                        1 **** 0.0 # 3 Carbonyl Carbon
+     15 O           -1.4435   1.4282  -4.0523 O.2                        1 **** 0.0 # 7 Carbonyl Oxygen
+     16 N            0.4274   2.0703  -2.8210 N.am                       1 **** 0.0 # 10 Amide Nitrogen
+     17 C            1.4876   1.8222  -3.7237 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     18 C            1.2991   1.3971  -5.0488 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     19 C            2.3853   1.1739  -5.9161 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     20 C            3.6770   1.3871  -5.4273 C.ar                       1 **** 0.0 # 64 5-Arom Beta N,O,S
+     21 N            4.9043   1.2597  -6.0216 N.ar                       1 **** 0.0 # 66 5-Arom Beta N,O,S
+     22 C            5.7599   1.6068  -5.0769 C.ar                       1 **** 0.0 # 63 5-Arom Alpha N,O,S
+     23 O            5.1663   1.9447  -3.8803 O.3                        1 **** 0.0 # 59 Furan Oxygen
+     24 C            3.8309   1.8053  -4.1194 C.ar                       1 **** 0.0 # 63 5-Arom Alpha N,O,S
+     25 C            2.7861   2.0370  -3.2306 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     26 C            7.2218   1.6723  -5.1028 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     27 C            7.9414   1.4758  -3.9061 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     28 C            9.3380   1.5210  -3.8788 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     29 C           10.0461   1.7640  -5.0496 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     30 C            9.3572   1.9617  -6.2449 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     31 C            7.9557   1.9187  -6.2775 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     32 Cl           7.2140   2.2215  -7.8158 Cl                         1 **** 0.0 # 12 Chlorine
+     33 N           -2.2449   0.8039  -0.0189 N.ar                       1 **** 0.0 # 65 5-Arom Alpha N,O,S
+     34 C           -4.2699  -3.2296   5.7800 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     35 C           -5.0426  -2.0873   6.0301 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     36 C           -6.3272  -2.2056   6.5649 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     37 C           -6.8203  -3.4742   6.8508 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     38 C           -5.9930  -4.5593   6.6193 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     39 N           -4.7466  -4.4586   6.0911 N.ar                       1 **** 0.0 # 38 Pyridine Nitrogen
+     40 C           -8.1554  -3.7123   7.4259 C.2                        1 **** 0.0 # 3 Carbonyl Carbon
+     41 O           -8.3832  -4.6109   8.2158 O.2                        1 **** 0.0 # 7 Carbonyl Oxygen
+     42 O           -9.1010  -2.8679   6.9642 O.3                        1 **** 0.0 # 6 Divalent Oxygen
+     43 H           -1.1903  -4.1955   4.8554 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     44 H           -2.6931  -4.9789   4.3361 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     45 H           -2.2403  -4.9007   6.0618 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     46 H           -0.7404  -1.6230   5.0996 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     47 H           -0.0954  -0.0642   3.3155 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     48 H           -3.7769  -0.9430   1.2369 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     49 H           -4.4032  -2.5097   3.0155 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     50 H           -2.8562   2.0932  -2.1041 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     51 H           -1.7170   3.4157  -1.7577 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     52 H            0.7134   2.3641  -1.8864 H                          1 **** 0.0 # 28 Amide Hydrogen
+     53 H            0.3058   1.2274  -5.4552 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     54 H            2.2281   0.8468  -6.9382 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     55 H            2.9876   2.3659  -2.2189 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     56 H            7.4125   1.2757  -2.9752 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     57 H            9.8688   1.3638  -2.9427 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     58 H           11.1328   1.7988  -5.0348 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     59 H            9.9192   2.1513  -7.1569 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     60 H           -4.6306  -1.1004   5.8370 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     61 H           -6.8961  -1.3079   6.7875 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     62 H           -6.3099  -5.5729   6.8549 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     63 H           -8.8350  -2.3115   6.2087 H                          1 **** 0.0 # 24 Carboxyl Hydrogen
+@<TRIPOS>BOND
+      1   1    2 1
+     48   1   43 1
+     49   1   44 1
+     50   1   45 1
+      2   2    3 1
+     38   2   34 1
+      3   3    4 1
+      8   3    8 2
+      4   4    5 2
+     51   4   46 1
+      5   5    6 1
+     52   5   47 1
+      6   6    7 2
+      9   6    9 1
+      7   7    8 1
+     53   7   48 1
+     54   8   49 1
+     10   9   10 1
+     37   9   33 2
+     11  10   11 2
+     12  11   12 1
+     13  12   13 1
+     36  12   33 1
+     14  13   14 1
+     55  13   50 1
+     56  13   51 1
+     15  14   15 2
+     16  14   16 1
+     17  16   17 1
+     57  16   52 1
+     18  17   18 1
+     27  17   25 2
+     19  18   19 2
+     58  18   53 1
+     20  19   20 1
+     59  19   54 1
+     21  20   21 1
+     25  20   24 2
+     22  21   22 2
+     23  22   23 1
+     28  22   26 1
+     24  23   24 1
+     26  24   25 1
+     60  25   55 1
+     29  26   27 1
+     34  26   31 2
+     30  27   28 2
+     61  27   56 1
+     31  28   29 1
+     62  28   57 1
+     32  29   30 2
+     63  29   58 1
+     33  30   31 1
+     64  30   59 1
+     35  31   32 1
+     39  34   35 1
+     44  34   39 2
+     40  35   36 2
+     65  35   60 1
+     41  36   37 1
+     66  36   61 1
+     42  37   38 2
+     45  37   40 1
+     43  38   39 1
+     67  38   62 1
+     46  40   41 2
+     47  40   42 1
+     68  42   63 1
+@<TRIPOS>SUBSTRUCTURE
+     1 UNKNOWN     1
+@<TRIPOS>MOLECULE
+Nc1cnc(Nc2ccc(cc2)c3nnn(CC(=O)Nc4ccc5nc(oc5c4)c6ccccc6Cl)n3)c(Cl)c1
+	59	64	1	0	0
+SMALL
+GAST_HUCK
+# @<LIGEN>YAML
+# smiles: Nc1cnc(Nc2ccc(cc2)c3nnn(CC(=O)Nc4ccc5nc(oc5c4)c6ccccc6Cl)n3)c(Cl)c1
+# force_field: mmff94
+# rings:
+#   - - 11
+#     - 10
+#     - 9
+#     - 8
+#     - 7
+#     - 6
+#   - - 27
+#     - 26
+#     - 25
+#     - 24
+#     - 23
+#   - - 28
+#     - 27
+#     - 23
+#     - 22
+#     - 21
+#     - 20
+#   - - 34
+#     - 33
+#     - 32
+#     - 31
+#     - 30
+#     - 29
+#   - - 36
+#     - 15
+#     - 14
+#     - 13
+#     - 12
+#   - - 39
+#     - 37
+#     - 4
+#     - 3
+#     - 2
+#     - 1
+# minimization:
+#   method: bfgs
+#   maxiter: 10000
+#   ftol: 1e-06
+#   gtol: 1e-14
+#   gmax: 1e-14
+#   mu: 0.0001
+#   eta: 0.9
+# 
+@<TRIPOS>ATOM
+      1 N           -2.1443 -11.0857  -0.7011 N.pl3                      1 **** 0.0 # 40 N-C=C or N-C=N
+      2 C           -1.1976 -10.2028  -0.1726 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+      3 C           -1.1908  -8.8483  -0.4926 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+      4 N           -0.3910  -7.9161   0.0822 N.ar                       1 **** 0.0 # 38 Pyridine Nitrogen
+      5 C            0.4437  -8.3133   1.0680 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+      6 N            1.3381  -7.3931   1.6744 N.pl3                      1 **** 0.0 # 40 N-C=C or N-C=N
+      7 C            1.5962  -6.0416   1.3641 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+      8 C            2.1610  -5.2180   2.3489 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+      9 C            2.4869  -3.8824   2.0803 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     10 C            2.2752  -3.3379   0.8080 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     11 C            1.7406  -4.1636  -0.1872 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     12 C            1.4176  -5.4998   0.0879 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     13 C            2.6129  -1.9493   0.5216 C.ar                       1 **** 0.0 # 64 5-Arom Beta N,O,S
+     14 N            2.3959  -1.3586  -0.7059 N.ar                       1 **** 0.0 # 66 5-Arom Beta N,O,S
+     15 N            2.8254  -0.1086  -0.6174 N.ar                       1 **** 0.0 # 65 5-Arom Alpha N,O,S
+     16 N            3.2623   0.0085   0.6494 N.3                        1 **** 0.0 # 39 Pyrrole Nitrogen
+     17 C            3.8455   1.2386   1.1259 C.3                        1 **** 0.0 # 1 Alkyl Carbon
+     18 C            2.7968   2.3014   1.3645 C.2                        1 **** 0.0 # 3 Carbonyl Carbon
+     19 O            2.7319   2.8641   2.4555 O.2                        1 **** 0.0 # 7 Carbonyl Oxygen
+     20 N            2.0270   2.6088   0.2492 N.am                       1 **** 0.0 # 10 Amide Nitrogen
+     21 C            1.0307   3.6059   0.1299 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     22 C            0.7070   4.5103   1.1548 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     23 C           -0.2831   5.4970   0.9871 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     24 C           -0.9480   5.5653  -0.2402 C.ar                       1 **** 0.0 # 64 5-Arom Beta N,O,S
+     25 N           -1.9333   6.4037  -0.6938 N.ar                       1 **** 0.0 # 66 5-Arom Beta N,O,S
+     26 C           -2.1355   6.0095  -1.9407 C.ar                       1 **** 0.0 # 63 5-Arom Alpha N,O,S
+     27 O           -1.3800   4.9287  -2.3205 O.3                        1 **** 0.0 # 59 Furan Oxygen
+     28 C           -0.6086   4.6610  -1.2289 C.ar                       1 **** 0.0 # 63 5-Arom Alpha N,O,S
+     29 C            0.3588   3.6694  -1.1027 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     30 C           -3.1049   6.5218  -2.9068 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     31 C           -4.3120   7.0433  -2.4012 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     32 C           -5.2958   7.5574  -3.2493 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     33 C           -5.0896   7.5635  -4.6238 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     34 C           -3.8985   7.0617  -5.1466 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     35 C           -2.9058   6.5490  -4.2990 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     36 Cl          -1.4417   6.0188  -5.0644 Cl                         1 **** 0.0 # 12 Chlorine
+     37 N            3.1726  -1.0995   1.4033 N.ar                       1 **** 0.0 # 65 5-Arom Alpha N,O,S
+     38 C            0.4564  -9.6532   1.4958 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     39 Cl           1.4962 -10.1912   2.7753 Cl                         1 **** 0.0 # 12 Chlorine
+     40 C           -0.3873 -10.5870   0.8893 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     41 H           -2.4791 -10.8380  -1.6284 H                          1 **** 0.0 # 28 Amide Hydrogen
+     42 H           -1.8849 -12.0663  -0.6394 H                          1 **** 0.0 # 28 Amide Hydrogen
+     43 H           -1.8593  -8.4531  -1.2531 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     44 H            1.3874  -7.5804   2.6710 H                          1 **** 0.0 # 28 Amide Hydrogen
+     45 H            2.3534  -5.6058   3.3463 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     46 H            2.9124  -3.2739   2.8759 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     47 H            1.5724  -3.7842  -1.1931 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     48 H            1.0289  -6.1111  -0.7220 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     49 H            4.3758   1.0264   2.0600 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     50 H            4.5696   1.5887   0.3833 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     51 H            2.1411   2.0096  -0.5690 H                          1 **** 0.0 # 28 Amide Hydrogen
+     52 H            1.2104   4.4815   2.1172 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     53 H           -0.5235   6.1892   1.7867 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     54 H            0.5685   2.9991  -1.9270 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     55 H           -4.4899   7.0499  -1.3256 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     56 H           -6.2194   7.9524  -2.8327 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     57 H           -5.8518   7.9622  -5.2890 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     58 H           -3.7442   7.0769  -6.2234 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     59 H           -0.4066 -11.6111   1.2497 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+@<TRIPOS>BOND
+      1   1    2 1
+     46   1   41 1
+     47   1   42 1
+      2   2    3 1
+     45   2   40 2
+      3   3    4 2
+     48   3   43 1
+      4   4    5 1
+      5   5    6 1
+     42   5   38 2
+      6   6    7 1
+     49   6   44 1
+      7   7    8 1
+     12   7   12 2
+      8   8    9 2
+     50   8   45 1
+      9   9   10 1
+     51   9   46 1
+     10  10   11 2
+     13  10   13 1
+     11  11   12 1
+     52  11   47 1
+     53  12   48 1
+     14  13   14 1
+     41  13   37 2
+     15  14   15 2
+     16  15   16 1
+     17  16   17 1
+     40  16   37 1
+     18  17   18 1
+     54  17   49 1
+     55  17   50 1
+     19  18   19 2
+     20  18   20 1
+     21  20   21 1
+     56  20   51 1
+     22  21   22 1
+     31  21   29 2
+     23  22   23 2
+     57  22   52 1
+     24  23   24 1
+     58  23   53 1
+     25  24   25 1
+     29  24   28 2
+     26  25   26 2
+     27  26   27 1
+     32  26   30 1
+     28  27   28 1
+     30  28   29 1
+     59  29   54 1
+     33  30   31 1
+     38  30   35 2
+     34  31   32 2
+     60  31   55 1
+     35  32   33 1
+     61  32   56 1
+     36  33   34 2
+     62  33   57 1
+     37  34   35 1
+     63  34   58 1
+     39  35   36 1
+     43  38   39 1
+     44  38   40 1
+     64  40   59 1
+@<TRIPOS>SUBSTRUCTURE
+     1 UNKNOWN     1
+@<TRIPOS>MOLECULE
+Cc1cc(Nc2ccc(cc2)c3nnn(CC(=O)Nc4ccc5nc(oc5c4)c6ccccc6Cl)n3)ncc1N
+	62	67	1	0	0
+SMALL
+GAST_HUCK
+# @<LIGEN>YAML
+# smiles: Cc1cc(Nc2ccc(cc2)c3nnn(CC(=O)Nc4ccc5nc(oc5c4)c6ccccc6Cl)n3)ncc1N
+# force_field: mmff94
+# rings:
+#   - - 10
+#     - 9
+#     - 8
+#     - 7
+#     - 6
+#     - 5
+#   - - 26
+#     - 25
+#     - 24
+#     - 23
+#     - 22
+#   - - 27
+#     - 26
+#     - 22
+#     - 21
+#     - 20
+#     - 19
+#   - - 33
+#     - 32
+#     - 31
+#     - 30
+#     - 29
+#     - 28
+#   - - 35
+#     - 14
+#     - 13
+#     - 12
+#     - 11
+#   - - 38
+#     - 37
+#     - 36
+#     - 3
+#     - 2
+#     - 1
+# minimization:
+#   method: bfgs
+#   maxiter: 10000
+#   ftol: 1e-06
+#   gtol: 1e-14
+#   gmax: 1e-14
+#   mu: 0.0001
+#   eta: 0.9
+# 
+@<TRIPOS>ATOM
+      1 C            3.4249   6.6855   1.6901 C.3                        1 **** 0.0 # 1 Alkyl Carbon
+      2 C            2.6848   6.0420   2.8277 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+      3 C            2.9611   4.7059   3.1575 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+      4 C            2.2419   4.0711   4.1673 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+      5 N            2.5114   2.7451   4.5398 N.pl3                      1 **** 0.0 # 40 N-C=C or N-C=N
+      6 C            2.6582   1.6223   3.6953 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+      7 C            3.2645   0.4733   4.2165 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+      8 C            3.4045  -0.6833   3.4406 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+      9 C            2.9239  -0.7219   2.1256 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     10 C            2.2964   0.4206   1.6102 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     11 C            2.1592   1.5762   2.3897 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     12 C            3.0679  -1.9283   1.3196 C.ar                       1 **** 0.0 # 64 5-Arom Beta N,O,S
+     13 N            3.6948  -3.0656   1.7784 N.ar                       1 **** 0.0 # 66 5-Arom Beta N,O,S
+     14 N            3.6503  -3.9578   0.8001 N.ar                       1 **** 0.0 # 65 5-Arom Alpha N,O,S
+     15 N            2.9998  -3.3396  -0.1939 N.3                        1 **** 0.0 # 39 Pyrrole Nitrogen
+     16 C            2.7655  -3.9638  -1.4746 C.3                        1 **** 0.0 # 1 Alkyl Carbon
+     17 C            1.2972  -4.2365  -1.7208 C.2                        1 **** 0.0 # 3 Carbonyl Carbon
+     18 O            0.9467  -5.3240  -2.1751 O.2                        1 **** 0.0 # 7 Carbonyl Oxygen
+     19 N            0.4600  -3.1558  -1.4792 N.am                       1 **** 0.0 # 10 Amide Nitrogen
+     20 C           -0.9381  -3.0754  -1.6669 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     21 C           -1.7081  -4.1030  -2.2351 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     22 C           -3.1003  -3.9776  -2.4044 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     23 C           -3.7132  -2.7919  -1.9893 C.ar                       1 **** 0.0 # 64 5-Arom Beta N,O,S
+     24 N           -5.0217  -2.3837  -2.0264 N.ar                       1 **** 0.0 # 66 5-Arom Beta N,O,S
+     25 C           -4.9955  -1.1839  -1.4686 C.ar                       1 **** 0.0 # 63 5-Arom Alpha N,O,S
+     26 O           -3.7416  -0.7541  -1.1137 O.3                        1 **** 0.0 # 59 Furan Oxygen
+     27 C           -2.9277  -1.7989  -1.4352 C.ar                       1 **** 0.0 # 63 5-Arom Alpha N,O,S
+     28 C           -1.5516  -1.8815  -1.2523 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     29 C           -6.1026  -0.2496  -1.2747 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     30 C           -7.1574  -0.2912  -2.2076 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     31 C           -8.2565   0.5648  -2.1039 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     32 C           -8.3253   1.4787  -1.0590 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     33 C           -7.2984   1.5308  -0.1174 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     34 C           -6.1946   0.6710  -0.2150 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     35 Cl          -5.0168   0.7873   1.0536 Cl                         1 **** 0.0 # 12 Chlorine
+     36 N            2.6120  -2.0686   0.0584 N.ar                       1 **** 0.0 # 65 5-Arom Alpha N,O,S
+     37 N            1.2784   4.7019   4.8589 N.ar                       1 **** 0.0 # 38 Pyridine Nitrogen
+     38 C            1.0318   5.9941   4.5335 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     39 C            1.7255   6.7343   3.5742 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     40 N            1.3144   8.0303   3.2324 N.pl3                      1 **** 0.0 # 40 N-C=C or N-C=N
+     41 H            4.0998   5.9779   1.1967 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     42 H            4.0302   7.5209   2.0564 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     43 H            2.7213   7.0482   0.9337 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     44 H            3.7339   4.1570   2.6279 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     45 H            1.8551   2.5388   5.2917 H                          1 **** 0.0 # 28 Amide Hydrogen
+     46 H            3.6469   0.4779   5.2352 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     47 H            3.8918  -1.5523   3.8794 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     48 H            1.9010   0.4245   0.5968 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     49 H            1.6403   2.4315   1.9638 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     50 H            3.1535  -3.2998  -2.2533 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     51 H            3.3220  -4.9063  -1.5005 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     52 H            0.8916  -2.3376  -1.0426 H                          1 **** 0.0 # 28 Amide Hydrogen
+     53 H           -1.2552  -5.0333  -2.5667 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     54 H           -3.6845  -4.7793  -2.8430 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     55 H           -1.0063  -1.0598  -0.8053 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     56 H           -7.1230  -1.0042  -3.0317 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     57 H           -9.0561   0.5130  -2.8392 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     58 H           -9.1786   2.1471  -0.9727 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     59 H           -7.3648   2.2449   0.7007 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     60 H            0.2203   6.4456   5.0979 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     61 H            2.0352   8.5912   2.7897 H                          1 **** 0.0 # 28 Amide Hydrogen
+     62 H            0.8566   8.5316   3.9882 H                          1 **** 0.0 # 28 Amide Hydrogen
+@<TRIPOS>BOND
+      1   1    2 1
+     46   1   41 1
+     47   1   42 1
+     48   1   43 1
+      2   2    3 1
+     44   2   39 2
+      3   3    4 2
+     49   3   44 1
+      4   4    5 1
+     41   4   37 1
+      5   5    6 1
+     50   5   45 1
+      6   6    7 1
+     11   6   11 2
+      7   7    8 2
+     51   7   46 1
+      8   8    9 1
+     52   8   47 1
+      9   9   10 2
+     12   9   12 1
+     10  10   11 1
+     53  10   48 1
+     54  11   49 1
+     13  12   13 1
+     40  12   36 2
+     14  13   14 2
+     15  14   15 1
+     16  15   16 1
+     39  15   36 1
+     17  16   17 1
+     55  16   50 1
+     56  16   51 1
+     18  17   18 2
+     19  17   19 1
+     20  19   20 1
+     57  19   52 1
+     21  20   21 1
+     30  20   28 2
+     22  21   22 2
+     58  21   53 1
+     23  22   23 1
+     59  22   54 1
+     24  23   24 1
+     28  23   27 2
+     25  24   25 2
+     26  25   26 1
+     31  25   29 1
+     27  26   27 1
+     29  27   28 1
+     60  28   55 1
+     32  29   30 1
+     37  29   34 2
+     33  30   31 2
+     61  30   56 1
+     34  31   32 1
+     62  31   57 1
+     35  32   33 2
+     63  32   58 1
+     36  33   34 1
+     64  33   59 1
+     38  34   35 1
+     42  37   38 2
+     43  38   39 1
+     65  38   60 1
+     45  39   40 1
+     66  40   61 1
+     67  40   62 1
+@<TRIPOS>SUBSTRUCTURE
+     1 UNKNOWN     1
+@<TRIPOS>MOLECULE
+NCc1ccc(Nc2ccc(cc2)c3nnn(CC(=O)Nc4ccc5nc(oc5c4)c6ccccc6Cl)n3)nc1
+	62	67	1	0	0
+SMALL
+GAST_HUCK
+# @<LIGEN>YAML
+# smiles: NCc1ccc(Nc2ccc(cc2)c3nnn(CC(=O)Nc4ccc5nc(oc5c4)c6ccccc6Cl)n3)nc1
+# force_field: mmff94
+# rings:
+#   - - 12
+#     - 11
+#     - 10
+#     - 9
+#     - 8
+#     - 7
+#   - - 28
+#     - 27
+#     - 26
+#     - 25
+#     - 24
+#   - - 29
+#     - 28
+#     - 24
+#     - 23
+#     - 22
+#     - 21
+#   - - 35
+#     - 34
+#     - 33
+#     - 32
+#     - 31
+#     - 30
+#   - - 37
+#     - 16
+#     - 15
+#     - 14
+#     - 13
+#   - - 39
+#     - 38
+#     - 5
+#     - 4
+#     - 3
+#     - 2
+# minimization:
+#   method: bfgs
+#   maxiter: 10000
+#   ftol: 1e-06
+#   gtol: 1e-14
+#   gmax: 1e-14
+#   mu: 0.0001
+#   eta: 0.9
+# 
+@<TRIPOS>ATOM
+      1 N           -1.0834   0.5980  12.8385 N.3                        1 **** 0.0 # 8 Amine Nitrogen
+      2 C           -1.5326  -0.3925  11.8658 C.3                        1 **** 0.0 # 1 Alkyl Carbon
+      3 C           -1.8490   0.2230  10.5330 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+      4 C           -0.9558   1.0693   9.8765 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+      5 C           -1.2894   1.5950   8.6294 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+      6 C           -2.5028   1.2481   8.0444 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+      7 N           -2.9025   1.7605   6.8037 N.pl3                      1 **** 0.0 # 40 N-C=C or N-C=N
+      8 C           -2.1681   1.8986   5.6077 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+      9 C           -0.9317   1.2858   5.3843 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     10 C           -0.2495   1.4633   4.1736 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     11 C           -0.7901   2.2590   3.1549 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     12 C           -2.0316   2.8684   3.3733 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     13 C           -2.7106   2.6864   4.5841 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     14 C           -0.0801   2.4502   1.8962 C.ar                       1 **** 0.0 # 64 5-Arom Beta N,O,S
+     15 N           -0.5808   3.2099   0.8594 N.ar                       1 **** 0.0 # 66 5-Arom Beta N,O,S
+     16 N            0.3166   3.1785  -0.1141 N.ar                       1 **** 0.0 # 65 5-Arom Alpha N,O,S
+     17 N            1.3030   2.3962   0.3613 N.3                        1 **** 0.0 # 39 Pyrrole Nitrogen
+     18 C            2.4897   2.1371  -0.4173 C.3                        1 **** 0.0 # 1 Alkyl Carbon
+     19 C            2.2216   1.1742  -1.5526 C.2                        1 **** 0.0 # 3 Carbonyl Carbon
+     20 O            2.9449   0.1919  -1.7065 O.2                        1 **** 0.0 # 7 Carbonyl Oxygen
+     21 N            1.1875   1.5531  -2.3996 N.am                       1 **** 0.0 # 10 Amide Nitrogen
+     22 C            0.7503   0.9000  -3.5755 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     23 C           -0.3776   1.4504  -4.2147 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     24 C           -0.9063   0.8991  -5.3947 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     25 C           -0.2768  -0.2279  -5.9302 C.ar                       1 **** 0.0 # 64 5-Arom Beta N,O,S
+     26 N           -0.5551  -0.9740  -7.0443 N.ar                       1 **** 0.0 # 66 5-Arom Beta N,O,S
+     27 C            0.3789  -1.9086  -7.0504 C.ar                       1 **** 0.0 # 63 5-Arom Alpha N,O,S
+     28 O            1.2563  -1.8282  -5.9917 O.3                        1 **** 0.0 # 59 Furan Oxygen
+     29 C            0.8282  -0.7453  -5.2813 C.ar                       1 **** 0.0 # 63 5-Arom Alpha N,O,S
+     30 C            1.3831  -0.2299  -4.1126 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     31 C            0.6108  -3.0099  -7.9877 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     32 C            1.2939  -4.1612  -7.5434 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     33 C            1.5320  -5.2439  -8.3946 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     34 C            1.0918  -5.1994  -9.7118 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     35 C            0.4155  -4.0725 -10.1753 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     36 C            0.1748  -2.9827  -9.3254 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     37 Cl          -0.6435  -1.6270 -10.0337 Cl                         1 **** 0.0 # 12 Chlorine
+     38 N            1.1245   1.9239   1.6062 N.ar                       1 **** 0.0 # 65 5-Arom Alpha N,O,S
+     39 N           -3.3889   0.4464   8.6678 N.ar                       1 **** 0.0 # 38 Pyridine Nitrogen
+     40 C           -3.0421  -0.0547   9.8776 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     41 H           -0.9775   0.1515  13.7476 H                          1 **** 0.0 # 23 Amine Hydrogen
+     42 H           -1.8068   1.3079  12.9494 H                          1 **** 0.0 # 23 Amine Hydrogen
+     43 H           -0.7546  -1.1520  11.7301 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     44 H           -2.4159  -0.9007  12.2693 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     45 H           -0.0077   1.3337  10.3392 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     46 H           -0.6162   2.2880   8.1364 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     47 H           -3.8357   1.3957   6.6268 H                          1 **** 0.0 # 28 Amide Hydrogen
+     48 H           -0.4866   0.6386   6.1352 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     49 H            0.7081   0.9648   4.0330 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     50 H           -2.4850   3.4946   2.6074 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     51 H           -3.6690   3.1802   4.7310 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     52 H            2.8560   3.0886  -0.8153 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     53 H            3.2500   1.7179   0.2499 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     54 H            0.6272   2.3569  -2.1145 H                          1 **** 0.0 # 28 Amide Hydrogen
+     55 H           -0.8741   2.3263  -3.8000 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     56 H           -1.7761   1.3280  -5.8798 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     57 H            2.2547  -0.6995  -3.6793 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     58 H            1.6450  -4.2276  -6.5141 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     59 H            2.0597  -6.1198  -8.0242 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     60 H            1.2731  -6.0390 -10.3782 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     61 H            0.0743  -4.0457 -11.2079 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     62 H           -3.7875  -0.7123  10.3175 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+@<TRIPOS>BOND
+      1   1    2 1
+     46   1   41 1
+     47   1   42 1
+      2   2    3 1
+     48   2   43 1
+     49   2   44 1
+      3   3    4 1
+     45   3   40 2
+      4   4    5 2
+     50   4   45 1
+      5   5    6 1
+     51   5   46 1
+      6   6    7 1
+     43   6   39 2
+      7   7    8 1
+     52   7   47 1
+      8   8    9 1
+     13   8   13 2
+      9   9   10 2
+     53   9   48 1
+     10  10   11 1
+     54  10   49 1
+     11  11   12 2
+     14  11   14 1
+     12  12   13 1
+     55  12   50 1
+     56  13   51 1
+     15  14   15 1
+     42  14   38 2
+     16  15   16 2
+     17  16   17 1
+     18  17   18 1
+     41  17   38 1
+     19  18   19 1
+     57  18   52 1
+     58  18   53 1
+     20  19   20 2
+     21  19   21 1
+     22  21   22 1
+     59  21   54 1
+     23  22   23 1
+     32  22   30 2
+     24  23   24 2
+     60  23   55 1
+     25  24   25 1
+     61  24   56 1
+     26  25   26 1
+     30  25   29 2
+     27  26   27 2
+     28  27   28 1
+     33  27   31 1
+     29  28   29 1
+     31  29   30 1
+     62  30   57 1
+     34  31   32 1
+     39  31   36 2
+     35  32   33 2
+     63  32   58 1
+     36  33   34 1
+     64  33   59 1
+     37  34   35 2
+     65  34   60 1
+     38  35   36 1
+     66  35   61 1
+     40  36   37 1
+     44  39   40 1
+     67  40   62 1
+@<TRIPOS>SUBSTRUCTURE
+     1 UNKNOWN     1
+@<TRIPOS>MOLECULE
+Clc1ccccc1c2oc3cc(NC(=O)Cn4nnc(n4)c5ccc(Nc6ccc(Br)cn6)cc5)ccc3n2
+	57	62	1	0	0
+SMALL
+GAST_HUCK
+# @<LIGEN>YAML
+# smiles: Clc1ccccc1c2oc3cc(NC(=O)Cn4nnc(n4)c5ccc(Nc6ccc(Br)cn6)cc5)ccc3n2
+# force_field: mmff94
+# rings:
+#   - - 6
+#     - 5
+#     - 4
+#     - 3
+#     - 2
+#     - 1
+#   - - 20
+#     - 19
+#     - 18
+#     - 17
+#     - 16
+#   - - 32
+#     - 31
+#     - 29
+#     - 28
+#     - 27
+#     - 26
+#   - - 34
+#     - 33
+#     - 24
+#     - 23
+#     - 22
+#     - 21
+#   - - 37
+#     - 36
+#     - 35
+#     - 11
+#     - 10
+#     - 9
+#   - - 38
+#     - 37
+#     - 9
+#     - 8
+#     - 7
+# minimization:
+#   method: bfgs
+#   maxiter: 10000
+#   ftol: 1e-06
+#   gtol: 1e-14
+#   gmax: 1e-14
+#   mu: 0.0001
+#   eta: 0.9
+# 
+@<TRIPOS>ATOM
+      1 Cl           3.0828  -4.0729   0.5789 Cl                         1 **** 0.0 # 12 Chlorine
+      2 C            2.3957  -5.5859   1.0777 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+      3 C            3.2583  -6.4678   1.7452 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+      4 C            2.8177  -7.7299   2.1410 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+      5 C            1.5114  -8.1198   1.8707 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+      6 C            0.6471  -7.2434   1.2103 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+      7 C            1.0663  -5.9593   0.8094 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+      8 C            0.0878  -5.1167   0.1242 C.ar                       1 **** 0.0 # 63 5-Arom Alpha N,O,S
+      9 O            0.1637  -3.7630   0.3357 O.3                        1 **** 0.0 # 59 Furan Oxygen
+     10 C           -0.8755  -3.2539  -0.3847 C.ar                       1 **** 0.0 # 63 5-Arom Alpha N,O,S
+     11 C           -1.2295  -1.9161  -0.5237 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     12 C           -2.3513  -1.6479  -1.3262 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     13 N           -2.7091  -0.2878  -1.4644 N.am                       1 **** 0.0 # 10 Amide Nitrogen
+     14 C           -3.7153   0.2593  -2.2494 C.2                        1 **** 0.0 # 3 Carbonyl Carbon
+     15 O           -4.4968  -0.3759  -2.9548 O.2                        1 **** 0.0 # 7 Carbonyl Oxygen
+     16 C           -3.8738   1.7583  -2.1123 C.3                        1 **** 0.0 # 1 Alkyl Carbon
+     17 N           -2.6177   2.4534  -2.2631 N.3                        1 **** 0.0 # 39 Pyrrole Nitrogen
+     18 N           -2.3510   3.2414  -3.3127 N.ar                       1 **** 0.0 # 65 5-Arom Alpha N,O,S
+     19 N           -1.1330   3.7080  -3.0808 N.ar                       1 **** 0.0 # 66 5-Arom Beta N,O,S
+     20 C           -0.7175   3.1790  -1.8785 C.ar                       1 **** 0.0 # 64 5-Arom Beta N,O,S
+     21 N           -1.6458   2.3715  -1.3271 N.ar                       1 **** 0.0 # 65 5-Arom Alpha N,O,S
+     22 C            0.5856   3.4684  -1.2933 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     23 C            0.9473   2.9517  -0.0433 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     24 C            2.2035   3.2314   0.5105 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     25 C            3.1213   4.0518  -0.1530 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     26 N            4.4202   4.3042   0.3438 N.pl3                      1 **** 0.0 # 40 N-C=C or N-C=N
+     27 C            4.8485   4.3505   1.6932 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     28 C            6.2260   4.3840   1.9305 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     29 C            6.7064   4.4295   3.2400 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     30 C            5.7966   4.4374   4.2856 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     31 Br           6.3858   4.5007   6.0817 Br                         1 **** 0.0 # 13 Bromine
+     32 C            4.4483   4.3968   3.9791 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     33 N            3.9649   4.3511   2.7137 N.ar                       1 **** 0.0 # 38 Pyridine Nitrogen
+     34 C            2.7676   4.5388  -1.4194 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     35 C            1.5130   4.2625  -1.9784 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     36 C           -3.0512  -2.7027  -1.9342 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     37 C           -2.6590  -4.0445  -1.7673 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     38 C           -1.5419  -4.3132  -0.9713 C.ar                       1 **** 0.0 # 64 5-Arom Beta N,O,S
+     39 N           -0.9354  -5.4933  -0.6260 N.ar                       1 **** 0.0 # 66 5-Arom Beta N,O,S
+     40 H            4.2846  -6.1745   1.9556 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     41 H            3.4952  -8.4076   2.6548 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     42 H            1.1609  -9.1048   2.1705 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     43 H           -0.3730  -7.5684   1.0042 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     44 H           -0.6525  -1.1411  -0.0348 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     45 H           -2.1005   0.3773  -0.9808 H                          1 **** 0.0 # 28 Amide Hydrogen
+     46 H           -4.2811   1.9988  -1.1254 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     47 H           -4.5618   2.1267  -2.8802 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     48 H            0.2604   2.3217   0.5170 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     49 H            2.4552   2.7922   1.4727 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     50 H            4.8816   5.0433  -0.1752 H                          1 **** 0.0 # 28 Amide Hydrogen
+     51 H            6.9264   4.3572   1.1015 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     52 H            7.7760   4.4503   3.4256 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     53 H            3.6884   4.4000   4.7549 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     54 H            3.4655   5.1466  -1.9899 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     55 H            1.2742   4.6713  -2.9586 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     56 H           -3.9234  -2.5203  -2.5561 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     57 H           -3.2065  -4.8504  -2.2437 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+@<TRIPOS>BOND
+      1   1    2 1
+      2   2    3 1
+      7   2    7 2
+      3   3    4 2
+     45   3   40 1
+      4   4    5 1
+     46   4   41 1
+      5   5    6 2
+     47   5   42 1
+      6   6    7 1
+     48   6   43 1
+      8   7    8 1
+      9   8    9 1
+     44   8   39 2
+     10   9   10 1
+     11  10   11 1
+     42  10   38 2
+     12  11   12 2
+     49  11   44 1
+     13  12   13 1
+     39  12   36 1
+     14  13   14 1
+     50  13   45 1
+     15  14   15 2
+     16  14   16 1
+     17  16   17 1
+     51  16   46 1
+     52  16   47 1
+     18  17   18 1
+     22  17   21 1
+     19  18   19 2
+     20  19   20 1
+     21  20   21 2
+     23  20   22 1
+     24  22   23 1
+     38  22   35 2
+     25  23   24 2
+     53  23   48 1
+     26  24   25 1
+     54  24   49 1
+     27  25   26 1
+     36  25   34 2
+     28  26   27 1
+     55  26   50 1
+     29  27   28 1
+     35  27   33 2
+     30  28   29 2
+     56  28   51 1
+     31  29   30 1
+     57  29   52 1
+     32  30   31 1
+     33  30   32 2
+     34  32   33 1
+     58  32   53 1
+     37  34   35 1
+     59  34   54 1
+     60  35   55 1
+     40  36   37 2
+     61  36   56 1
+     41  37   38 1
+     62  37   57 1
+     43  38   39 1
+@<TRIPOS>SUBSTRUCTURE
+     1 UNKNOWN     1
+@<TRIPOS>MOLECULE
+Nc1ccnc(Nc2ccc(cc2)c3nnn(CC(=O)Nc4ccc5nc(oc5c4)c6ccccc6Cl)n3)c1
+	59	64	1	0	0
+SMALL
+GAST_HUCK
+# @<LIGEN>YAML
+# smiles: Nc1ccnc(Nc2ccc(cc2)c3nnn(CC(=O)Nc4ccc5nc(oc5c4)c6ccccc6Cl)n3)c1
+# force_field: mmff94
+# rings:
+#   - - 12
+#     - 11
+#     - 10
+#     - 9
+#     - 8
+#     - 7
+#   - - 28
+#     - 27
+#     - 26
+#     - 25
+#     - 24
+#   - - 29
+#     - 28
+#     - 24
+#     - 23
+#     - 22
+#     - 21
+#   - - 35
+#     - 34
+#     - 33
+#     - 32
+#     - 31
+#     - 30
+#   - - 37
+#     - 16
+#     - 15
+#     - 14
+#     - 13
+#   - - 38
+#     - 5
+#     - 4
+#     - 3
+#     - 2
+#     - 1
+# minimization:
+#   method: bfgs
+#   maxiter: 10000
+#   ftol: 1e-06
+#   gtol: 1e-14
+#   gmax: 1e-14
+#   mu: 0.0001
+#   eta: 0.9
+# 
+@<TRIPOS>ATOM
+      1 N           -5.1586   1.1152  12.1117 N.pl3                      1 **** 0.0 # 40 N-C=C or N-C=N
+      2 C           -4.4448   0.5744  11.0342 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+      3 C           -3.6355  -0.5386  11.2133 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+      4 C           -2.8588  -0.9634  10.1509 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+      5 N           -2.8205  -0.3470   8.9512 N.ar                       1 **** 0.0 # 38 Pyridine Nitrogen
+      6 C           -3.5524   0.7734   8.7936 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+      7 N           -3.5371   1.5016   7.5764 N.pl3                      1 **** 0.0 # 40 N-C=C or N-C=N
+      8 C           -2.9941   1.1114   6.3310 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+      9 C           -2.9318  -0.2229   5.9170 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     10 C           -2.4499  -0.5673   4.6470 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     11 C           -2.0382   0.4217   3.7463 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     12 C           -2.1329   1.7619   4.1412 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     13 C           -2.6163   2.1004   5.4116 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     14 C           -1.5332   0.0615   2.4269 C.ar                       1 **** 0.0 # 64 5-Arom Beta N,O,S
+     15 N           -1.4573  -1.2411   1.9837 N.ar                       1 **** 0.0 # 66 5-Arom Beta N,O,S
+     16 N           -0.9379  -1.2072   0.7655 N.ar                       1 **** 0.0 # 65 5-Arom Alpha N,O,S
+     17 N           -0.7617   0.1001   0.5082 N.3                        1 **** 0.0 # 39 Pyrrole Nitrogen
+     18 C           -0.0745   0.5496  -0.6845 C.3                        1 **** 0.0 # 1 Alkyl Carbon
+     19 C           -0.9677   0.4776  -1.8930 C.2                        1 **** 0.0 # 3 Carbonyl Carbon
+     20 O           -2.1964   0.5623  -1.8135 O.2                        1 **** 0.0 # 7 Carbonyl Oxygen
+     21 N           -0.4424   0.2832  -3.1457 N.am                       1 **** 0.0 # 10 Amide Nitrogen
+     22 C            0.8654   0.3285  -3.6701 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     23 C            1.9608   0.9203  -3.0215 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     24 C            3.2447   0.9375  -3.6017 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     25 C            3.4143   0.3466  -4.8570 C.ar                       1 **** 0.0 # 64 5-Arom Beta N,O,S
+     26 N            4.5205   0.2084  -5.6532 N.ar                       1 **** 0.0 # 66 5-Arom Beta N,O,S
+     27 C            4.0699  -0.4472  -6.7112 C.ar                       1 **** 0.0 # 63 5-Arom Alpha N,O,S
+     28 O            2.7218  -0.7038  -6.6825 O.3                        1 **** 0.0 # 59 Furan Oxygen
+     29 C            2.3129  -0.2051  -5.4821 C.ar                       1 **** 0.0 # 63 5-Arom Alpha N,O,S
+     30 C            1.0285  -0.2316  -4.9493 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     31 C            4.8012  -0.8395  -7.9143 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     32 C            5.8777  -0.0235  -8.3142 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     33 C            6.6342  -0.3200  -9.4505 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     34 C            6.3311  -1.4444 -10.2093 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     35 C            5.2767  -2.2726  -9.8273 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     36 C            4.5170  -1.9816  -8.6849 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     37 Cl           3.2769  -3.1240  -8.2760 Cl                         1 **** 0.0 # 12 Chlorine
+     38 N           -1.0604   0.9389   1.5212 N.ar                       1 **** 0.0 # 65 5-Arom Alpha N,O,S
+     39 C           -4.3534   1.2664   9.8270 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     40 H           -5.4254   0.4322  12.8148 H                          1 **** 0.0 # 28 Amide Hydrogen
+     41 H           -5.9409   1.7017  11.8358 H                          1 **** 0.0 # 28 Amide Hydrogen
+     42 H           -3.6026  -1.0711  12.1562 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     43 H           -2.2162  -1.8342  10.2414 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     44 H           -3.3357   2.4738   7.7824 H                          1 **** 0.0 # 28 Amide Hydrogen
+     45 H           -3.2628  -1.0194   6.5789 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     46 H           -2.4093  -1.6197   4.3728 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     47 H           -1.8365   2.5571   3.4599 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     48 H           -2.6894   3.1526   5.6739 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     49 H            0.7957  -0.1035  -0.7919 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     50 H            0.2406   1.5847  -0.5240 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     51 H           -1.1836   0.0736  -3.8107 H                          1 **** 0.0 # 28 Amide Hydrogen
+     52 H            1.8607   1.4387  -2.0753 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     53 H            4.0825   1.4112  -3.1008 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     54 H            0.2162  -0.6896  -5.5011 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     55 H            6.1329   0.8610  -7.7302 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     56 H            7.4589   0.3278  -9.7385 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     57 H            6.9164  -1.6802 -11.0949 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     58 H            5.0517  -3.1540 -10.4242 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     59 H           -4.9197   2.1794   9.6788 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+@<TRIPOS>BOND
+      1   1    2 1
+     45   1   40 1
+     46   1   41 1
+      2   2    3 1
+     44   2   39 2
+      3   3    4 2
+     47   3   42 1
+      4   4    5 1
+     48   4   43 1
+      5   5    6 2
+      6   6    7 1
+     43   6   39 1
+      7   7    8 1
+     49   7   44 1
+      8   8    9 1
+     13   8   13 2
+      9   9   10 2
+     50   9   45 1
+     10  10   11 1
+     51  10   46 1
+     11  11   12 2
+     14  11   14 1
+     12  12   13 1
+     52  12   47 1
+     53  13   48 1
+     15  14   15 1
+     42  14   38 2
+     16  15   16 2
+     17  16   17 1
+     18  17   18 1
+     41  17   38 1
+     19  18   19 1
+     54  18   49 1
+     55  18   50 1
+     20  19   20 2
+     21  19   21 1
+     22  21   22 1
+     56  21   51 1
+     23  22   23 1
+     32  22   30 2
+     24  23   24 2
+     57  23   52 1
+     25  24   25 1
+     58  24   53 1
+     26  25   26 1
+     30  25   29 2
+     27  26   27 2
+     28  27   28 1
+     33  27   31 1
+     29  28   29 1
+     31  29   30 1
+     59  30   54 1
+     34  31   32 1
+     39  31   36 2
+     35  32   33 2
+     60  32   55 1
+     36  33   34 1
+     61  33   56 1
+     37  34   35 2
+     62  34   57 1
+     38  35   36 1
+     63  35   58 1
+     40  36   37 1
+     64  39   59 1
+@<TRIPOS>SUBSTRUCTURE
+     1 UNKNOWN     1
+@<TRIPOS>MOLECULE
+[O-][N+](=O)c1ccnc(Nc2ccc(cc2)c3nnn(CC(=O)Nc4ccc5nc(oc5c4)c6ccccc6Cl)n3)c1
+	59	64	1	0	0
+SMALL
+GAST_HUCK
+# @<LIGEN>YAML
+# smiles: '[O-][N+](=O)c1ccnc(Nc2ccc(cc2)c3nnn(CC(=O)Nc4ccc5nc(oc5c4)c6ccccc6Cl)n3)c1'
+# force_field: mmff94
+# rings:
+#   - - 14
+#     - 13
+#     - 12
+#     - 11
+#     - 10
+#     - 9
+#   - - 30
+#     - 29
+#     - 28
+#     - 27
+#     - 26
+#   - - 31
+#     - 30
+#     - 26
+#     - 25
+#     - 24
+#     - 23
+#   - - 37
+#     - 36
+#     - 35
+#     - 34
+#     - 33
+#     - 32
+#   - - 39
+#     - 18
+#     - 17
+#     - 16
+#     - 15
+#   - - 40
+#     - 7
+#     - 6
+#     - 5
+#     - 4
+#     - 3
+# minimization:
+#   method: bfgs
+#   maxiter: 10000
+#   ftol: 1e-06
+#   gtol: 1e-14
+#   gmax: 1e-14
+#   mu: 0.0001
+#   eta: 0.9
+# 
+@<TRIPOS>ATOM
+      1 O            3.8307 -11.2943  -2.5043 O.3                        1 **** 0.0 # 6 Divalent Oxygen
+      2 N            2.4452 -11.1518  -2.3492 N.2                        1 **** 0.0 # 45 Nitro Nitrogen
+      3 O            1.8311 -12.2202  -2.3872 O.co2                      1 **** 0.0 # 32 Carboxylate Oxygen
+      4 C            1.8098  -9.8741  -2.1614 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+      5 C            0.4276  -9.8169  -2.0531 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+      6 C           -0.1231  -8.5664  -1.8882 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+      7 N            0.6055  -7.4286  -1.8269 N.ar                       1 **** 0.0 # 38 Pyridine Nitrogen
+      8 C            1.9500  -7.5027  -1.9256 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+      9 N            2.7584  -6.3404  -1.8676 N.pl3                      1 **** 0.0 # 40 N-C=C or N-C=N
+     10 C            2.3497  -4.9879  -1.9331 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     11 C            3.1706  -3.9987  -1.3722 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     12 C            2.8385  -2.6405  -1.4656 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     13 C            1.6844  -2.2338  -2.1459 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     14 C            0.8810  -3.2155  -2.7381 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     15 C            1.2186  -4.5719  -2.6423 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     16 C            1.3348  -0.8217  -2.2395 C.ar                       1 **** 0.0 # 64 5-Arom Beta N,O,S
+     17 N            2.0800   0.1780  -1.6490 N.ar                       1 **** 0.0 # 66 5-Arom Beta N,O,S
+     18 N            1.4854   1.3267  -1.9352 N.ar                       1 **** 0.0 # 65 5-Arom Alpha N,O,S
+     19 N            0.4107   0.9772  -2.6655 N.3                        1 **** 0.0 # 39 Pyrrole Nitrogen
+     20 C           -0.4933   1.9733  -3.1869 C.3                        1 **** 0.0 # 1 Alkyl Carbon
+     21 C           -1.3949   2.5358  -2.1103 C.2                        1 **** 0.0 # 3 Carbonyl Carbon
+     22 O           -2.6108   2.5713  -2.2881 O.2                        1 **** 0.0 # 7 Carbonyl Oxygen
+     23 N           -0.7248   3.0577  -1.0108 N.am                       1 **** 0.0 # 10 Amide Nitrogen
+     24 C           -1.2795   3.7062   0.1174 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     25 C           -2.6490   3.9821   0.2634 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     26 C           -3.1554   4.6388   1.4013 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     27 C           -2.2558   5.0192   2.4007 C.ar                       1 **** 0.0 # 64 5-Arom Beta N,O,S
+     28 N           -2.4458   5.6586   3.5984 N.ar                       1 **** 0.0 # 66 5-Arom Beta N,O,S
+     29 C           -1.2249   5.7683   4.0967 C.ar                       1 **** 0.0 # 63 5-Arom Alpha N,O,S
+     30 O           -0.2462   5.1971   3.3227 O.3                        1 **** 0.0 # 59 Furan Oxygen
+     31 C           -0.9145   4.7332   2.2288 C.ar                       1 **** 0.0 # 63 5-Arom Alpha N,O,S
+     32 C           -0.3739   4.0868   1.1224 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     33 C           -0.8185   6.3330   5.3817 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     34 C           -1.7354   6.2453   6.4478 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     35 C           -1.4350   6.7585   7.7117 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     36 C           -0.2094   7.3754   7.9344 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     37 C            0.7100   7.4827   6.8918 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     38 C            0.4114   6.9734   5.6198 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     39 Cl           1.6080   7.2293   4.3899 Cl                         1 **** 0.0 # 12 Chlorine
+     40 N            0.2676  -0.3371  -2.9014 N.ar                       1 **** 0.0 # 65 5-Arom Alpha N,O,S
+     41 C            2.5925  -8.7240  -2.0997 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     42 H           -0.1981 -10.7011  -2.0976 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     43 H           -1.1975  -8.4316  -1.7974 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     44 H            3.4858  -6.4723  -1.1731 H                          1 **** 0.0 # 28 Amide Hydrogen
+     45 H            4.0826  -4.2728  -0.8474 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     46 H            3.4967  -1.9063  -1.0054 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     47 H           -0.0182  -2.9379  -3.2850 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     48 H            0.5784  -5.2991  -3.1353 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     49 H            0.0990   2.7778  -3.6340 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     50 H           -1.1000   1.5060  -3.9694 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     51 H            0.2843   2.9092  -0.9719 H                          1 **** 0.0 # 28 Amide Hydrogen
+     52 H           -3.3695   3.6991  -0.4990 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     53 H           -4.2152   4.8460   1.5016 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     54 H            0.6911   3.8999   1.0618 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     55 H           -2.7030   5.7674   6.2915 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     56 H           -2.1602   6.6757   8.5179 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     57 H            0.0301   7.7763   8.9160 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     58 H            1.6637   7.9729   7.0748 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     59 H            3.6712  -8.7592  -2.1994 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+@<TRIPOS>BOND
+      1   1    2 1
+      2   2    3 2
+      3   2    4 1
+      4   4    5 1
+     46   4   41 2
+      5   5    6 2
+     47   5   42 1
+      6   6    7 1
+     48   6   43 1
+      7   7    8 2
+      8   8    9 1
+     45   8   41 1
+      9   9   10 1
+     49   9   44 1
+     10  10   11 1
+     15  10   15 2
+     11  11   12 2
+     50  11   45 1
+     12  12   13 1
+     51  12   46 1
+     13  13   14 2
+     16  13   16 1
+     14  14   15 1
+     52  14   47 1
+     53  15   48 1
+     17  16   17 1
+     44  16   40 2
+     18  17   18 2
+     19  18   19 1
+     20  19   20 1
+     43  19   40 1
+     21  20   21 1
+     54  20   49 1
+     55  20   50 1
+     22  21   22 2
+     23  21   23 1
+     24  23   24 1
+     56  23   51 1
+     25  24   25 1
+     34  24   32 2
+     26  25   26 2
+     57  25   52 1
+     27  26   27 1
+     58  26   53 1
+     28  27   28 1
+     32  27   31 2
+     29  28   29 2
+     30  29   30 1
+     35  29   33 1
+     31  30   31 1
+     33  31   32 1
+     59  32   54 1
+     36  33   34 1
+     41  33   38 2
+     37  34   35 2
+     60  34   55 1
+     38  35   36 1
+     61  35   56 1
+     39  36   37 2
+     62  36   57 1
+     40  37   38 1
+     63  37   58 1
+     42  38   39 1
+     64  41   59 1
+@<TRIPOS>SUBSTRUCTURE
+     1 UNKNOWN     1
+@<TRIPOS>MOLECULE
+OC(=O)c1ccc(Nc2ccc(cc2)c3nnn(CC(=O)Nc4ccc5nc(oc5c4)c6ccccc6Cl)n3)nc1
+	60	65	1	0	0
+SMALL
+GAST_HUCK
+# @<LIGEN>YAML
+# smiles: OC(=O)c1ccc(Nc2ccc(cc2)c3nnn(CC(=O)Nc4ccc5nc(oc5c4)c6ccccc6Cl)n3)nc1
+# force_field: mmff94
+# rings:
+#   - - 13
+#     - 12
+#     - 11
+#     - 10
+#     - 9
+#     - 8
+#   - - 29
+#     - 28
+#     - 27
+#     - 26
+#     - 25
+#   - - 30
+#     - 29
+#     - 25
+#     - 24
+#     - 23
+#     - 22
+#   - - 36
+#     - 35
+#     - 34
+#     - 33
+#     - 32
+#     - 31
+#   - - 38
+#     - 17
+#     - 16
+#     - 15
+#     - 14
+#   - - 40
+#     - 39
+#     - 6
+#     - 5
+#     - 4
+#     - 3
+# minimization:
+#   method: bfgs
+#   maxiter: 10000
+#   ftol: 1e-06
+#   gtol: 1e-14
+#   gmax: 1e-14
+#   mu: 0.0001
+#   eta: 0.9
+# 
+@<TRIPOS>ATOM
+      1 O           -4.0747   2.4860  10.4398 O.3                        1 **** 0.0 # 6 Divalent Oxygen
+      2 C           -3.2015   3.5047  10.5098 C.2                        1 **** 0.0 # 3 Carbonyl Carbon
+      3 O           -3.1952   4.2737  11.4528 O.2                        1 **** 0.0 # 7 Carbonyl Oxygen
+      4 C           -2.2958   3.5649   9.3486 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+      5 C           -1.3257   4.5606   9.2787 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+      6 C           -0.4731   4.6060   8.1742 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+      7 C           -0.6036   3.6596   7.1546 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+      8 N            0.2908   3.7521   6.0607 N.pl3                      1 **** 0.0 # 40 N-C=C or N-C=N
+      9 C            0.5170   2.8139   5.0279 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     10 C            0.3486   1.4369   5.2029 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     11 C            0.6492   0.5324   4.1758 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     12 C            1.1541   0.9827   2.9503 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     13 C            1.3584   2.3573   2.7804 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     14 C            1.0542   3.2572   3.8105 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     15 C            1.4730   0.0462   1.8797 C.ar                       1 **** 0.0 # 64 5-Arom Beta N,O,S
+     16 N            1.9746   0.4453   0.6581 N.ar                       1 **** 0.0 # 66 5-Arom Beta N,O,S
+     17 N            2.1593  -0.6501  -0.0632 N.ar                       1 **** 0.0 # 65 5-Arom Alpha N,O,S
+     18 N            1.7491  -1.6527   0.7351 N.3                        1 **** 0.0 # 39 Pyrrole Nitrogen
+     19 C            1.8191  -3.0271   0.3020 C.3                        1 **** 0.0 # 1 Alkyl Carbon
+     20 C            0.7498  -3.3530  -0.7173 C.2                        1 **** 0.0 # 3 Carbonyl Carbon
+     21 O            0.0228  -4.3303  -0.5505 O.2                        1 **** 0.0 # 7 Carbonyl Oxygen
+     22 N            0.7479  -2.5271  -1.8345 N.am                       1 **** 0.0 # 10 Amide Nitrogen
+     23 C           -0.0796  -2.6140  -2.9783 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     24 C           -1.0200  -3.6365  -3.1847 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     25 C           -1.8180  -3.6864  -4.3438 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     26 C           -1.6543  -2.6834  -5.3034 C.ar                       1 **** 0.0 # 64 5-Arom Beta N,O,S
+     27 N           -2.2743  -2.4676  -6.5071 N.ar                       1 **** 0.0 # 66 5-Arom Beta N,O,S
+     28 C           -1.6831  -1.3814  -6.9779 C.ar                       1 **** 0.0 # 63 5-Arom Alpha N,O,S
+     29 O           -0.7444  -0.8399  -6.1360 O.3                        1 **** 0.0 # 59 Furan Oxygen
+     30 C           -0.7209  -1.6908  -5.0715 C.ar                       1 **** 0.0 # 63 5-Arom Alpha N,O,S
+     31 C            0.0855  -1.6044  -3.9416 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     32 C           -1.9676  -0.6584  -8.2156 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     33 C           -3.2914  -0.6911  -8.6964 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     34 C           -3.6567  -0.0284  -9.8706 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     35 C           -2.7015   0.6785 -10.5917 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     36 C           -1.3827   0.7159 -10.1409 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     37 C           -1.0100   0.0488  -8.9650 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     38 Cl           0.6724   0.1139  -8.5454 Cl                         1 **** 0.0 # 12 Chlorine
+     39 N            1.3269  -1.2898   1.9575 N.ar                       1 **** 0.0 # 65 5-Arom Alpha N,O,S
+     40 N           -1.5393   2.6895   7.2226 N.ar                       1 **** 0.0 # 38 Pyridine Nitrogen
+     41 C           -2.3614   2.6593   8.3035 C.ar                       1 **** 0.0 # 37 Aromatic Carbon
+     42 H           -4.6038   2.5643  11.2624 H                          1 **** 0.0 # 24 Carboxyl Hydrogen
+     43 H           -1.2240   5.2933  10.0757 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     44 H            0.2993   5.3670   8.1221 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     45 H            0.2864   4.7025   5.7073 H                          1 **** 0.0 # 28 Amide Hydrogen
+     46 H           -0.0176   1.0421   6.1472 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     47 H            0.4897  -0.5298   4.3514 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     48 H            1.7619   2.7455   1.8472 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     49 H            1.2418   4.3152   3.6454 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     50 H            1.6982  -3.6682   1.1813 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     51 H            2.8099  -3.2035  -0.1286 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     52 H            1.3696  -1.7179  -1.8106 H                          1 **** 0.0 # 28 Amide Hydrogen
+     53 H           -1.1662  -4.4287  -2.4556 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     54 H           -2.5410  -4.4813  -4.4909 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     55 H            0.7950  -0.7935  -3.8343 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     56 H           -4.0536  -1.2427  -8.1456 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     57 H           -4.6864  -0.0677 -10.2183 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     58 H           -2.9800   1.1966 -11.5062 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     59 H           -0.6413   1.2664 -10.7161 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+     60 H           -3.0908   1.8541   8.2880 H                          1 **** 0.0 # 5 Nonpolar Hydrogen
+@<TRIPOS>BOND
+      1   1    2 1
+     47   1   42 1
+      2   2    3 2
+      3   2    4 1
+      4   4    5 1
+     46   4   41 2
+      5   5    6 2
+     48   5   43 1
+      6   6    7 1
+     49   6   44 1
+      7   7    8 1
+     44   7   40 2
+      8   8    9 1
+     50   8   45 1
+      9   9   10 1
+     14   9   14 2
+     10  10   11 2
+     51  10   46 1
+     11  11   12 1
+     52  11   47 1
+     12  12   13 2
+     15  12   15 1
+     13  13   14 1
+     53  13   48 1
+     54  14   49 1
+     16  15   16 1
+     43  15   39 2
+     17  16   17 2
+     18  17   18 1
+     19  18   19 1
+     42  18   39 1
+     20  19   20 1
+     55  19   50 1
+     56  19   51 1
+     21  20   21 2
+     22  20   22 1
+     23  22   23 1
+     57  22   52 1
+     24  23   24 1
+     33  23   31 2
+     25  24   25 2
+     58  24   53 1
+     26  25   26 1
+     59  25   54 1
+     27  26   27 1
+     31  26   30 2
+     28  27   28 2
+     29  28   29 1
+     34  28   32 1
+     30  29   30 1
+     32  30   31 1
+     60  31   55 1
+     35  32   33 1
+     40  32   37 2
+     36  33   34 2
+     61  33   56 1
+     37  34   35 1
+     62  34   57 1
+     38  35   36 2
+     63  35   58 1
+     39  36   37 1
+     64  36   59 1
+     41  37   38 1
+     45  40   41 1
+     65  41   60 1
+@<TRIPOS>SUBSTRUCTURE
+     1 UNKNOWN     1

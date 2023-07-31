@@ -17,6 +17,10 @@ from ligate.wrapper.gmx import GMX  # noqa
 from ligate.wrapper.stage import Stage  # noqa
 
 
+def get_data(path: str) -> Path:
+    return (Path(PYTEST_DIR) / "data").absolute() / path
+
+
 # Pytest configuration
 def pytest_collection_modifyitems(config, items):
     """

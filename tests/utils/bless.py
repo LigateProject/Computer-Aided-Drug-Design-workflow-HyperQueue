@@ -1,6 +1,7 @@
 import enum
 import os
 import shutil
+import subprocess
 from pathlib import Path
 
 from ligate.utils.paths import GenericPath
@@ -48,3 +49,7 @@ def bless_file(expected: GenericPath, actual: GenericPath, mode: BlessMode):
         print(f"Bless: overwriting file {expected} with contents of {actual}")
     elif mode == BlessMode.Create:
         print(f"Bless: creating file {expected} with contents of {actual}")
+    try:
+        subprocess.run(["git", "add", str(expected)])
+    except:
+        pass

@@ -6,8 +6,8 @@ from ligate.utils.paths import GenericPath
 from .bless import BlessMode, bless_file, get_bless_mode
 
 
-def check_files_are_equal(expected: GenericPath, actual: GenericPath):
-    bless_mode = get_bless_mode()
+def check_files_are_equal(expected: GenericPath, actual: GenericPath, bless=True):
+    bless_mode = get_bless_mode() if bless else BlessMode.NoBless
 
     try:
         expected_file = open(expected)
@@ -17,7 +17,7 @@ def check_files_are_equal(expected: GenericPath, actual: GenericPath):
             return
 
         raise Exception(
-            "Expected file `expected` not found. Run test again with BLESS=create to "
+            f"Expected file `{expected}` not found. Run test again with BLESS=create to "
             "create it."
         )
 
@@ -38,7 +38,8 @@ def check_files_are_equal(expected: GenericPath, actual: GenericPath):
                 tofile=str(actual),
             ):
                 error += f"{line}\n"
-            error += "Run test again with BLESS=overwrite to bless the test."
+            if bless:
+                error += "Run test again with BLESS=overwrite to bless the test."
             raise Exception(error)
 
 
