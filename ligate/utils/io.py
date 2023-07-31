@@ -2,7 +2,7 @@ import logging
 import os
 import shutil
 from pathlib import Path
-from typing import Callable, Iterable, List, Optional, Tuple
+from typing import Callable, Iterable, Iterator, List, Optional, Tuple
 
 from .paths import GenericPath, normalize_path
 
@@ -105,6 +105,25 @@ def replace_in_place(path: GenericPath, replacements: List[Tuple[str, str]]):
 
     with open(path, "w") as f:
         f.write(data)
+
+
+def split_file_by_lines(file: Path, max_lines: int) -> Iterator[str]:
+    """
+    Splits the input file into sections, so that each section has at most `max_lines` lines.
+    Returns a lazy iterator of these sections.
+    """
+    buffer = ""
+    line_count = 0
+    with open(file) as f:
+        for line in f:
+            buffer += line
+            line_count += 1
+            if line_count == max_lines:
+                yield buffer
+                buffer = ""
+                line_count = 0
+    if buffer:
+        yield buffer
 
 
 # File iteration

@@ -1,8 +1,9 @@
 import logging
+import multiprocessing
 import os
 import shutil
 from pathlib import Path
-from typing import List, Optional
+from typing import Optional
 
 import typer
 from hyperqueue import Job, LocalCluster
@@ -11,7 +12,13 @@ from hyperqueue.task.function import PythonEnv
 
 from ligate.ligen.common import LigenTaskContext
 from ligate.ligen.container import ensure_directory
-from ligate.ligen.expansion import ExpandConfig, SubmittedExpansion, expand_task, submit_expansion
+from ligate.ligen.expansion import (
+    ExpandConfig,
+    SubmittedExpansion,
+    create_configs_from_smi,
+    expand_task,
+    submit_expansion,
+)
 from ligate.ligen.virtual_screening import ScreeningConfig, submit_screening
 
 ROOT = Path(__file__).absolute().parent
@@ -30,20 +37,8 @@ def expand(path: Path, name: Optional[str] = None):
         name = path.stem
     expand_task(
         LigenTaskContext(workdir=Path(os.getcwd()), container_path=CONTAINER_PATH),
-        ExpandConfig(id=name, input_smi=path, output_smi=Path(f"{name}.expanded.smi"))
+        ExpandConfig(id=name, input_smi=path, output_smi=Path(f"{name}.expanded.smi")),
     )
-
-
-def gather_expand_configs() -> List[ExpandConfig]:
-    configs = []
-    for i in range(1):
-        config = ExpandConfig(
-            id=str(i),
-            input_smi=DATA_DIR / "ligands.smi",
-            output_smi=Path(f"expansion-{i}.smi")
-        )
-        configs.append(config)
-    return configs
 
 
 def create_screening_config(task: SubmittedExpansion) -> ScreeningConfig:
@@ -53,19 +48,30 @@ def create_screening_config(task: SubmittedExpansion) -> ScreeningConfig:
         output_path=Path(f"screening-{task.config.id}.csv"),
         input_protein_name="1CVU",
         ligand_expansion=task,
-        cores=8
+        cores=8,
     )
 
 
 @app.command()
-def workflow():
+def workflow(input_smi: Path, max_molecules: int = 100):
     shutil.rmtree("ligen-work", ignore_errors=True)
     workdir = ensure_directory("ligen-work")
+    inputs = ensure_directory(workdir / "expansion" / "inputs")
+    outputs = ensure_directory(workdir / "expansion" / "outputs")
 
-    ctx = LigenTaskContext(workdir=workdir, container_path=Path(CONTAINER_PATH).absolute())
+    ctx = LigenTaskContext(
+        workdir=workdir, container_path=Path(CONTAINER_PATH).absolute()
+    )
+
+    expansion_configs = create_configs_from_smi(
+        input_smi=input_smi,
+        workdir_inputs=inputs,
+        workdir_outputs=outputs,
+        max_molecules=max_molecules,
+    )
 
     with LocalCluster() as cluster:
-        cluster.start_worker(WorkerConfig(cores=1))
+        cluster.start_worker(WorkerConfig(cores=multiprocessing.cpu_count()))
 
         client = cluster.client(
             python_env=PythonEnv(
@@ -73,12 +79,14 @@ def workflow():
             )
         )
         job = Job(workdir, default_env=dict(HQ_PYLOG="DEBUG"))
-        expand_configs = gather_expand_configs()
         expand_tasks = []
-        for config in expand_configs:
+        for config in expansion_configs:
             expand_tasks.append(submit_expansion(ctx, config, job))
 
-        [submit_screening(ctx, create_screening_config(task), job) for task in expand_tasks]
+        [
+            submit_screening(ctx, create_screening_config(task), job)
+            for task in expand_tasks
+        ]
 
         submitted = client.submit(job)
 
