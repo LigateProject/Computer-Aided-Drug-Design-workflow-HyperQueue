@@ -62,8 +62,13 @@ class LigenContainerContext:
             )
             shutil.copy(path, host_path)
         self.mapped_files.append(
-            MappedFile(target_path=path, host_path=host_path, container_path=container_path,
-                       input=input))
+            MappedFile(
+                target_path=path,
+                host_path=host_path,
+                container_path=container_path,
+                input=input,
+            )
+        )
         return container_path
 
     def map_input(self, path: Path) -> Path:
@@ -85,10 +90,10 @@ class LigenContainerContext:
                 str(self.container),
                 "bash",
                 "-c",
-                command,
+                f"""mpirun -np 1 --bind-to none {command}""",
             ],
             env=env,
-            input=input
+            input=input,
         )
 
         # Copy output files from the tmpdir to their destination
@@ -96,9 +101,7 @@ class LigenContainerContext:
             if not file.input:
                 host_path = file.host_path
                 if not host_path.is_file():
-                    raise Exception(
-                        f"Output file `{file.host_path}` not found"
-                    )
+                    raise Exception(f"Output file `{file.host_path}` not found")
                 shutil.copy(host_path, file.target_path)
 
 
