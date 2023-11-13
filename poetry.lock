@@ -230,6 +230,17 @@ files = [
 colorama = {version = "*", markers = "platform_system == \"Windows\""}
 
 [[package]]
+name = "cloudpickle"
+version = "2.2.1"
+description = "Extended pickling support for Python objects"
+optional = false
+python-versions = ">=3.6"
+files = [
+    {file = "cloudpickle-2.2.1-py3-none-any.whl", hash = "sha256:61f594d1f4c295fa5cd9014ceb3a1fc4a70b0de1164b94fbc2d854ccba056f9f"},
+    {file = "cloudpickle-2.2.1.tar.gz", hash = "sha256:d89684b8de9e34a2a43b3460fbca07d09d6e25ce858df4d5a44240403b6178f5"},
+]
+
+[[package]]
 name = "colorama"
 version = "0.4.6"
 description = "Cross-platform colored terminal text."
@@ -541,6 +552,23 @@ tensorflow = ["graphviz", "pydot", "tensorflow"]
 testing = ["InquirerPy (==0.3.4)", "Jinja2", "Pillow", "gradio", "jedi", "numpy", "pytest", "pytest-cov", "pytest-env", "pytest-vcr", "pytest-xdist", "soundfile", "urllib3 (<2.0)"]
 torch = ["torch"]
 typing = ["types-PyYAML", "types-requests", "types-simplejson", "types-toml", "types-tqdm", "types-urllib3"]
+
+[[package]]
+name = "hyperqueue"
+version = "0.16.0"
+description = "HyperQueue Python API"
+optional = false
+python-versions = ">=3.6"
+files = [
+    {file = "hyperqueue-0.16.0-cp36-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:a3919d12fa470b8a556ed6bf43f7f74d6ccf1fd4ddf24fcbd7b05bffaeef1de7"},
+]
+
+[package.dependencies]
+cloudpickle = ">=2.0,<3"
+tqdm = ">=4.60,<5"
+
+[package.extras]
+all = ["pydot (>=1.4,<2)"]
 
 [[package]]
 name = "idna"
@@ -2306,4 +2334,4 @@ test = ["pytest (>=6.0.0)"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "4728d9768748d7e412958fc81b1efc018b04ac551144abb2cc6fade116a9011f"
+content-hash = "2c11f467edead27287029cbad8af738cf45585deda0e0c768b12d3127b6b6f5d"

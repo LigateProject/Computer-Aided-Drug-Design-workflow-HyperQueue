@@ -7,20 +7,37 @@ license = "MIT"
 
 [tool.poetry.dependencies]
 python = "^3.10"
-Jinja2 = "^3.1.1"
-numpy = "1.23"
+hyperqueue = "^0.17.0"
 click = "^8.1.3"
-rdkit = "2023.3.1"
-biopython = "^1.81"
-tmbed = { git = "https://github.com/BernhoferM/TMbed.git" }
-accelerate = "^0.20.3" # For tmbed
-openbabel-wheel = "^3.1.1"
-rmsd = "1.5.1"
-pdb-tools = "2.5.0"
-parmEd = { git = "https://github.com/Valdes-Tresanco-MS/ParmEd.git", branch = "v3.4" }
-gmx-mmpbsa = "1.5.6"
-acpype = "2022.7.21"
 typer = "0.4.1"
+Jinja2 = { version = "^3.1.1", optional = true }
+numpy = { version = "1.23", optional = true }
+rdkit = { version = "2023.3.1", optional = true }
+biopython = { version = "^1.81", optional = true }
+tmbed = { git = "https://github.com/BernhoferM/TMbed.git", optional = true }
+accelerate = { version = "^0.20.3", optional = true } # For tmbed
+openbabel-wheel = { version = "^3.1.1", optional = true }
+rmsd = { version = "1.5.1", optional = true }
+pdb-tools = { version = "2.5.0", optional = true }
+parmEd = { git = "https://github.com/Valdes-Tresanco-MS/ParmEd.git", branch = "v3.4", optional = true }
+gmx-mmpbsa = { version = "1.5.6", optional = true }
+acpype = { version = "2022.7.21", optional = true }
+
+[tool.poetry.extras]
+awh = [
+    "Jinja2",
+    "numpy",
+    "rdkit",
+    "biopython",
+    "tmbed",
+    "accelerate",
+    "openbabel-wheel",
+    "rmsd",
+    "pdb-tools",
+    "parmEd",
+    "gmx-mmpbsa",
+    "acpype"
+]
 
 [tool.poetry.dev-dependencies]
 pytest = "^7.1.2"
