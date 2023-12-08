@@ -32,7 +32,7 @@ class SubmittedScreening:
     task: Task
 
 
-def screening_task(ctx: LigenTaskContext, config: ScreeningConfig):
+def screening_task(ctx: LigenTaskContext, config: ScreeningConfig, dep=None):
     with ligen_container(container=ctx.container_path) as ligen:
         input_smi = ligen.map_input(config.ligand_expansion.config.output_smi)
         input_pdb = ligen.map_input(config.input_pdb)
@@ -45,29 +45,18 @@ def screening_task(ctx: LigenTaskContext, config: ScreeningConfig):
                 {
                     "kind": "reader_mol2",
                     "name": "reader",
-                    "input_filepath": str(input_smi)
+                    "input_filepath": str(input_smi),
                 },
-                {
-                    "kind": "parser_mol2",
-                    "number_of_workers": config.num_parser
-                },
-                {
-                    "kind": "bucketizer_ligand",
-                    "name": "bucketizer"
-                },
-                {
-                    "kind": "unfold",
-                    "cpp_workers": config.num_workers_unfold
-                },
+                {"kind": "parser_mol2", "number_of_workers": config.num_parser},
+                {"kind": "bucketizer_ligand", "name": "bucketizer"},
+                {"kind": "unfold", "cpp_workers": config.num_workers_unfold},
                 {
                     "kind": "dock_n_score",
                     "wait_setup": "reader",
                     "number_of_restart": "256",
                     "clipping_factor": "256",
-                    "scoring_functions": [
-                        "d22"
-                    ],
-                    "cpp_workers": config.num_workers_docknscore
+                    "scoring_functions": ["d22"],
+                    "cpp_workers": config.num_workers_docknscore,
                 },
                 {
                     "kind": "writer_csv_bucket",
@@ -75,43 +64,29 @@ def screening_task(ctx: LigenTaskContext, config: ScreeningConfig):
                     "wait_setup": "reader",
                     "output_filepath": str(output_csv),
                     "print_preamble": "1",
-                    "csv_fields": [
-                        "SCORE_PROTEIN_NAME",
-                        "D22_SCORE"
-                    ]
+                    "csv_fields": ["SCORE_PROTEIN_NAME", "D22_SCORE"],
                 },
-                {
-                    "kind": "tracker_bucket",
-                    "wait_setup": "reader"
-                },
-                {
-                    "kind": "sink_bucket",
-                    "number_of_workers": "1"
-                }
+                {"kind": "tracker_bucket", "wait_setup": "reader"},
+                {"kind": "sink_bucket", "number_of_workers": "1"},
             ],
             "targets": [
                 {
                     "name": config.input_protein_name,
                     "configuration": {
-                        "input": {
-                            "format": "protein",
-                            "protein_path": str(input_pdb)
-                        },
+                        "input": {"format": "protein", "protein_path": str(input_pdb)},
                         "filtering": {
                             "algorithm": "probe",
                             "path": str(input_mol2),
-                            "radius": "8"
+                            "radius": "8",
                         },
-                        "pocket_identification": {
-                            "algorithm": "caviar_like"
-                        },
+                        "pocket_identification": {"algorithm": "caviar_like"},
                         "anchor_points": {
                             "algorithms": "maximum_points",
-                            "separation_radius": "4"
-                        }
-                    }
+                            "separation_radius": "4",
+                        },
+                    },
                 }
-            ]
+            ],
         }
 
         ligen.run(
@@ -120,8 +95,9 @@ def screening_task(ctx: LigenTaskContext, config: ScreeningConfig):
         )
 
 
-def submit_screening(ctx: LigenTaskContext, config: ScreeningConfig,
-                     job: Job) -> SubmittedScreening:
+def submit_screening(
+    ctx: LigenTaskContext, config: ScreeningConfig, job: Job
+) -> SubmittedScreening:
     task = job.function(
         screening_task,
         args=(
@@ -130,6 +106,6 @@ def submit_screening(ctx: LigenTaskContext, config: ScreeningConfig,
         ),
         deps=(config.ligand_expansion.task,),
         name=f"screening-{config.output_path.name}",
-        resources=ResourceRequest(cpus=config.cores)
+        resources=ResourceRequest(cpus=config.cores),
     )
     return SubmittedScreening(config=config, task=task)
