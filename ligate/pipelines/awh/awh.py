@@ -39,10 +39,10 @@ class AWHOutput:
 
 
 def awh_task_fn(
-        ctx: AWHContext,
-        workload: AWHLigandOrProtein,
-        run_dir: Path,
-        mdp_path: Path,
+    ctx: AWHContext,
+    workload: AWHLigandOrProtein,
+    run_dir: Path,
+    mdp_path: Path,
 ):
     ctx.tools.gmx.execute(
         [
@@ -92,10 +92,10 @@ def awh_task_fn(
 
 
 def awh_task(
-        job: Job,
-        ctx: AWHContext,
-        params: AWHParams,
-        equilibrate_output: EquilibrateOutput,
+    job: Job,
+    ctx: AWHContext,
+    params: AWHParams,
+    equilibrate_output: EquilibrateOutput,
 ) -> AWHOutput:
     generated_mdp = ctx.workdir / "generated_production.mdp"
     render_mdp(
@@ -106,9 +106,7 @@ def awh_task(
         awh1_dim1_diffusion=params.diffusion,
     )
 
-    def create_tasks(
-            workload: AWHLigandOrProtein, dependency: Task
-    ) -> List[AWHPartOutputWithTask]:
+    def create_tasks(workload: AWHLigandOrProtein, dependency: Task) -> List[AWHPartOutputWithTask]:
         tasks = []
         awh_directory = ensure_directory(workload.equi_dir.path / "AWH")
 
@@ -123,9 +121,7 @@ def awh_task(
             tasks.append(
                 AWHPartOutputWithTask(
                     task=task,
-                    output=AWHPartOutput(
-                        workload=workload, awh_directory=awh_directory, run_directory=run_dir
-                    ),
+                    output=AWHPartOutput(workload=workload, awh_directory=awh_directory, run_directory=run_dir),
                 )
             )
         return tasks

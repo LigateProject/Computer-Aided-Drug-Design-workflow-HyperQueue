@@ -27,9 +27,7 @@ def fix_edge_structure_task(
     return EdgeTaskMapping(edge_to_task=state)
 
 
-def fix_edge_structure(
-    edge: Edge, ctx: LigConvContext, structure_mdp_file: GenericPath
-):
+def fix_edge_structure(edge: Edge, ctx: LigConvContext, structure_mdp_file: GenericPath):
     structure_merged = ctx.protein_dir.edge_dir(edge).merged_structure_gro
     structure_dir = structure_merged.parent
     tmp_structure = structure_dir / "merged_old.gro"

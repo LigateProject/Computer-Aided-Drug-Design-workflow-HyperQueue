@@ -148,12 +148,7 @@ class TopologyMerger:
                 if len(line.split()) >= 2:
                     if line.split()[0] == "#ifdef":
                         check2 = False
-                    if (
-                        check1
-                        and check2
-                        and line.split()[0] != ";"
-                        and line.split()[0] != "["
-                    ):
+                    if check1 and check2 and line.split()[0] != ";" and line.split()[0] != "[":
                         indexCut = line.split().index(";")
                         self.dihedrals[index].append(line.split()[:indexCut])
                     if line.split()[1] == "dihedrals":
@@ -248,9 +243,7 @@ class TopologyMerger:
             if self.header[0][i] == self.header[1][i]:
                 self.header[-1].append(self.header[0][i])
             else:
-                sys.exit(
-                    "Topology headers are assumed to be identical, but they aren't."
-                )
+                sys.exit("Topology headers are assumed to be identical, but they aren't.")
         self.header[-1].append("MOL  3\n")
 
     def mergeAtoms(self):
@@ -259,8 +252,7 @@ class TopologyMerger:
         self.atoms.append([])
         self.atoms[-1].append(" [ atoms ]\n")
         self.atoms[-1].append(
-            ";   nr       type  resnr residue  atom   cgnr     charge       mass  typeB    "
-            "chargeB      massB\n"
+            ";   nr       type  resnr residue  atom   cgnr     charge       mass  typeB    " "chargeB      massB\n"
         )
         justificationList = [6, 12, 7, 7, 7, 7, 11, 11, 12, 11, 11]
         for i in range(max(self.indexMapping[-1]) + 1):
@@ -272,18 +264,11 @@ class TopologyMerger:
                     checkCount = 0
                     indexList = [1, 6, 7]
                     for j in range(3):
-                        if (
-                            self.atoms[0][i][indexList[j]]
-                            != self.atoms[1][self.indexMapping[1].index(i)][
-                                indexList[j]
-                            ]
-                        ):
+                        if self.atoms[0][i][indexList[j]] != self.atoms[1][self.indexMapping[1].index(i)][indexList[j]]:
                             checkCount += 1
                     if checkCount > 0:
                         for j in range(3):
-                            resultString += self.atoms[1][
-                                self.indexMapping[1].index(i)
-                            ][indexList[j]].rjust(
+                            resultString += self.atoms[1][self.indexMapping[1].index(i)][indexList[j]].rjust(
                                 justificationList[len(self.atoms[0][i]) + j], " "
                             )
                 else:
@@ -294,40 +279,23 @@ class TopologyMerger:
                     # need to worry about masses for virtual sites later
                     resultString += self.atoms[0][i][7].rjust(11)
             else:
-                if (
-                    "DUM_" + self.atoms[1][self.indexMapping[1].index(i)][1]
-                    not in self.dummyAtoms
-                ):
-                    self.dummyAtoms.append(
-                        "DUM_" + self.atoms[1][self.indexMapping[1].index(i)][1]
-                    )
+                if "DUM_" + self.atoms[1][self.indexMapping[1].index(i)][1] not in self.dummyAtoms:
+                    self.dummyAtoms.append("DUM_" + self.atoms[1][self.indexMapping[1].index(i)][1])
                 resultString += str(i + 1).rjust(6)
-                resultString += (
-                    "DUM_" + self.atoms[1][self.indexMapping[1].index(i)][1]
-                ).rjust(12)
+                resultString += ("DUM_" + self.atoms[1][self.indexMapping[1].index(i)][1]).rjust(12)
                 for j in range(2, 4):
-                    resultString += self.atoms[1][self.indexMapping[1].index(i)][
-                        j
-                    ].rjust(justificationList[j], " ")
-                resultString += (
-                    "D" + self.atoms[1][self.indexMapping[1].index(i)][4]
-                ).rjust(justificationList[4], " ")
+                    resultString += self.atoms[1][self.indexMapping[1].index(i)][j].rjust(justificationList[j], " ")
+                resultString += ("D" + self.atoms[1][self.indexMapping[1].index(i)][4]).rjust(justificationList[4], " ")
                 resultString += str(i + 1).rjust(justificationList[5], " ")
                 resultString += "0.000000".rjust(11)
                 # need to worry about masses for virtual sites later
-                resultString += self.atoms[1][self.indexMapping[1].index(i)][7].rjust(
-                    11
-                )
-                resultString += self.atoms[1][self.indexMapping[1].index(i)][1].rjust(
-                    12
-                )
+                resultString += self.atoms[1][self.indexMapping[1].index(i)][7].rjust(11)
+                resultString += self.atoms[1][self.indexMapping[1].index(i)][1].rjust(12)
                 for j in range(
                     len(self.atoms[1][self.indexMapping[1].index(i)]) - 2,
                     len(self.atoms[1][self.indexMapping[1].index(i)]),
                 ):
-                    resultString += self.atoms[1][self.indexMapping[1].index(i)][
-                        j
-                    ].rjust(justificationList[j], " ")
+                    resultString += self.atoms[1][self.indexMapping[1].index(i)][j].rjust(justificationList[j], " ")
             resultString += "\n"
             self.atoms[-1].append(resultString)
 
@@ -335,9 +303,7 @@ class TopologyMerger:
         # merge data
         self.bonds.append([])
         self.bonds[-1].append(" [ bonds ]\n")
-        self.bonds[-1].append(
-            ";  ai    aj funct            c0            c1            c2            c3\n"
-        )
+        self.bonds[-1].append(";  ai    aj funct            c0            c1            c2            c3\n")
         justificationList = [6, 7, 7, 15, 15, 15, 15]
         alreadySeen = []
         for i in range(len(self.bonds[0])):
@@ -351,21 +317,15 @@ class TopologyMerger:
                     self.bonds[0][i][4],
                 ]
             )
-        alreadySeenTuples = [
-            tuple(map(int, alreadySeen[i][0])) for i in range(len(alreadySeen))
-        ]
+        alreadySeenTuples = [tuple(map(int, alreadySeen[i][0])) for i in range(len(alreadySeen))]
         for i in range(len(self.bonds[1])):
             testTuple = (
                 self.indexMapping[1][int(self.bonds[1][i][0]) - 1] + 1,
                 self.indexMapping[1][int(self.bonds[1][i][1]) - 1] + 1,
             )
             if testTuple in alreadySeenTuples:
-                alreadySeen[alreadySeenTuples.index(testTuple)][-2] = self.bonds[1][i][
-                    3
-                ]
-                alreadySeen[alreadySeenTuples.index(testTuple)][-1] = self.bonds[1][i][
-                    4
-                ]
+                alreadySeen[alreadySeenTuples.index(testTuple)][-2] = self.bonds[1][i][3]
+                alreadySeen[alreadySeenTuples.index(testTuple)][-1] = self.bonds[1][i][4]
             else:
                 alreadySeen.append(
                     [
@@ -379,14 +339,12 @@ class TopologyMerger:
                 )
         for i in range(len(alreadySeen)):
             resultString = ""
-            resultString += alreadySeen[i][0][0].rjust(
-                justificationList[0]
-            ) + alreadySeen[i][0][1].rjust(justificationList[1])
+            resultString += alreadySeen[i][0][0].rjust(justificationList[0]) + alreadySeen[i][0][1].rjust(
+                justificationList[1]
+            )
             resultString += alreadySeen[i][1].rjust(justificationList[2])
             for j in range(2, len(alreadySeen[i])):
-                resultString += ("{:.6f}".format(float(alreadySeen[i][j]))).rjust(
-                    justificationList[j + 1]
-                )
+                resultString += ("{:.6f}".format(float(alreadySeen[i][j]))).rjust(justificationList[j + 1])
             resultString += "\n"
             self.bonds[-1].append(resultString)
 
@@ -394,18 +352,12 @@ class TopologyMerger:
         # merge data
         self.pairs.append([])
         self.pairs[-1].append(" [ pairs ]\n")
-        self.pairs[-1].append(
-            ";  ai    aj funct            c0            c1            c2            c3\n"
-        )
+        self.pairs[-1].append(";  ai    aj funct            c0            c1            c2            c3\n")
         justificationList = [6, 7, 7]
         alreadySeen = []
         for i in range(len(self.pairs[0])):
-            alreadySeen.append(
-                [(self.pairs[0][i][0], self.pairs[0][i][1]), self.pairs[0][i][2]]
-            )
-        alreadySeenTuples = [
-            tuple(map(int, alreadySeen[i][0])) for i in range(len(alreadySeen))
-        ]
+            alreadySeen.append([(self.pairs[0][i][0], self.pairs[0][i][1]), self.pairs[0][i][2]])
+        alreadySeenTuples = [tuple(map(int, alreadySeen[i][0])) for i in range(len(alreadySeen))]
         for i in range(len(self.pairs[1])):
             testTuple = (
                 self.indexMapping[1][int(self.pairs[1][i][0]) - 1] + 1,
@@ -415,9 +367,9 @@ class TopologyMerger:
                 alreadySeen.append([tuple(map(str, testTuple)), self.pairs[1][i][2]])
         for i in range(len(alreadySeen)):
             resultString = ""
-            resultString += alreadySeen[i][0][0].rjust(
-                justificationList[0]
-            ) + alreadySeen[i][0][1].rjust(justificationList[1])
+            resultString += alreadySeen[i][0][0].rjust(justificationList[0]) + alreadySeen[i][0][1].rjust(
+                justificationList[1]
+            )
             resultString += alreadySeen[i][1].rjust(justificationList[2])
             resultString += "\n"
             self.pairs[-1].append(resultString)
@@ -426,9 +378,7 @@ class TopologyMerger:
         # merge data
         self.angles.append([])
         self.angles[-1].append(" [ angles ]\n")
-        self.angles[-1].append(
-            ";  ai    aj    ak funct            c0            c1            c2            c3\n"
-        )
+        self.angles[-1].append(";  ai    aj    ak funct            c0            c1            c2            c3\n")
         justificationList = [6, 7, 7, 7, 15, 15, 15, 15]
         alreadySeen = []
         for i in range(len(self.angles[0])):
@@ -442,9 +392,7 @@ class TopologyMerger:
                     self.angles[0][i][5],
                 ]
             )
-        alreadySeenTuples = [
-            tuple(map(int, alreadySeen[i][0])) for i in range(len(alreadySeen))
-        ]
+        alreadySeenTuples = [tuple(map(int, alreadySeen[i][0])) for i in range(len(alreadySeen))]
         for i in range(len(self.angles[1])):
             testTuple = (
                 self.indexMapping[1][int(self.angles[1][i][0]) - 1] + 1,
@@ -452,12 +400,8 @@ class TopologyMerger:
                 self.indexMapping[1][int(self.angles[1][i][2]) - 1] + 1,
             )
             if testTuple in alreadySeenTuples:
-                alreadySeen[alreadySeenTuples.index(testTuple)][-2] = self.angles[1][i][
-                    4
-                ]
-                alreadySeen[alreadySeenTuples.index(testTuple)][-1] = self.angles[1][i][
-                    5
-                ]
+                alreadySeen[alreadySeenTuples.index(testTuple)][-2] = self.angles[1][i][4]
+                alreadySeen[alreadySeenTuples.index(testTuple)][-1] = self.angles[1][i][5]
             else:
                 alreadySeen.append(
                     [
@@ -478,9 +422,7 @@ class TopologyMerger:
             )
             resultString += alreadySeen[i][1].rjust(justificationList[3])
             for j in range(2, len(alreadySeen[i])):
-                resultString += ("{:.6f}".format(float(alreadySeen[i][j]))).rjust(
-                    justificationList[j + 2]
-                )
+                resultString += ("{:.6f}".format(float(alreadySeen[i][j]))).rjust(justificationList[j + 2])
             resultString += "\n"
             self.angles[-1].append(resultString)
 
@@ -512,10 +454,7 @@ class TopologyMerger:
             alreadySeen.append(listToAppend)
         for i in range(len(self.dihedrals[1])):
             listToAppend = []
-            testTuple = [
-                self.indexMapping[1][int(self.dihedrals[1][i][j]) - 1] + 1
-                for j in range(4)
-            ]
+            testTuple = [self.indexMapping[1][int(self.dihedrals[1][i][j]) - 1] + 1 for j in range(4)]
             listToAppend.append(tuple(map(str, testTuple)))
             for j in range(4, 8):
                 listToAppend.append(self.dihedrals[1][i][j])
@@ -671,9 +610,7 @@ class TopologyMerger:
                     if len(gro[index][-1]) == 1:
                         gro[index][-1] = int(gro[index][-1][0])
                     elif line == lines[-1]:
-                        gro[index][-1] = [
-                            float(gro[index][-1][i]) for i in range(len(gro[index][-1]))
-                        ]
+                        gro[index][-1] = [float(gro[index][-1][i]) for i in range(len(gro[index][-1]))]
                     else:
                         gro[index][-1] = [
                             gro[index][-1][0],
@@ -800,9 +737,7 @@ MOL 1
             target.write("MOL 1\n")
 
 
-def pos_res_for_ligand_to_fix_structure(
-    topology: GenericPath, posre_ligand: GenericPath
-):
+def pos_res_for_ligand_to_fix_structure(topology: GenericPath, posre_ligand: GenericPath):
     with open(topology) as f:
         with open(posre_ligand, "w") as target:
             check = -2
@@ -822,9 +757,7 @@ def pos_res_for_ligand_to_fix_structure(
                         if data[1] == "bonds":
                             check = -2
                         elif "DUM" not in data[1]:
-                            target.write(
-                                f"{int(data[0]):6}{1:6}{value:8}{value:8}{value:8}\n"
-                            )
+                            target.write(f"{int(data[0]):6}{1:6}{value:8}{value:8}{value:8}\n")
                 elif check == -1:
                     check = 0
                 elif len(data) > 1:
@@ -850,9 +783,7 @@ def pos_res_for_ligand(topology: GenericPath, posre_ligand: GenericPath):
                             check = -2
                         elif "h" not in data[1] and "H" not in data[1]:
                             # TODO: why 8 above and 6 here?
-                            target.write(
-                                f"{int(data[0]):6}{1:6}{1000:6}{1000:6}{1000:6}\n"
-                            )
+                            target.write(f"{int(data[0]):6}{1:6}{1000:6}{1000:6}{1000:6}\n")
                 elif check == -1:
                     check = 0
                 elif len(data) > 1:

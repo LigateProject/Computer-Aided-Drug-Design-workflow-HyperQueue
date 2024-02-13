@@ -36,9 +36,7 @@ def get_bless_mode() -> BlessMode:
     elif bless_mode == "overwrite":
         return BlessMode.Overwrite
     else:
-        raise Exception(
-            f"Invalid bless mode {bless_mode}. Use `create` or `overwrite`."
-        )
+        raise Exception(f"Invalid bless mode {bless_mode}. Use `create` or `overwrite`.")
 
 
 def bless_file(expected: GenericPath, actual: GenericPath, mode: BlessMode):

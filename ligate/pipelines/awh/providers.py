@@ -31,9 +31,7 @@ class AWHLigandOrProtein(PathProvider):
     def solvated_gro(self) -> Path:
         return self.file_path("solvated.gro")
 
-    def get_topology_file(
-        self, edge_dir: AWHEdgeDir, protein_forcefield: ProteinForcefield
-    ):
+    def get_topology_file(self, edge_dir: AWHEdgeDir, protein_forcefield: ProteinForcefield):
         raise NotImplementedError
 
     @property
@@ -61,9 +59,7 @@ class AWHLigandOrProtein(PathProvider):
 
 
 class AWHLigandDir(AWHLigandOrProtein):
-    def get_topology_file(
-        self, edge_dir: AWHEdgeDir, protein_forcefield: ProteinForcefield
-    ):
+    def get_topology_file(self, edge_dir: AWHEdgeDir, protein_forcefield: ProteinForcefield):
         return edge_dir.topology_ligand_in_water
 
     def is_ligand(self) -> bool:
@@ -71,9 +67,7 @@ class AWHLigandDir(AWHLigandOrProtein):
 
 
 class AWHProteinDir(AWHLigandOrProtein):
-    def get_topology_file(
-        self, edge_dir: AWHEdgeDir, protein_forcefield: ProteinForcefield
-    ):
+    def get_topology_file(self, edge_dir: AWHEdgeDir, protein_forcefield: ProteinForcefield):
         return edge_dir.topology_forcefield(protein_forcefield)
 
     def is_ligand(self) -> bool:

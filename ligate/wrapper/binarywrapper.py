@@ -19,9 +19,7 @@ class BinaryWrapper:
         workdir: Optional[GenericPath] = None,
         env: Optional[Dict[str, str]] = None,
     ):
-        return execute_command(
-            [self.binary_path, *args], input=input, workdir=workdir, env=env
-        )
+        return execute_command([self.binary_path, *args], input=input, workdir=workdir, env=env)
 
 
 def execute_command(
@@ -45,9 +43,7 @@ def execute_command(
     logging.debug(f"Executing `{' '.join(cmd)}` in {workdir or os.getcwd()}")
     result = subprocess.run(cmd, cwd=workdir, env=environment, **kwargs)
     if result.returncode != 0:
-        raise Exception(
-            f"`{' '.join(cmd)}` resulted in error. Exit code: {result.returncode}"
-        )
+        raise Exception(f"`{' '.join(cmd)}` resulted in error. Exit code: {result.returncode}")
     return result
 
 
@@ -59,7 +55,5 @@ def normalize_arguments(input: List[Any]) -> List[str]:
         if any(isinstance(item, t) for t in allowed_types):
             output.append(str(item))
         else:
-            raise Exception(
-                f"Invalid type `{type(item)}` with value `{item}` passed as an executable argument"
-            )
+            raise Exception(f"Invalid type `{type(item)}` with value `{item}` passed as an executable argument")
     return output

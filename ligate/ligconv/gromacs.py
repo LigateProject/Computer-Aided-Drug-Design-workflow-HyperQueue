@@ -92,13 +92,10 @@ class ComplexGroFilePrinter:
                 if counter > 0:
                     groFilesInMemory[index].append(line.split())
                     if len(groFilesInMemory[index][-1]) == 1:
-                        groFilesInMemory[index][-1] = int(
-                            groFilesInMemory[index][-1][0]
-                        )
+                        groFilesInMemory[index][-1] = int(groFilesInMemory[index][-1][0])
                     elif line == lines[-1]:
                         groFilesInMemory[index][-1] = [
-                            float(groFilesInMemory[index][-1][i])
-                            for i in range(len(groFilesInMemory[index][-1]))
+                            float(groFilesInMemory[index][-1][i]) for i in range(len(groFilesInMemory[index][-1]))
                         ]
                     else:
                         if len(groFilesInMemory[index][-1]) == 6:
@@ -108,9 +105,7 @@ class ComplexGroFilePrinter:
                         listToAppend = []
                         for i in range(indices[index2][0]):
                             listToAppend.append(groFilesInMemory[index][-1][i])
-                        listToAppend.append(
-                            int(groFilesInMemory[index][-1][indices[index2][0]])
-                        )
+                        listToAppend.append(int(groFilesInMemory[index][-1][indices[index2][0]]))
                         for i in range(indices[index2][1], indices[index2][2]):
                             listToAppend.append(float(groFilesInMemory[index][-1][i]))
                         groFilesInMemory[index][-1] = listToAppend

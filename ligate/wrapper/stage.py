@@ -11,9 +11,7 @@ class Stage:
         if self.stage_path is None:
             raise Exception("Could not find stage.py in PATH")
 
-    def run(
-        self, input: GenericPath, output: GenericPath, forcefield: LigandForcefield
-    ):
+    def run(self, input: GenericPath, output: GenericPath, forcefield: LigandForcefield):
         return execute_command(
             [
                 "python3",

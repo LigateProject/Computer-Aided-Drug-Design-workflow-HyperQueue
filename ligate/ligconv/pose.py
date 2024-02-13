@@ -128,9 +128,7 @@ def load_single_pose(path: GenericPath, pose_number: int) -> Pose:
     `pose_number` is numbered from one.
     """
     with open(path) as file:
-        pose_data = next(
-            itertools.islice(iterate_poses(file), pose_number - 1, pose_number)
-        )
+        pose_data = next(itertools.islice(iterate_poses(file), pose_number - 1, pose_number))
     return parse_pose(pose_data, pose_number)
 
 
@@ -139,7 +137,7 @@ def load_poses(path: GenericPath) -> Iterable[Pose]:
     Loads all poses from the file at `path`.
     """
     with open(path) as file:
-        for (pose_id, pose_data) in enumerate(iterate_poses(file), start=1):
+        for pose_id, pose_data in enumerate(iterate_poses(file), start=1):
             yield parse_pose(pose_data, pose_id=pose_id)
 
 
@@ -160,10 +158,7 @@ def extract_pose(pose_file: GenericPath, pose_number: int, output: GenericPath):
         file.write(f"{pose.molecule.lines[0]}\n")
 
         nums = line_as_numbers(pose.molecule.lines[1], [0, 1, 2, 3, 4])
-        file.write(
-            f"{len(pose.atoms.lines):5} {len(pose.bonds.lines):5} "
-            f"{nums[2]:5} {nums[3]:5} {nums[4]:5}\n"
-        )
+        file.write(f"{len(pose.atoms.lines):5} {len(pose.bonds.lines):5} " f"{nums[2]:5} {nums[3]:5} {nums[4]:5}\n")
         file.write(f"{join_lines(pose.molecule.lines[2:])}\n")
 
         # Write atoms
@@ -179,9 +174,7 @@ def extract_pose(pose_file: GenericPath, pose_number: int, output: GenericPath):
         file.write(f"{join_lines(pose.substructure.lines)}\n")
 
 
-def extract_and_clean_pose(
-    pose_file: GenericPath, pose_number: int, output: GenericPath, babel: Babel
-):
+def extract_and_clean_pose(pose_file: GenericPath, pose_number: int, output: GenericPath, babel: Babel):
     """
     Extract a single pose with the given number (index starting from 1) from the `pose_file`.
     Writes the pose into `output`.

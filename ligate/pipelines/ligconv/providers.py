@@ -30,14 +30,10 @@ class LigConvProteinDir(PathProvider):
         """
         Return a provider for files that concern the given edge.
         """
-        return LigConvEdgeDir(
-            self.dir_path(Path(edge_directory_name(edge)) / self.forcefield_name), edge
-        )
+        return LigConvEdgeDir(self.dir_path(Path(edge_directory_name(edge)) / self.forcefield_name), edge)
 
     def ligand_dir(self, ligand_name: str) -> "LigConvLigandDir":
-        return LigConvLigandDir(
-            self.dir_path(Path("ligands") / ligand_name / self.forcefield_name)
-        )
+        return LigConvLigandDir(self.dir_path(Path("ligands") / ligand_name / self.forcefield_name))
 
 
 def edge_directory_name(edge: Edge) -> str:

@@ -25,7 +25,7 @@ def find_values_by_prefix(file: Path, prefixes: List[str], column=1) -> List[str
             if not line:
                 continue
 
-            for (index, prefix) in enumerate(prefixes):
+            for index, prefix in enumerate(prefixes):
                 if line[0] == prefix:
                     assert values[index] is None
                     values[index] = line[column]
@@ -44,9 +44,7 @@ class AnalysisResult:
     difference: float
 
 
-def calculate_diff_error(
-    ctx: Context, inputs: List[AWHPartOutput], lop: LigandOrProtein
-) -> AnalysisResult:
+def calculate_diff_error(ctx: Context, inputs: List[AWHPartOutput], lop: LigandOrProtein) -> AnalysisResult:
     items = [input for input in inputs if input.lop == lop]
     awh_directory = items[0].awh_directory
     tmax = 10  # TODO: calculate from input parameters, currently assumes 5000 AWH steps

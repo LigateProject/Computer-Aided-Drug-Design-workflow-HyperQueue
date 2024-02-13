@@ -40,16 +40,12 @@ def check_env_exists(env: str, notok="missing") -> bool:
 
 
 def check_gromacs_env_exists() -> bool:
-    return check_env_exists(
-        "GMXLIB",
-        notok="GMXLIB missing. Set it to <GROMACS_INSTALL_DIR>/share/gromacs/top"
-    )
+    return check_env_exists("GMXLIB", notok="GMXLIB missing. Set it to <GROMACS_INSTALL_DIR>/share/gromacs/top")
 
 
 def check_openbabel_import() -> bool:
-    prefix = f"Checking if `openbabel` can be imported:"
+    prefix = "Checking if `openbabel` can be imported:"
     try:
-        import openbabel
         print_availability_status(prefix, True, ok="OK", notok="error")
         return True
     except BaseException as error:
@@ -59,9 +55,8 @@ def check_openbabel_import() -> bool:
 
 
 def check_gmxmmpba_import() -> bool:
-    prefix = f"Checking if `GMXMMPBSA` can be imported:"
+    prefix = "Checking if `GMXMMPBSA` can be imported:"
     try:
-        import GMXMMPBSA
         print_availability_status(prefix, True, ok="OK", notok="error")
         return True
     except BaseException as error:
@@ -71,14 +66,14 @@ def check_gmxmmpba_import() -> bool:
 
 
 def check_ambertools() -> bool:
-    prefix = f"Checking if `AmberTools` is available:"
+    prefix = "Checking if `AmberTools` is available:"
     antechamber_available = shutil.which("antechamber") is not None
     print_availability_status(prefix, antechamber_available, ok="OK", notok="antechamber not found")
     return antechamber_available
 
 
 def check_promod3() -> bool:
-    prefix = f"Checking if `ProMod3` is available:"
+    prefix = "Checking if `ProMod3` is available:"
     promod_available = shutil.which("pm") is not None
     print_availability_status(prefix, promod_available, ok="OK", notok="pm not found")
     return promod_available
@@ -91,8 +86,9 @@ def check_python_package(name: str, expected_version: str) -> bool:
         if module_version == expected_version:
             print_availability_status(prefix, True, ok="OK", notok="error")
         else:
-            print_availability_status(prefix, False, ok="OK",
-                                      notok=f"expected version {expected_version}, found {module_version}")
+            print_availability_status(
+                prefix, False, ok="OK", notok=f"expected version {expected_version}, found {module_version}"
+            )
         return True
     except BaseException as error:
         print_availability_status(prefix, False, ok="OK", notok="import error")
@@ -115,8 +111,10 @@ def tmbed_model_exists() -> bool:
 
 def check_tmbed_model() -> bool:
     model_exists = tmbed_model_exists()
-    print_availability_status("Checking tmbed downloaded model:",
-                              model_exists,
-                              ok="OK",
-                              notok="Model is not downloaded. Run `tmbed download`.")
+    print_availability_status(
+        "Checking tmbed downloaded model:",
+        model_exists,
+        ok="OK",
+        notok="Model is not downloaded. Run `tmbed download`.",
+    )
     return model_exists

@@ -95,9 +95,7 @@ def editconf_task(ctx: AWHContext):
 
 def solvate(ctx: AWHContext, workload: AWHLigandOrProtein):
     solvated = workload.solvated_gro
-    logging.debug(
-        f"Running solvate step on {workload}, output will be written to {solvated}"
-    )
+    logging.debug(f"Running solvate step on {workload}, output will be written to {solvated}")
 
     topology_file = workload.get_topology_file(ctx.edge_dir, ctx.protein_forcefield)
     ctx.tools.gmx.execute(
@@ -201,9 +199,7 @@ def energy_minimize(
             "2",
         ]
     )
-    ctx.tools.gmx.execute(
-        ["mdrun", "-v", "-deffnm", "EM", "-ntmpi", "4"], workdir=workload.path
-    )
+    ctx.tools.gmx.execute(["mdrun", "-v", "-deffnm", "EM", "-ntmpi", "4"], workdir=workload.path)
 
 
 def energy_minimization_task_fn(
