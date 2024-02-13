@@ -22,6 +22,7 @@ pdb-tools = { version = "2.5.0", optional = true }
 parmEd = { git = "https://github.com/Valdes-Tresanco-MS/ParmEd.git", branch = "v3.4", optional = true }
 gmx-mmpbsa = { version = "1.5.6", optional = true }
 acpype = { version = "2022.7.21", optional = true }
+ruff = "^0.2.1"
 
 [tool.poetry.extras]
 awh = [
