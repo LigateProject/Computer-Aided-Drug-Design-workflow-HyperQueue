@@ -40,12 +40,13 @@ awh = [
     "acpype"
 ]
 
-[tool.poetry.dev-dependencies]
+[tool.poetry.group.dev.dependencies]
 pytest = "^7.1.2"
 pytest-xdist = "2.5.0"
 flake8 = "4.0.1"
 black = "22.3.0"
 isort = "5.10.1"
+pytest-insta = "^0.2.0"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

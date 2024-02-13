@@ -1,0 +1,2 @@
+class AWHError(BaseException):
+    pass

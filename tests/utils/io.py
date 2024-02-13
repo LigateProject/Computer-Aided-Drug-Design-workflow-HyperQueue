@@ -56,3 +56,8 @@ def remove_lines(path: GenericPath, lines: List[int]):
     with open(path, "w") as f:
         for line in output:
             f.write(line)
+
+
+def read_file(path: GenericPath) -> str:
+    with open(path) as f:
+        return f.read()
