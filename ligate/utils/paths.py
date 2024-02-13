@@ -10,7 +10,7 @@ PATH_STACK = []
 
 
 @contextlib.contextmanager
-def use_dir(path: GenericPath):
+def active_workdir(path: GenericPath):
     path = Path(path)
     if not path.is_absolute():
         root = get_active_dir()

@@ -3,7 +3,7 @@ import os.path
 from pathlib import Path
 from typing import List
 
-from ..utils.paths import GenericPath, use_dir
+from ..utils.paths import GenericPath, active_workdir
 from ..wrapper.gmx import GMX
 
 
@@ -18,7 +18,7 @@ def convert_pdb_to_gmx(
     """
     Generates `conf.gro` and topology files from a protein PDB file.
     """
-    with use_dir(output_dir):
+    with active_workdir(output_dir):
         gmx.execute(
             [
                 "pdb2gmx",

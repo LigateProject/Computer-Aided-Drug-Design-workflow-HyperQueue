@@ -3,7 +3,7 @@ from hyperqueue import Job
 from ...ligconv.gromacs import shift_last_gromacs_line, write_gro_complex_structure
 from ...ligconv.topology import pos_res_for_ligand
 from ...utils.io import delete_files, move_file
-from ...utils.paths import GenericPath, use_dir
+from ...utils.paths import GenericPath, active_workdir
 from ..taskmapping import EdgeTaskMapping
 from . import LigConvContext
 from .common import Edge
@@ -27,7 +27,9 @@ def fix_edge_structure_task(
     return EdgeTaskMapping(edge_to_task=state)
 
 
-def fix_edge_structure(edge: Edge, ctx: LigConvContext, structure_mdp_file: GenericPath):
+def fix_edge_structure(
+    edge: Edge, ctx: LigConvContext, structure_mdp_file: GenericPath
+):
     structure_merged = ctx.protein_dir.edge_dir(edge).merged_structure_gro
     structure_dir = structure_merged.parent
     tmp_structure = structure_dir / "merged_old.gro"
@@ -36,7 +38,7 @@ def fix_edge_structure(edge: Edge, ctx: LigConvContext, structure_mdp_file: Gene
     shift_last_gromacs_line(tmp_structure, 10)
 
     tpr_file = "merged.tpr"
-    with use_dir(structure_dir):
+    with active_workdir(structure_dir):
         ctx.tools.gmx.execute(
             [
                 "grompp",
