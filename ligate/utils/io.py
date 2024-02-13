@@ -63,7 +63,7 @@ def copy_directory(src: GenericPath, dst: GenericPath):
 
 
 # File content manipulation and reading
-def iterate_file_lines(file: Path, skip=0) -> Iterable[str]:
+def iterate_file_lines(file: GenericPath, skip=0) -> Iterable[str]:
     """
     Lazily iterates the lines of the given `file`.
     """
@@ -148,7 +148,9 @@ def iterate_directories(path: GenericPath) -> List[Path]:
     The directories are sorted by their filepath.
     """
     path = Path(path)
-    dirs = [path.absolute() / child for child in os.listdir(path) if (path / child).is_dir()]
+    dirs = [
+        path.absolute() / child for child in os.listdir(path) if (path / child).is_dir()
+    ]
     return sorted(dirs)
 
 
