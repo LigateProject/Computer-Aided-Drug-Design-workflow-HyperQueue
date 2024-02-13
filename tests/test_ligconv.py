@@ -123,7 +123,8 @@ def test_posres_fix_structure(data_dir, tmp_path):
     output = tmp_path / "out.itp"
 
     pos_res_for_ligand_to_fix_structure(
-        data_dir / "ligen/p38/ligands_gaff2/lig_p38a_2aa/edges/lig_p38a_2aa_p38a_2bb/topology" "/merged.itp",
+        data_dir / "ligen/p38/ligands_gaff2/lig_p38a_2aa/edges/lig_p38a_2aa_p38a_2bb/topology"
+        "/merged.itp",
         output,
     )
     check_files_are_equal(

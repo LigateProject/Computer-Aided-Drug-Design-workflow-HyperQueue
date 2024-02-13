@@ -95,7 +95,9 @@ def screening_task(ctx: LigenTaskContext, config: ScreeningConfig, dep=None):
         )
 
 
-def submit_screening(ctx: LigenTaskContext, config: ScreeningConfig, job: Job) -> SubmittedScreening:
+def submit_screening(
+    ctx: LigenTaskContext, config: ScreeningConfig, job: Job
+) -> SubmittedScreening:
     task = job.function(
         screening_task,
         args=(

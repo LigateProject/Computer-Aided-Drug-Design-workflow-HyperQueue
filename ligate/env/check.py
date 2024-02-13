@@ -40,7 +40,9 @@ def check_env_exists(env: str, notok="missing") -> bool:
 
 
 def check_gromacs_env_exists() -> bool:
-    return check_env_exists("GMXLIB", notok="GMXLIB missing. Set it to <GROMACS_INSTALL_DIR>/share/gromacs/top")
+    return check_env_exists(
+        "GMXLIB", notok="GMXLIB missing. Set it to <GROMACS_INSTALL_DIR>/share/gromacs/top"
+    )
 
 
 def check_openbabel_import() -> bool:
@@ -87,7 +89,10 @@ def check_python_package(name: str, expected_version: str) -> bool:
             print_availability_status(prefix, True, ok="OK", notok="error")
         else:
             print_availability_status(
-                prefix, False, ok="OK", notok=f"expected version {expected_version}, found {module_version}"
+                prefix,
+                False,
+                ok="OK",
+                notok=f"expected version {expected_version}, found {module_version}",
             )
         return True
     except BaseException as error:

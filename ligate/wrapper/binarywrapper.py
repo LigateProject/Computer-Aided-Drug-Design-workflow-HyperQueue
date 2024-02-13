@@ -55,5 +55,7 @@ def normalize_arguments(input: List[Any]) -> List[str]:
         if any(isinstance(item, t) for t in allowed_types):
             output.append(str(item))
         else:
-            raise Exception(f"Invalid type `{type(item)}` with value `{item}` passed as an executable argument")
+            raise Exception(
+                f"Invalid type `{type(item)}` with value `{item}` passed as an executable argument"
+            )
     return output

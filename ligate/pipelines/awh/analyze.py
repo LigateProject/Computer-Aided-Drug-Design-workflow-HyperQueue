@@ -44,7 +44,9 @@ class AnalysisResult:
     difference: float
 
 
-def calculate_diff_error(ctx: Context, inputs: List[AWHPartOutput], lop: LigandOrProtein) -> AnalysisResult:
+def calculate_diff_error(
+    ctx: Context, inputs: List[AWHPartOutput], lop: LigandOrProtein
+) -> AnalysisResult:
     items = [input for input in inputs if input.lop == lop]
     awh_directory = items[0].awh_directory
     tmax = 10  # TODO: calculate from input parameters, currently assumes 5000 AWH steps

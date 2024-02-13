@@ -95,7 +95,8 @@ class ComplexGroFilePrinter:
                         groFilesInMemory[index][-1] = int(groFilesInMemory[index][-1][0])
                     elif line == lines[-1]:
                         groFilesInMemory[index][-1] = [
-                            float(groFilesInMemory[index][-1][i]) for i in range(len(groFilesInMemory[index][-1]))
+                            float(groFilesInMemory[index][-1][i])
+                            for i in range(len(groFilesInMemory[index][-1]))
                         ]
                     else:
                         if len(groFilesInMemory[index][-1]) == 6:

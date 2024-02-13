@@ -121,7 +121,9 @@ def awh_task(
             tasks.append(
                 AWHPartOutputWithTask(
                     task=task,
-                    output=AWHPartOutput(workload=workload, awh_directory=awh_directory, run_directory=run_dir),
+                    output=AWHPartOutput(
+                        workload=workload, awh_directory=awh_directory, run_directory=run_dir
+                    ),
                 )
             )
         return tasks

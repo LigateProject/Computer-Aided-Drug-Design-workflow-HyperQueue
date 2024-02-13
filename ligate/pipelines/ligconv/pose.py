@@ -26,7 +26,9 @@ def prepare_ligand_poses_task(job: Job, deps: List[Task], ctx: LigConvContext) -
     task_state = {}
 
     ligands = set(
-        itertools.chain.from_iterable((edge.start_ligand_name(), edge.end_ligand_name()) for edge in ctx.params.edges)
+        itertools.chain.from_iterable(
+            (edge.start_ligand_name(), edge.end_ligand_name()) for edge in ctx.params.edges
+        )
     )
 
     for ligand_name in ligands:
@@ -56,21 +58,23 @@ def prepare_ligand_poses(ligand: Path, ctx: LigConvContext):
 
         stage_output = f"{filename}_stage"
         ligand_ff = ctx.params.ligand_ff
-        logging.debug(f"Running stage on {cleaned_mol2}, output {stage_output}, ligand forcefield {ligand_ff}")
+        logging.debug(
+            f"Running stage on {cleaned_mol2}, output {stage_output}, ligand forcefield {ligand_ff}"
+        )
         ctx.tools.stage.run(cleaned_mol2, stage_output, ligand_ff)
 
         pose_1_dir = ctx.protein_dir.ligand_dir(ligand_name).pose_dir(pose_number).path
         # mv *.mol2 *.gro {pose_dir}
-        files = list(iterate_files(ligand_dir, filter=lambda p: file_has_extension(p, "mol2"))) + list(
-            iterate_files(ligand_dir, filter=lambda p: file_has_extension(p, "gro"))
-        )
+        files = list(
+            iterate_files(ligand_dir, filter=lambda p: file_has_extension(p, "mol2"))
+        ) + list(iterate_files(ligand_dir, filter=lambda p: file_has_extension(p, "gro")))
         move_files(files, pose_1_dir)
 
         topology_dir = ctx.protein_dir.ligand_dir(ligand_name).topology_dir
         # mv *.itp *.pkl {topology_dir}
-        files = list(iterate_files(ligand_dir, filter=lambda p: file_has_extension(p, "itp"))) + list(
-            iterate_files(ligand_dir, filter=lambda p: file_has_extension(p, "pkl"))
-        )
+        files = list(
+            iterate_files(ligand_dir, filter=lambda p: file_has_extension(p, "itp"))
+        ) + list(iterate_files(ligand_dir, filter=lambda p: file_has_extension(p, "pkl")))
         move_files(files, topology_dir)
 
         # Normalize filenames and put them into the correct directories

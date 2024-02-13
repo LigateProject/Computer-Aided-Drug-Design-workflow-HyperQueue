@@ -16,7 +16,9 @@ from .common import Edge
 logger = logging.getLogger(__name__)
 
 
-def merge_topologies_task(job: Job, ctx: LigConvContext, task_state: LigandTaskMapping) -> EdgeTaskMapping:
+def merge_topologies_task(
+    job: Job, ctx: LigConvContext, task_state: LigandTaskMapping
+) -> EdgeTaskMapping:
     edge_to_task = {}
 
     for edge in ctx.params.edges:
@@ -40,7 +42,10 @@ def merge_edge_topologies(edge: Edge, ctx: LigConvContext):
     pose_a = find_best_pose_by_score(ctx.ligen_data.pose_file(ligand_a))
     pose_b = find_best_pose_by_score(ctx.ligen_data.pose_file(ligand_b))
 
-    logging.debug(f"Best poses: A(ligand={ligand_a}, pose={pose_a.id}), " f"B(ligand={ligand_b}, pose={pose_b.id})")
+    logging.debug(
+        f"Best poses: A(ligand={ligand_a}, pose={pose_a.id}), "
+        f"B(ligand={ligand_b}, pose={pose_b.id})"
+    )
 
     edge_topology_dir = ctx.protein_dir.edge_dir(edge).topology_dir
 
@@ -64,7 +69,9 @@ def merge_edge_topologies(edge: Edge, ctx: LigConvContext):
         forcefield_path="amber99sb-ildn.ff",
     )
 
-    pos_res_for_ligand_to_fix_structure(edge_merged_topology, edge_topology_dir / "posre_Ligand.itp")
+    pos_res_for_ligand_to_fix_structure(
+        edge_merged_topology, edge_topology_dir / "posre_Ligand.itp"
+    )
 
 
 def find_best_pose_by_score(pose_file: GenericPath) -> Pose:

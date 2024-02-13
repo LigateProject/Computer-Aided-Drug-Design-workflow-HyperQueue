@@ -16,13 +16,16 @@ def test_construct_additional_gromacs_files(data_dir, tmp_path):
 
     out_path = tmp_path / "out.gro"
     construct_additional_gromacs_files(pose, 1, gro_path, out_path)
-    check_files_are_equal(data_dir / "ligen/p38/fixtures/gromacs/lig_p38a_2aa_additional.gro", out_path)
+    check_files_are_equal(
+        data_dir / "ligen/p38/fixtures/gromacs/lig_p38a_2aa_additional.gro", out_path
+    )
 
 
 def test_shift_last_gromacs_line(data_dir, tmp_path):
     path = tmp_path / "merged.gro"
     shutil.copy(
-        data_dir / "ligen/p38/ligands_gaff2/lig_p38a_2aa/edges/lig_p38a_2aa_p38a_2bb/structure/merged.gro",
+        data_dir
+        / "ligen/p38/ligands_gaff2/lig_p38a_2aa/edges/lig_p38a_2aa_p38a_2bb/structure/merged.gro",
         path,
     )
 
@@ -34,7 +37,10 @@ def test_shift_last_gromacs_line(data_dir, tmp_path):
 
 
 def test_shift_last_gromacs_line_roundtrip(data_dir, tmp_path):
-    original_file = data_dir / "ligen/p38/ligands_gaff2/lig_p38a_2aa/edges/lig_p38a_2aa_p38a_2bb/structure/merged.gro"
+    original_file = (
+        data_dir
+        / "ligen/p38/ligands_gaff2/lig_p38a_2aa/edges/lig_p38a_2aa_p38a_2bb/structure/merged.gro"
+    )
 
     path = tmp_path / "merged.gro"
     shutil.copy(original_file, path)

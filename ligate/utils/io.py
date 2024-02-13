@@ -127,7 +127,9 @@ def split_file_by_lines(file: Path, max_lines: int) -> Iterator[str]:
 
 
 # File iteration
-def iterate_files(directory: GenericPath, filter: Optional[Callable[[Path], bool]] = None) -> Iterable[Path]:
+def iterate_files(
+    directory: GenericPath, filter: Optional[Callable[[Path], bool]] = None
+) -> Iterable[Path]:
     """
     Iterates files in the given directory (non-recursively).
     Optionally, you can select a filter for each file.
@@ -169,7 +171,9 @@ def file_has_extension(path: GenericPath, extension: str) -> bool:
 def check_has_extension(path: GenericPath, extension: str):
     actual_extension = Path(path).suffix.strip(".")
     if actual_extension != extension:
-        raise Exception(f"Path {path} should have extension {extension}, but it has {actual_extension}")
+        raise Exception(
+            f"Path {path} should have extension {extension}, but it has {actual_extension}"
+        )
 
 
 # General utility

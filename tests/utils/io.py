@@ -16,7 +16,10 @@ def check_files_are_equal(expected: GenericPath, actual: GenericPath, bless=True
             bless_file(expected, actual, bless_mode)
             return
 
-        raise Exception(f"Expected file `{expected}` not found. Run test again with BLESS=create to " "create it.")
+        raise Exception(
+            f"Expected file `{expected}` not found. Run test again with BLESS=create to "
+            "create it."
+        )
 
     with open(actual) as actual_file:
         expected_file = expected_file.read()

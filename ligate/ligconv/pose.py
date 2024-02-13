@@ -158,7 +158,10 @@ def extract_pose(pose_file: GenericPath, pose_number: int, output: GenericPath):
         file.write(f"{pose.molecule.lines[0]}\n")
 
         nums = line_as_numbers(pose.molecule.lines[1], [0, 1, 2, 3, 4])
-        file.write(f"{len(pose.atoms.lines):5} {len(pose.bonds.lines):5} " f"{nums[2]:5} {nums[3]:5} {nums[4]:5}\n")
+        file.write(
+            f"{len(pose.atoms.lines):5} {len(pose.bonds.lines):5} "
+            f"{nums[2]:5} {nums[3]:5} {nums[4]:5}\n"
+        )
         file.write(f"{join_lines(pose.molecule.lines[2:])}\n")
 
         # Write atoms
@@ -174,7 +177,9 @@ def extract_pose(pose_file: GenericPath, pose_number: int, output: GenericPath):
         file.write(f"{join_lines(pose.substructure.lines)}\n")
 
 
-def extract_and_clean_pose(pose_file: GenericPath, pose_number: int, output: GenericPath, babel: Babel):
+def extract_and_clean_pose(
+    pose_file: GenericPath, pose_number: int, output: GenericPath, babel: Babel
+):
     """
     Extract a single pose with the given number (index starting from 1) from the `pose_file`.
     Writes the pose into `output`.

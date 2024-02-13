@@ -12,7 +12,9 @@ class GromacsTopologyFiles:
     files: List[Path]
 
 
-def convert_pdb_to_gmx(gmx: GMX, pdb_path: GenericPath, output_dir: GenericPath) -> GromacsTopologyFiles:
+def convert_pdb_to_gmx(
+    gmx: GMX, pdb_path: GenericPath, output_dir: GenericPath
+) -> GromacsTopologyFiles:
     """
     Generates `conf.gro` and topology files from a protein PDB file.
     """
