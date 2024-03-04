@@ -52,6 +52,10 @@ ENV OST_INSTALL_DIR=${DEPS_BUILD_DIR}/ost
 COPY ./deps/ost.sh /deps
 RUN /deps/ost.sh ${DEPS_BUILD_DIR} ${DEPS_INSTALL_DIR}
 
+# Save the OST Python directory into the environment
+RUN export OST_PYTHON_DIR=$(realpath ${DEPS_INSTALL_DIR}/ost/lib64/python*/site-packages) && \
+    echo 'export PYTHONPATH=${PYTHONPATH}:'${OST_PYTHON_DIR} >> /deps/env.sh
+
 # Clean up space
 # RUN rm -rf ${DEPS_BUILD_DIR}
 # RUN rm -rf /var/lib/apt/lists/*
