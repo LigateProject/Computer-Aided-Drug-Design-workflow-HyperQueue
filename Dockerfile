@@ -52,5 +52,9 @@ ENV OPENMM_LIB_PATH="${DEPS_BUILD_DIR}/openmm/lib"
 RUN cd ${DEPS_SRC_DIR}/openmm-${OPENMM_VERSION}/build/python && \
     python3 setup.py build && python3 setup.py install
 
+# Download OST
+
+# Build OST
+
 # Delete all sources
 RUN rm -rf ${DEPS_SRC_DIR}

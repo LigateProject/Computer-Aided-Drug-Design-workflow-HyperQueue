@@ -37,6 +37,7 @@ def copy_files(files: List[GenericPath], target_dir: GenericPath):
     target_dir = ensure_directory(target_dir)
 
     for path in files:
+        logging.debug(f"Copying {path} to {target_dir}")
         shutil.copy(path, target_dir)
 
 
