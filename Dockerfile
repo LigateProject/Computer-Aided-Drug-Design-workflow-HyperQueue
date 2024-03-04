@@ -10,15 +10,16 @@ ENV BUILD_THREADS="16"
 
 # Install global dependencies
 RUN apt-get update -y && \
-    apt-get install -y --no-install-recommends cmake \
-    git \
-    build-essential \
-    g++ \
-    wget \
-    tar \
-    swig \
-    doxygen \
-    python3-pip
+    apt-get install -y --no-install-recommends \
+        cmake \
+        git \
+        build-essential \
+        g++ \
+        wget \
+        tar \
+        swig \
+        doxygen \
+        python3-pip
 
 RUN python3 -m pip install -U poetry setuptools wheel pip
 
@@ -42,7 +43,7 @@ RUN apt-get -y install --no-instal-recommends \
         libsqlite3-dev \
         libpng-dev \
         libfftw3-dev \
-        libtiff-dev \
+        libtiff-dev
 
 ENV OST_INSTALL_DIR=${DEPS_BUILD_DIR}/ost
 
