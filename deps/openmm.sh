@@ -49,8 +49,8 @@ make -j"${BUILD_THREADS}" && \
 make install
 
 # Needed for the Python build
-export OPENMM_INCLUDE_PATH="${DEPS_INSTALL_DIR}/openmm/include"
-export OPENMM_LIB_PATH="${DEPS_INSTALL_DIR}/openmm/lib"
+export OPENMM_INCLUDE_PATH="${INSTALL_DIR}/openmm/include"
+export OPENMM_LIB_PATH="${INSTALL_DIR}/openmm/lib"
 
 cd python
 python3 setup.py build
