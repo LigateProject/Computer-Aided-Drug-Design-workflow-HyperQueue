@@ -30,7 +30,7 @@ fi
 
 echo "Unzipping OpenMM"
 mkdir -p "${OPENMM_DIR}"
-tar -xf "${ARCHIVE_NAME}" -C openmm --strip-components=1
+tar -xf "${ARCHIVE_NAME}" -C "${OPENMM_DIR}" --strip-components=1
 
 echo "Building OpenMM ${OPENMM_VERSION}"
 
