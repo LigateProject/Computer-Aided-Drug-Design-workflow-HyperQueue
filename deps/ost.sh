@@ -22,7 +22,7 @@ cd "${BUILD_DIR}"
 
 OST_DIR=ost-"${OST_VERSION}"
 
-if [ ! -f ost ] ; then
+if [ ! -d "${OST_DIR}" ] ; then
   echo "Downloading OST ${OST_VERSION}"
   git clone https://git.scicore.unibas.ch/schwede/openstructure.git --depth=1 --branch "${OST_VERSION}" "${OST_DIR}"
 fi

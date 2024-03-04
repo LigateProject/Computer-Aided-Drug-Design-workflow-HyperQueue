@@ -38,7 +38,7 @@ RUN /deps/openmm.sh ${DEPS_BUILD_DIR} ${DEPS_INSTALL_DIR}
 ENV OPENMM_INSTALL_DIR="${DEPS_INSTALL_DIR}/openmm"
 
 # Install OST dependencies
-RUN apt-get -y install --no-instal-recommends \
+RUN apt-get -y install --no-install-recommends \
         libboost-all-dev \
         libeigen3-dev \
         libsqlite3-dev \
