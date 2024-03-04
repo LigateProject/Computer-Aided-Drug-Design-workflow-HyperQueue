@@ -3,6 +3,7 @@ FROM ubuntu:22.04
 ENV OPENMM_VERSION="7.7.0"
 ENV PROMOD_VERSION="3.3.1"
 ENV OST_VERSION="2.4.0"
+ENV BOOST_VERSION="1.82.0"
 
 ENV DEPS_BUILD_DIR="/deps/build"
 ENV DEPS_INSTALL_DIR="/deps/install"
@@ -39,12 +40,15 @@ ENV OPENMM_INSTALL_DIR="${DEPS_INSTALL_DIR}/openmm"
 
 # Install OST dependencies
 RUN apt-get -y install --no-install-recommends \
-        libboost-all-dev \
         libeigen3-dev \
         libsqlite3-dev \
         libpng-dev \
         libfftw3-dev \
         libtiff-dev
+
+# Install Boost (OST dependency)
+COPY ./deps/boost.sh /deps
+RUN /deps/boost.sh ${DEPS_BUILD_DIR} ${DEPS_INSTALL_DIR}
 
 ENV OST_INSTALL_DIR=${DEPS_BUILD_DIR}/ost
 
@@ -59,3 +63,4 @@ RUN export OST_PYTHON_DIR=$(realpath ${DEPS_INSTALL_DIR}/ost/lib64/python*/site-
 # Clean up space
 # RUN rm -rf ${DEPS_BUILD_DIR}
 # RUN rm -rf /var/lib/apt/lists/*
+# source /deps/env.sh

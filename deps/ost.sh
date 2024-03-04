@@ -40,6 +40,10 @@ cmake .. -DCMAKE_INSTALL_PREFIX="${OST_INSTALL_DIR}" \
          -DENABLE_MM=ON \
          -DOPEN_MM_LIBRARY="${OPENMM_INSTALL_DIR}"/lib/libOpenMM.so \
          -DOPEN_MM_INCLUDE_DIR="${OPENMM_INSTALL_DIR}"/include \
-         -DOPEN_MM_PLUGIN_DIR="${OPENMM_INSTALL_DIR}"/lib/plugins
+         -DOPEN_MM_PLUGIN_DIR="${OPENMM_INSTALL_DIR}"/lib/plugins \
+         -DBOOST_ROOT="${INSTALL_DIR/boost}" \
+         -DPython_EXECUTABLE="$(which python)" \
+         -DPython_FIND_VIRTUALENV=ONLY
+
 make -j"${BUILD_THREADS}"
 make install
