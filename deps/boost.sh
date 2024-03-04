@@ -30,7 +30,7 @@ fi
 
 echo "Unzipping Boost"
 mkdir -p "${BOOST_DIR}"
-#tar -xf "${ARCHIVE_NAME}" -C "${BOOST_DIR}" --strip-components=1
+tar -xf "${ARCHIVE_NAME}" -C "${BOOST_DIR}" --strip-components=1
 
 BOOST_INSTALL_DIR=${INSTALL_DIR}/boost
 
@@ -39,14 +39,16 @@ echo "Building Boost ${BOOST_VERSION}"
 cd "${BOOST_DIR}"
 
 # Fix for failing to find pyconfig.h
-PYTHON_INCLUDE_DIRS=$(python -c "from sysconfig import get_paths as gp; print(gp()['include'])")
+PYTHON_INCLUDE_DIRS=$(python3 -c "from sysconfig import get_paths as gp; print(gp()['include'])")
 export CPLUS_INCLUDE_PATH="$CPLUS_INCLUDE_PATH:${PYTHON_INCLUDE_DIRS}"
 
-./bootstrap.sh --with-python="$(which python)" --prefix="${BOOST_INSTALL_DIR}"
+./bootstrap.sh --with-python="$(which python3)" --prefix="${BOOST_INSTALL_DIR}"
 ./b2 install -j"${BUILD_THREADS}" \
-  --with-python \
-  --with-test \
   --with-filesystem \
   --with-iostreams \
   --with-program_options \
+  --with-python \
+  --with-regex \
+  --with-system \
+  --with-test \
   --with-thread
