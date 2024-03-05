@@ -2,7 +2,7 @@
 
 # Usage: BOOST_VERSION=1.82.0 ./boost.sh <build-dir> <install-dir>
 
-set -e
+set -eu
 
 # Arguments
 BUILD_DIR=${1:-build}

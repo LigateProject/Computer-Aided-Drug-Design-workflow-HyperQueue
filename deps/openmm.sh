@@ -2,7 +2,7 @@
 
 # Usage: OPENMM_VERSION=7.7.0 ./openmm.sh <build-dir> <install-dir>
 
-set -e
+set -eu
 
 # Arguments
 BUILD_DIR=${1:-build}

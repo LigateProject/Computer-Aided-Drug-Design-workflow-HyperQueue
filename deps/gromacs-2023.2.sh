@@ -2,7 +2,7 @@
 
 # Usage: ./gromacs-2023.2.sh <build-dir> <install-dir>
 
-set -e
+set -eu
 
 GROMACS_VERSION=gromacs-2023.2
 TARGET_DIR=${1:-build}

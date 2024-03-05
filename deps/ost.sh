@@ -2,7 +2,7 @@
 
 # Usage: OST_VERSION=2.4.0 ./ost.sh <build-dir> <install-dir>
 
-set -e
+set -eu
 
 # Arguments
 BUILD_DIR=${1:-build}

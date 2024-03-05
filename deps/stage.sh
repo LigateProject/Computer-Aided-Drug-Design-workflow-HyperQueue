@@ -2,7 +2,7 @@
 
 # Usage: ./stage.sh <build-dir>
 
-set -e
+set -eu
 
 TARGET_DIR=${1:-build}
 TARGET_DIR=$(realpath "${TARGET_DIR}")

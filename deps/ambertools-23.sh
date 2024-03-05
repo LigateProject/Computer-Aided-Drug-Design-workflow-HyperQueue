@@ -3,7 +3,7 @@
 # Usage: ./ambertools-21.sh <build-dir> <install-dir>
 # Requires: MPI, CUDA, Boost
 
-set -e
+set -eu
 
 TARGET_DIR=${1:-build}
 TARGET_DIR=$(realpath "${TARGET_DIR}")
