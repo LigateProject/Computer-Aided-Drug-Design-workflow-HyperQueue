@@ -47,3 +47,7 @@ cmake .. -DCMAKE_INSTALL_PREFIX="${OST_INSTALL_DIR}" \
 
 make -j"${BUILD_THREADS}"
 make install
+
+# Save the OST Python directory into the environment script
+OST_PYTHON_DIR=$(realpath "${OST_INSTALL_DIR}"/lib64/python*/site-packages)
+echo 'export PYTHONPATH=${PYTHONPATH}:'"${OST_PYTHON_DIR}" >> "$ENVIRONMENT_SCRIPT"

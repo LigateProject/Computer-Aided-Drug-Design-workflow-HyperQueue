@@ -7,6 +7,8 @@ ENV BOOST_VERSION="1.82.0"
 
 ENV DEPS_BUILD_DIR="/deps/build"
 ENV DEPS_INSTALL_DIR="/deps/install"
+ENV ENVIRONMENT_SCRIPT="/deps/env.sh"
+
 ENV BUILD_THREADS="16"
 
 # Install global dependencies
@@ -55,10 +57,6 @@ ENV OST_INSTALL_DIR=${DEPS_BUILD_DIR}/ost
 # Install OST
 COPY ./deps/ost.sh /deps
 RUN /deps/ost.sh ${DEPS_BUILD_DIR} ${DEPS_INSTALL_DIR}
-
-# Save the OST Python directory into the environment
-RUN export OST_PYTHON_DIR=$(realpath ${DEPS_INSTALL_DIR}/ost/lib64/python*/site-packages) && \
-    echo 'export PYTHONPATH=${PYTHONPATH}:'${OST_PYTHON_DIR} >> /deps/env.sh
 
 # Clean up space
 # RUN rm -rf ${DEPS_BUILD_DIR}
