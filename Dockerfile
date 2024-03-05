@@ -4,6 +4,7 @@ ENV OPENMM_VERSION="7.7.0"
 ENV PROMOD_VERSION="3.3.1"
 ENV OST_VERSION="2.4.0"
 ENV BOOST_VERSION="1.82.0"
+ENV GROMACS_VERSION="2023.2"
 
 ENV DEPS_BUILD_DIR="/deps/build"
 ENV DEPS_INSTALL_DIR="/deps/install"
@@ -57,6 +58,10 @@ ENV OST_INSTALL_DIR=${DEPS_BUILD_DIR}/ost
 # Install OST
 COPY ./deps/ost.sh /deps
 RUN /deps/ost.sh ${DEPS_BUILD_DIR} ${DEPS_INSTALL_DIR}
+
+# Install Gromacs
+COPY ./deps/gromacs.sh /deps
+RUN /deps/gromacs.sh ${DEPS_BUILD_DIR} ${DEPS_INSTALL_DIR}
 
 # Clean up space
 # RUN rm -rf ${DEPS_BUILD_DIR}

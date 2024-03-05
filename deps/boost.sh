@@ -34,7 +34,6 @@ tar -xf "${ARCHIVE_NAME}" -C "${BOOST_DIR}" --strip-components=1
 
 BOOST_INSTALL_DIR=${INSTALL_DIR}/boost
 
-# Install Boost
 echo "Building Boost ${BOOST_VERSION}"
 cd "${BOOST_DIR}"
 
