@@ -39,7 +39,7 @@ cd "${BOOST_DIR}"
 
 # Fix for failing to find pyconfig.h
 PYTHON_INCLUDE_DIRS=$(python3 -c "from sysconfig import get_paths as gp; print(gp()['include'])")
-export CPLUS_INCLUDE_PATH="$CPLUS_INCLUDE_PATH:${PYTHON_INCLUDE_DIRS}"
+export CPLUS_INCLUDE_PATH="${CPLUS_INCLUDE_PATH:-}:${PYTHON_INCLUDE_DIRS}"
 
 ./bootstrap.sh --with-python="$(which python3)" --prefix="${BOOST_INSTALL_DIR}"
 ./b2 install -j"${BUILD_THREADS}" \
