@@ -46,5 +46,6 @@ make -j "${BUILD_THREADS}"
 make install
 
 # Configure the environment
+echo "# Gromacs" >> "$ENVIRONMENT_SCRIPT"
 echo "source ${GROMACS_INSTALL_DIR}/bin/GMXRC" >> "$ENVIRONMENT_SCRIPT"
 echo "export GMXLIB=${GROMACS_INSTALL_DIR}/share/gromacs/top" >> "$ENVIRONMENT_SCRIPT"

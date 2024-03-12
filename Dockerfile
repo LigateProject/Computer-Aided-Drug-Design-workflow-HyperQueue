@@ -1,11 +1,5 @@
 FROM ubuntu:22.04
 
-ENV OPENMM_VERSION="7.7.0"
-ENV OST_VERSION="2.4.0"
-ENV BOOST_VERSION="1.82.0"
-ENV PROMOD_VERSION="3.3.0"
-ENV GROMACS_VERSION="2023.2"
-
 ENV DEPS_BUILD_DIR="/deps/build"
 ENV DEPS_INSTALL_DIR="/deps/install"
 ENV ENVIRONMENT_SCRIPT="/deps/env.sh"
@@ -23,51 +17,57 @@ RUN apt-get update -y && \
         tar \
         swig \
         doxygen \
-        python3-pip
-
-RUN python3 -m pip install -U setuptools wheel pip
-
-RUN mkdir -p ${DEPS_BUILD_DIR} ${DEPS_INSTALL_DIR}
-
-WORKDIR ${DEPS_BUILD_DIR}
-
-# Install OpenMM dependencies
-RUN python3 -m pip install numpy==1.26.4 cython==3.0.8
-RUN apt-get install -y --no-install-recommends libpython3-dev
-
-# Install OpenMM (Promod dependency)
-COPY ./deps/openmm.sh /deps
-RUN /deps/openmm.sh ${DEPS_BUILD_DIR} ${DEPS_INSTALL_DIR}
-
-ENV OPENMM_INSTALL_DIR="${DEPS_INSTALL_DIR}/openmm"
-
-# Install OST dependencies
-RUN apt-get -y install --no-install-recommends \
+        libopenmpi-dev \
+        python3-pip \
+        python3-venv \
+        libpython3-dev \
         libeigen3-dev \
         libsqlite3-dev \
         libpng-dev \
         libfftw3-dev \
         libtiff-dev
 
-# Install Boost (OST dependency)
-COPY ./deps/boost.sh /deps
-RUN /deps/boost.sh ${DEPS_BUILD_DIR} ${DEPS_INSTALL_DIR}
+RUN python3 -m pip install -U setuptools wheel pip
 
-ENV OST_INSTALL_DIR=${DEPS_BUILD_DIR}/ost
+RUN mkdir -p ${DEPS_BUILD_DIR} ${DEPS_INSTALL_DIR}
 
-# Install OST (Promod dependency)
-COPY ./deps/ost.sh /deps
-RUN /deps/ost.sh ${DEPS_BUILD_DIR} ${DEPS_INSTALL_DIR}
+WORKDIR /cadd
 
-# Install Promod
-COPY ./deps/promod.sh /deps
-RUN /deps/promod.sh ${DEPS_BUILD_DIR} ${DEPS_INSTALL_DIR}
+# Python dependencies needed for some of the native dependencies
+RUN python3 -m pip install numpy==1.26.4 cython==3.0.8
 
-# Install Gromacs
-COPY ./deps/gromacs.sh /deps
-RUN /deps/gromacs.sh ${DEPS_BUILD_DIR} ${DEPS_INSTALL_DIR}
+# Pre-install the dependencies for a more interactive Docker image build
+COPY deps/openmm.sh deps/openmm.sh
+RUN ./deps/openmm.sh ${DEPS_BUILD_DIR} ${DEPS_INSTALL_DIR}
+COPY deps/boost.sh deps/boost.sh
+RUN ./deps/boost.sh ${DEPS_BUILD_DIR} ${DEPS_INSTALL_DIR}
+COPY deps/ost.sh deps/ost.sh
+RUN ./deps/ost.sh ${DEPS_BUILD_DIR} ${DEPS_INSTALL_DIR}
+COPY deps/promod.sh deps/promod.sh
+RUN ./deps/promod.sh ${DEPS_BUILD_DIR} ${DEPS_INSTALL_DIR}
+COPY deps/gromacs.sh deps/gromacs.sh
+RUN ./deps/gromacs.sh ${DEPS_BUILD_DIR} ${DEPS_INSTALL_DIR}
+
+# We need to install Poetry outside of the target environment for the project (which in this case
+# is just the global interpreter), otherwise it will break.
+ENV POETRY_VIRTUALENVS_CREATE=false
+RUN pip install pipx
+
+# Install Python dependencies
+COPY pyproject.toml pyproject.toml
+COPY poetry.lock poetry.lock
+RUN pipx run poetry install --extras awh --no-root
+
+# Finish the installation of the native dependencies
+COPY env.py env.py
+RUN python3 env.py install ${DEPS_INSTALL_DIR} --build-dir ${DEPS_BUILD_DIR}
+
+# Install the project
+COPY ligate ligate
+RUN pipx run poetry install --extras awh
+
+RUN bash -c "source ${ENVIRONMENT_SCRIPT} && python3 env.py check-env || exit 0"
 
 # Clean up space
-# RUN rm -rf ${DEPS_BUILD_DIR}
-# RUN rm -rf /var/lib/apt/lists/*
-# source /deps/env.sh
+#RUN rm -rf ${DEPS_BUILD_DIR}
+#RUN rm -rf /var/lib/apt/lists/*

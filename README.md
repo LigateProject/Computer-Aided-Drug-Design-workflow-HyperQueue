@@ -1,4 +1,4 @@
-# Ligate Ligen/Gromacs AWH pipeline
+# Ligate Ligen/Gromacs CADD workflow
 This repository contains various utility functions for converting Ligen/Gromacs files and primarily
 it implements two pipelines:
 1) Conversion from Ligen data to Gromacs data (`ligconv`)
@@ -9,53 +9,56 @@ a task graph.
 
 ## Installation
 
-### Build environment
-Before starting to setup anything, you should have at least the following packages available:
+There is a bunch of external dependencies required to run the workflow. They can be installed in two ways, with a Dockerfile or natively on the target system.
+
+### Docker installation
+Install Docker and run:
+```bash
+$ docker build -t cadd .
+```
+You can convert the resulting image to Singularity/Apptainer if you need to execute it on an HPC
+cluster.
+
+### Native installation
+
+Before starting to set up anything, you should have at least the following packages available:
 
 - C/C++ compiler
 - CMake
 - CPython development headers (`python-dev`)
 - MPI implementation (for compiling `mpi4py`)
-  - Preferably OpenMPI, AmberTools seems to have some issue with MPICH
+    - Preferably OpenMPI, AmberTools seems to have some issue with MPICH
+    - For example `libopenmpi-dev`
 
-### External dependencies
-- Gromacs 2022
-- stage (branch `ligate` from `https://gitlab.com/kobzol/stage`)
-
-The external dependencies can be installed using scripts located
-in the `deps` directory, or (preferably) using the `python3 main.py install` command.
-There is also a `Dockerfile` which installs all of these dependencies into a Docker image.
-
-### Python dependencies
-Python version has to be at least `3.10`.
+You will then need to install several dependencies. You can examine the [Dockerfile](Dockerfile) to see how it installs these dependencies on Ubuntu 22.04.
 
 1) Create a virtual environment
     ```bash
     $ python3 -m venv venv
     $ source venv/bin/activate
-    $ python3 -m pip install -U setuptools wheel pip 
+    (venv) $ python3 -m pip install -U setuptools wheel pip 
     ```
 2) Install `Poetry`
     ```bash
-    $ python3 -m pip install poetry 
+    (venv) $ python3 -m pip install poetry 
     ```
 3) Install Python dependencies
     ```bash
-    $ poetry install 
+    (venv) $ poetry install
     ```
 4) Install native dependencies
    ```bash
-   $ python3 main.py install
+   (venv) $ python3 env.py install
    ```
-   The installation step will generate a `awh-env.sh` file, which you should load before using this
+   - The installation step will generate an `env.sh` file, which you should load before using this
    package (and before executing the `check-env` command):
    ```bash
-   $ source awh-env.sh
+   (venv) $ source awh-env.sh
    ```
-
+   - You can also run the scripts in the `deps` directory manualy, in the same order as in the Dockerfile.
 5) Check if everything has been installed correctly
    ```bash
-   $ python3 main.py check-env
+   (venv) $ python3 main.py check-env
    ```
 
 ## Running the pipeline
