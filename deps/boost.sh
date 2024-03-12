@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Usage: BOOST_VERSION=1.82.0 ./boost.sh <build-dir> <install-dir>
+# Usage: ENVIRONMENT_SCRIPT=<path> BOOST_VERSION=1.82.0 ./boost.sh <build-dir> <install-dir>
 
 set -eu
 
@@ -51,3 +51,8 @@ export CPLUS_INCLUDE_PATH="${CPLUS_INCLUDE_PATH:-}:${PYTHON_INCLUDE_DIRS}"
   --with-system \
   --with-test \
   --with-thread
+
+# Save the Boost lib directory into the environment script
+BOOST_LIB_DIR=$(realpath "${BOOST_INSTALL_DIR}"/lib)
+echo "# Boost" >> "$ENVIRONMENT_SCRIPT"
+echo 'export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:'"${BOOST_LIB_DIR}" >> "$ENVIRONMENT_SCRIPT"

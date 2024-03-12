@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Usage: GROMACS_VERSION=2023.2 ./gromacs.sh <build-dir> <install-dir>
+# Usage: ENVIRONMENT_SCRIPT=<path> GROMACS_VERSION=2023.2 ./gromacs.sh <build-dir> <install-dir>
 
 set -eu
 

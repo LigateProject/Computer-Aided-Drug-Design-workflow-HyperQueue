@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Usage: OST_VERSION=2.4.0 ./ost.sh <build-dir> <install-dir>
+# Usage: ENVIRONMENT_SCRIPT=<path> OST_VERSION=2.4.0 ./ost.sh <build-dir> <install-dir>
 
 set -eu
 
@@ -50,4 +50,5 @@ make install
 
 # Save the OST Python directory into the environment script
 OST_PYTHON_DIR=$(realpath "${OST_INSTALL_DIR}"/lib64/python*/site-packages)
+echo "# OST" >> "$ENVIRONMENT_SCRIPT"
 echo 'export PYTHONPATH=${PYTHONPATH}:'"${OST_PYTHON_DIR}" >> "$ENVIRONMENT_SCRIPT"
