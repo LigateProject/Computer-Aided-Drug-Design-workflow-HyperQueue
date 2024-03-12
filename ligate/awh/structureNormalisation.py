@@ -20,10 +20,10 @@ def normalise_structure(input: Path, seqres_fasta: Path, output: Path):
     :param output: Cleaned structure output in PDB format.
     """
     ent = load_structure(input)
-    seqres = load_seqres(seqres_fasta)
+    seqres = load_seqres(str(seqres_fasta))
     ent = clean(ent)
     ent = normalize(ent, seqres)
-    io.SavePDB(ent, output)
+    io.SavePDB(ent, str(output))
 
 
 def load_structure(structure_path: Path):
@@ -66,7 +66,7 @@ def load_structure(structure_path: Path):
     return entity
 
 
-def load_seqres(seqres_path):
+def load_seqres(seqres_path: str):
     """Read sequence list in fasta format"""
     if not os.path.exists(seqres_path):
         raise AWHError(f"file not found: {seqres_path}")
