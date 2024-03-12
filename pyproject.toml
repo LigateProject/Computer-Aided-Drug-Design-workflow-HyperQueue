@@ -22,12 +22,13 @@ pdb-tools = { version = "2.5.0", optional = true }
 parmEd = { git = "https://github.com/Valdes-Tresanco-MS/ParmEd.git", branch = "v3.4", optional = true }
 gmx-mmpbsa = { version = "1.5.6", optional = true }
 acpype = { version = "2022.7.21", optional = true }
-ruff = "^0.2.1"
+cython = { version = "3.0.8", optional = true }
 
 [tool.poetry.extras]
 awh = [
     "Jinja2",
     "numpy",
+    "cython",
     "rdkit",
     "biopython",
     "tmbed",
@@ -43,10 +44,8 @@ awh = [
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.1.2"
 pytest-xdist = "2.5.0"
-flake8 = "4.0.1"
-black = "22.3.0"
-isort = "5.10.1"
 pytest-insta = "^0.2.0"
+ruff = "^0.2.1"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
