@@ -48,8 +48,34 @@ cmake .. -DCMAKE_INSTALL_PREFIX="${OST_INSTALL_DIR}" \
 make -j"${BUILD_THREADS}"
 make install
 
-# Save the OST Python directory into the environment script
 OST_LIB_DIR=$(realpath "${OST_INSTALL_DIR}"/lib64)
+
+# Build compound library
+echo "Downloading compound library"
+if [ ! -f components.cif ] ; then
+  wget https://files.wwpdb.org/pub/pdb/data/monomers/components.cif.gz
+  gzip -d -f -q components.cif.gz
+fi
+if [ ! -f aa-variants-v1.cif ] ; then
+  wget https://files.wwpdb.org/pub/pdb/data/monomers/aa-variants-v1.cif.gz
+  gzip -d -f -q aa-variants-v1.cif.gz
+fi
+if [ ! -f chem_comp_model.cif ] ; then
+  wget https://files.wwpdb.org/pub/pdb/data/component-models/complete/chem_comp_model.cif.gz
+  gzip -d -f -q chem_comp_model.cif.gz
+fi
+
+export LD_LIBRARY_PATH=${LD_LIBRARY_PATH:-}:${OST_LIB_DIR}
+export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${INSTALL_DIR}/boost/lib
+
+echo "Building compound library"
+"${OST_INSTALL_DIR}"/bin/chemdict_tool create components.cif compounds.chemlib
+"${OST_INSTALL_DIR}"/bin/chemdict_tool update aa-variants-v1.cif.gz compounds.chemlib pdb
+"${OST_INSTALL_DIR}"/bin/chemdict_tool update chem_comp_model.cif.gz compounds.chemlib pdb
+
+cp compounds.chemlib "${OST_INSTALL_DIR}"/compounds.chemlib
+
+# Save the OST Python and library directories into the environment script
 OST_PYTHON_DIR=$(realpath "${OST_LIB_DIR}"/python*/site-packages)
 echo "# OST" >> "$ENVIRONMENT_SCRIPT"
 echo 'export PYTHONPATH=${PYTHONPATH}:'"${OST_PYTHON_DIR}" >> "$ENVIRONMENT_SCRIPT"

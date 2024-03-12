@@ -82,9 +82,14 @@ def check_ambertools() -> bool:
 
 def check_promod3() -> bool:
     prefix = "Checking if `ProMod3` is available:"
-    promod_available = shutil.which("pm") is not None
-    print_availability_status(prefix, promod_available, ok="OK", notok="pm not found")
-    return promod_available
+    pm_found = shutil.which("pm") is not None
+    print_availability_status(prefix, pm_found, ok="OK", notok="pm not found")
+
+    def import_promod3():
+        import promod3
+
+    promod_importable = check_python_package_import("promod3", import_promod3)
+    return pm_found and promod_importable
 
 
 def check_python_package(name: str, expected_version: str) -> bool:

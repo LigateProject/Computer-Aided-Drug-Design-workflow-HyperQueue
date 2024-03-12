@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Usage: OPENMM_VERSION=7.7.0 ./openmm.sh <build-dir> <install-dir>
+# Usage: ENVIRONMENT_SCRIPT=<path> OPENMM_VERSION=7.7.0 ./openmm.sh <build-dir> <install-dir>
 
 set -eu
 
@@ -55,3 +55,7 @@ export OPENMM_LIB_PATH="${INSTALL_DIR}/openmm/lib"
 cd python
 python3 setup.py build
 python3 setup.py install
+
+# Save the OpenMM library directory into the environment script
+echo "# OpenMM" >> "$ENVIRONMENT_SCRIPT"
+echo 'export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:'"${OPENMM_LIB_PATH}" >> "$ENVIRONMENT_SCRIPT"
