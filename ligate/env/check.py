@@ -4,6 +4,7 @@ import os
 import shutil
 from importlib.metadata import version
 from pathlib import Path
+from typing import Callable
 
 import click
 
@@ -15,7 +16,9 @@ def add_dir_to_path(directory: Path):
         os.environ["PATH"] = f"{path}:{directory}"
 
 
-def print_availability_status(prefix: str, available: bool, ok="found", notok="not found"):
+def print_availability_status(
+    prefix: str, available: bool, ok="found", notok="not found"
+):
     if available:
         click.echo(f"{prefix} {click.style(f'[{ok}]', fg='green')}")
     else:
@@ -41,7 +44,8 @@ def check_env_exists(env: str, notok="missing") -> bool:
 
 def check_gromacs_env_exists() -> bool:
     return check_env_exists(
-        "GMXLIB", notok="GMXLIB missing. Set it to <GROMACS_INSTALL_DIR>/share/gromacs/top"
+        "GMXLIB",
+        notok="GMXLIB missing. Set it to <GROMACS_INSTALL_DIR>/share/gromacs/top",
     )
 
 
@@ -70,7 +74,9 @@ def check_gmxmmpba_import() -> bool:
 def check_ambertools() -> bool:
     prefix = "Checking if `AmberTools` is available:"
     antechamber_available = shutil.which("antechamber") is not None
-    print_availability_status(prefix, antechamber_available, ok="OK", notok="antechamber not found")
+    print_availability_status(
+        prefix, antechamber_available, ok="OK", notok="antechamber not found"
+    )
     return antechamber_available
 
 
@@ -98,6 +104,18 @@ def check_python_package(name: str, expected_version: str) -> bool:
     except BaseException as error:
         print_availability_status(prefix, False, ok="OK", notok="import error")
         logging.error(error)
+    return False
+
+
+def check_python_package_import(name: str, import_callback: Callable[[], None]) -> bool:
+    prefix = f"Checking if `{name}` can be imported:"
+    try:
+        import_callback()
+        print_availability_status(prefix, True, ok="can be imported")
+        return True
+    except ImportError as error:
+        logging.error(error)
+        print_availability_status(prefix, False, notok="cannot be imported")
     return False
 
 

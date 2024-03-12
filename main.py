@@ -11,6 +11,7 @@ from ligate.env.check import (
     check_openbabel_import,
     check_promod3,
     check_python_package,
+    check_python_package_import,
     check_tmbed_model,
 )
 from ligate.env.install import install_native_deps
@@ -45,7 +46,11 @@ def check_env():
     ok &= check_python_package("acpype", "2022.7.21")
     ok &= check_binary_exists("acpype")
     ok &= check_python_package("tmbed", "1.0.0")
-    ok &= check_python_package("ost", "1.0.0")
+
+    def import_ost():
+        import ost
+
+    ok &= check_python_package_import("ost", import_ost)
     ok &= check_tmbed_model()
     ok &= check_ambertools()
     ok &= check_promod3()
