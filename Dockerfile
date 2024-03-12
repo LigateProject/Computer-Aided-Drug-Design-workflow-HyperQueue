@@ -1,9 +1,9 @@
 FROM ubuntu:22.04
 
 ENV OPENMM_VERSION="7.7.0"
-ENV PROMOD_VERSION="3.3.1"
 ENV OST_VERSION="2.4.0"
 ENV BOOST_VERSION="1.82.0"
+ENV PROMOD_VERSION="3.3.0"
 ENV GROMACS_VERSION="2023.2"
 
 ENV DEPS_BUILD_DIR="/deps/build"
@@ -25,7 +25,7 @@ RUN apt-get update -y && \
         doxygen \
         python3-pip
 
-RUN python3 -m pip install -U poetry setuptools wheel pip
+RUN python3 -m pip install -U setuptools wheel pip
 
 RUN mkdir -p ${DEPS_BUILD_DIR} ${DEPS_INSTALL_DIR}
 
@@ -35,7 +35,7 @@ WORKDIR ${DEPS_BUILD_DIR}
 RUN python3 -m pip install numpy==1.26.4 cython==3.0.8
 RUN apt-get install -y --no-install-recommends libpython3-dev
 
-# Install OpenMM
+# Install OpenMM (Promod dependency)
 COPY ./deps/openmm.sh /deps
 RUN /deps/openmm.sh ${DEPS_BUILD_DIR} ${DEPS_INSTALL_DIR}
 
@@ -55,9 +55,13 @@ RUN /deps/boost.sh ${DEPS_BUILD_DIR} ${DEPS_INSTALL_DIR}
 
 ENV OST_INSTALL_DIR=${DEPS_BUILD_DIR}/ost
 
-# Install OST
+# Install OST (Promod dependency)
 COPY ./deps/ost.sh /deps
 RUN /deps/ost.sh ${DEPS_BUILD_DIR} ${DEPS_INSTALL_DIR}
+
+# Install Promod
+COPY ./deps/promod.sh /deps
+RUN /deps/promod.sh ${DEPS_BUILD_DIR} ${DEPS_INSTALL_DIR}
 
 # Install Gromacs
 COPY ./deps/gromacs.sh /deps
