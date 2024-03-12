@@ -49,6 +49,8 @@ make -j"${BUILD_THREADS}"
 make install
 
 # Save the OST Python directory into the environment script
-OST_PYTHON_DIR=$(realpath "${OST_INSTALL_DIR}"/lib64/python*/site-packages)
+OST_LIB_DIR=$(realpath "${OST_INSTALL_DIR}"/lib64)
+OST_PYTHON_DIR=$(realpath "${OST_LIB_DIR}"/python*/site-packages)
 echo "# OST" >> "$ENVIRONMENT_SCRIPT"
 echo 'export PYTHONPATH=${PYTHONPATH}:'"${OST_PYTHON_DIR}" >> "$ENVIRONMENT_SCRIPT"
+echo 'export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:'"${OST_LIB_DIR}" >> "$ENVIRONMENT_SCRIPT"
