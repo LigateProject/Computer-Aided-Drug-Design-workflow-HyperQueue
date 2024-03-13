@@ -17,7 +17,7 @@ from ligate.wrapper.gmx import GMX  # noqa
 from ligate.wrapper.stage import Stage  # noqa
 
 
-def get_data(path: str) -> Path:
+def get_test_data(path: str) -> Path:
     return (Path(PYTEST_DIR) / "data").absolute() / path
 
 
