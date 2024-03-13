@@ -6,7 +6,7 @@ from ost import conop, io, seq
 from ost.mol.alg import Molck, MolckSettings
 from promod3 import modelling
 
-from ..utils.error import AWHError
+from ....utils.error import AWHError
 
 
 def normalise_structure(input: Path, seqres_fasta: Path, output: Path):

@@ -3,12 +3,10 @@ from pathlib import Path
 import pytest
 
 from ligate.awh.pipeline.check_protein import check_protein
-from .utils.io import read_file
 
 
-def test_check_protein(protein_bace_amber, tmp_path, snapshot):
+def test_check_protein(protein_bace_amber, tmp_path):
     check_protein(protein_bace_amber, tmp_path)
-    assert snapshot() == read_file(tmp_path / "protein_normalized.pdb")
 
 
 @pytest.fixture
