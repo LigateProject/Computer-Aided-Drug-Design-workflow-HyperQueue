@@ -52,15 +52,11 @@ def load_structure(structure_path: Path):
         try:
             entity = io.LoadPDB(structure_path)
         except BaseException as e:
-            raise AWHError(
-                "promod3 didn't work correctly (error reading input PDB file)."
-            ) from e
+            raise AWHError("promod3 didn't work correctly (error reading input PDB file).") from e
         if len(entity.residues) == 0:
             raise AWHError(f"No residues found in file: {structure_path}")
     else:
-        raise AWHError(
-            f"Unknown/ unsupported file extension found for " f"file {structure_path}."
-        )
+        raise AWHError(f"Unknown/ unsupported file extension found for " f"file {structure_path}.")
     # restore old loglevel and return
     ost.PopVerbosityLevel()
     return entity
@@ -125,9 +121,7 @@ def normalize(ent, seqres):
             try:
                 aln = seq.alg.AlignToSEQRES(chain_sel, s, validate=False)
             except BaseException as e:
-                raise AWHError(
-                    "Could not normalise structure due to alignment failure."
-                ) from e
+                raise AWHError("Could not normalise structure due to alignment failure.") from e
             aln.AttachView(1, chain_sel)
             aln_list.append(aln)
             names.append(name)
