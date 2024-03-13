@@ -2,20 +2,15 @@ import json
 from dataclasses import dataclass
 from pathlib import Path
 
-from hyperqueue import Job
-from hyperqueue.ffi.protocol import ResourceRequest
-from hyperqueue.task.task import Task
-
-from .ligen.common import LigenTaskContext
-from .ligen.container import ligen_container
-from .expansion import SubmittedExpansion
+from .common import LigenTaskContext
+from .container import ligen_container
 
 
 @dataclass
 class ScreeningConfig:
     input_mol2: Path
     input_pdb: Path
-    ligand_expansion: SubmittedExpansion
+    input_expanded_smi: Path
     output_path: Path
 
     input_protein_name: str
@@ -26,15 +21,9 @@ class ScreeningConfig:
     num_workers_docknscore: int = 100
 
 
-@dataclass
-class SubmittedScreening:
-    config: ScreeningConfig
-    task: Task
-
-
-def screening_task(ctx: LigenTaskContext, config: ScreeningConfig, dep=None):
+def ligen_screen_ligands(ctx: LigenTaskContext, config: ScreeningConfig, dep=None):
     with ligen_container(container=ctx.container_path) as ligen:
-        input_smi = ligen.map_input(config.ligand_expansion.config.output_smi)
+        input_smi = ligen.map_input(config.input_expanded_smi)
         input_pdb = ligen.map_input(config.input_pdb)
         input_mol2 = ligen.map_input(config.input_mol2)
         output_csv = ligen.map_output(config.output_path)
@@ -93,19 +82,3 @@ def screening_task(ctx: LigenTaskContext, config: ScreeningConfig, dep=None):
             "ligen",
             input=json.dumps(description).encode("utf8"),
         )
-
-
-def submit_screening(
-    ctx: LigenTaskContext, config: ScreeningConfig, job: Job
-) -> SubmittedScreening:
-    task = job.function(
-        screening_task,
-        args=(
-            ctx,
-            config,
-        ),
-        deps=(config.ligand_expansion.task,),
-        name=f"screening-{config.output_path.name}",
-        resources=ResourceRequest(cpus=config.cores),
-    )
-    return SubmittedScreening(config=config, task=task)

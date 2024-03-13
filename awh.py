@@ -18,6 +18,12 @@ if __name__ == "__main__":
         datefmt="%d-%m-%Y %H:%M:%S",
     )
 
-    input = AWHInput(input_dir=DATA_DIR / "protLig_benchmark_FEP" / "bace")
+    input = AWHInput(
+        protein_pdb=DATA_DIR
+        / "protLig_benchmark_FEP"
+        / "bace_p2"
+        / "protein_amber"
+        / "protein.pdb"
+    )
 
-    check_protein(input.input_dir / "protein_amber" / "protein.pdb", WORKDIR)
+    check_protein(input.protein_pdb, WORKDIR)

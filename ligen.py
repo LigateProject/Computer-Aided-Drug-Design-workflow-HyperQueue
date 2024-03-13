@@ -12,16 +12,18 @@ from hyperqueue.task.function import PythonEnv
 
 from ligate.awh.pipeline.virtual_screening.ligen.common import LigenTaskContext
 from ligate.awh.pipeline.virtual_screening.ligen.container import ensure_directory
-from ligate.awh.pipeline.virtual_screening.expansion import (
-    ExpandConfig,
-    SubmittedExpansion,
-    create_configs_from_smi,
-    expand_task,
-    hq_submit_expansion,
+from ligate.awh.pipeline.virtual_screening.ligen.expansion import (
+    ExpansionConfig,
+    create_expansion_configs_from_smi,
+    ligen_expand_smi,
 )
-from ligate.awh.pipeline.virtual_screening.virtual_screening import (
+from ligate.awh.pipeline.virtual_screening.ligen.virtual_screening import (
     ScreeningConfig,
-    submit_screening,
+)
+from ligate.awh.pipeline.virtual_screening.tasks import (
+    SubmittedExpansion,
+    hq_submit_expansion,
+    hq_submit_screening,
 )
 
 ROOT = Path(__file__).absolute().parent
@@ -38,9 +40,11 @@ app = typer.Typer()
 def expand(path: Path, name: Optional[str] = None):
     if name is None:
         name = path.stem
-    expand_task(
+    ligen_expand_smi(
         LigenTaskContext(workdir=Path(os.getcwd()), container_path=CONTAINER_PATH),
-        ExpandConfig(id=name, input_smi=path, output_smi=Path(f"{name}.expanded.smi")),
+        ExpansionConfig(
+            id=name, input_smi=path, output_smi=Path(f"{name}.expanded.smi")
+        ),
     )
 
 
@@ -48,9 +52,9 @@ def create_screening_config(task: SubmittedExpansion) -> ScreeningConfig:
     return ScreeningConfig(
         input_mol2=DATA_DIR / "crystal.mol2",
         input_pdb=DATA_DIR / "protein.pdb",
-        output_path=Path(f"screening-{task.config.id}.csv"),
+        input_expanded_smi=task.config.output_smi,
         input_protein_name="1CVU",
-        ligand_expansion=task,
+        output_path=Path(f"screening-{task.config.id}.csv"),
         cores=8,
     )
 
@@ -66,7 +70,7 @@ def workflow(input_smi: Path, max_molecules: int = 100):
         workdir=workdir, container_path=Path(CONTAINER_PATH).absolute()
     )
 
-    expansion_configs = create_configs_from_smi(
+    expansion_configs = create_expansion_configs_from_smi(
         input_smi=input_smi,
         workdir_inputs=inputs,
         workdir_outputs=outputs,
@@ -87,7 +91,7 @@ def workflow(input_smi: Path, max_molecules: int = 100):
             expand_tasks.append(hq_submit_expansion(ctx, config, job))
 
         [
-            submit_screening(ctx, create_screening_config(task), job)
+            hq_submit_screening(ctx, create_screening_config(task), task, job)
             for task in expand_tasks
         ]
 
