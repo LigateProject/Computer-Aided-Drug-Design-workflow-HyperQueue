@@ -24,18 +24,14 @@ def test_convert_pdb_to_gmx(gmx: GMX, data_dir, tmp_path):
 
 
 def test_load_poses(data_dir):
-    pose_path = (
-        data_dir / "ligen/p38/ligands_gaff2/lig_p38a_2aa/out_amber_pose_000001.txt"
-    )
+    pose_path = data_dir / "ligen/p38/ligands_gaff2/lig_p38a_2aa/out_amber_pose_000001.txt"
     poses = list(load_poses(pose_path))
     assert len(poses) == 50
     assert list(range(1, 51)) == [pose.id for pose in poses]
 
 
 def test_load_first_pose(data_dir):
-    pose_path = (
-        data_dir / "ligen/p38/ligands_gaff2/lig_p38a_2aa/out_amber_pose_000001.txt"
-    )
+    pose_path = data_dir / "ligen/p38/ligands_gaff2/lig_p38a_2aa/out_amber_pose_000001.txt"
     pose = load_single_pose(pose_path, 1)
     assert pose.id == 1
     assert len(pose.atoms.lines) == 43
@@ -46,9 +42,7 @@ def test_load_first_pose(data_dir):
 
 
 def test_load_last_pose(data_dir):
-    pose_path = (
-        data_dir / "ligen/p38/ligands_gaff2/lig_p38a_2aa/out_amber_pose_000001.txt"
-    )
+    pose_path = data_dir / "ligen/p38/ligands_gaff2/lig_p38a_2aa/out_amber_pose_000001.txt"
     pose = load_single_pose(pose_path, 50)
     assert pose.id == 50
     assert len(pose.atoms.lines) == 43
@@ -60,21 +54,15 @@ def test_load_last_pose(data_dir):
 
 @pytest.mark.parametrize("pose", (1, 2, 4))
 def test_extract_and_clean_pose(pose: int, data_dir, tmp_path, babel):
-    pose_path = (
-        data_dir / "ligen/p38/ligands_gaff2/lig_p38a_2aa/out_amber_pose_000001.txt"
-    )
+    pose_path = data_dir / "ligen/p38/ligands_gaff2/lig_p38a_2aa/out_amber_pose_000001.txt"
 
     output = tmp_path / "pose.mol2"
     extract_and_clean_pose(pose_path, pose, output, babel)
-    check_files_are_equal(
-        data_dir / f"ligen/p38/fixtures/pose{pose}-cleaned.mol2", output
-    )
+    check_files_are_equal(data_dir / f"ligen/p38/fixtures/pose{pose}-cleaned.mol2", output)
 
 
 def test_extract_pose_with_dummy_atoms(data_dir, tmp_path):
-    pose_path = (
-        data_dir / "ligen/p38/ligands_gaff2/lig_p38a_2c/out_amber_pose_000001.txt"
-    )
+    pose_path = data_dir / "ligen/p38/ligands_gaff2/lig_p38a_2c/out_amber_pose_000001.txt"
 
     output = tmp_path / "pose.mol2"
     extract_pose(pose_path, 1, output)
@@ -82,9 +70,7 @@ def test_extract_pose_with_dummy_atoms(data_dir, tmp_path):
 
 
 def test_extract_pose_with_dummy_bonds(data_dir, tmp_path):
-    pose_path = (
-        data_dir / "ligen/p38/ligands_gaff2/lig_p38a_2c/out_amber_pose_000002.txt"
-    )
+    pose_path = data_dir / "ligen/p38/ligands_gaff2/lig_p38a_2c/out_amber_pose_000002.txt"
 
     output = tmp_path / "pose.mol2"
     extract_pose(pose_path, 1, output)
@@ -130,22 +116,18 @@ def test_merge_topologies(data_dir, tmp_path):
         structure,
     )
     check_files_are_equal(data_dir / "ligen/p38/fixtures/merged/topology.itp", topology)
-    check_files_are_equal(
-        data_dir / "ligen/p38/fixtures/merged/structure.gro", structure
-    )
+    check_files_are_equal(data_dir / "ligen/p38/fixtures/merged/structure.gro", structure)
 
 
 def test_posres_fix_structure(data_dir, tmp_path):
     output = tmp_path / "out.itp"
 
     pos_res_for_ligand_to_fix_structure(
-        data_dir
-        / "ligen/p38/ligands_gaff2/lig_p38a_2aa/edges/lig_p38a_2aa_p38a_2bb/topology"
+        data_dir / "ligen/p38/ligands_gaff2/lig_p38a_2aa/edges/lig_p38a_2aa_p38a_2bb/topology"
         "/merged.itp",
         output,
     )
     check_files_are_equal(
-        data_dir
-        / "ligen/p38/fixtures/edges/lig_p38a_2aa_p38a_2bb/topology/posre_Ligand.itp",
+        data_dir / "ligen/p38/fixtures/edges/lig_p38a_2aa_p38a_2bb/topology/posre_Ligand.itp",
         output,
     )

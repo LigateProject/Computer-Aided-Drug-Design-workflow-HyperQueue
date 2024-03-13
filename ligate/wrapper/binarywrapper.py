@@ -17,6 +17,4 @@ class BinaryWrapper:
         workdir: Optional[GenericPath] = None,
         env: Optional[Dict[str, str]] = None,
     ):
-        return execute_command(
-            [self.binary_path, *args], input=input, workdir=workdir, env=env
-        )
+        return execute_command([self.binary_path, *args], input=input, workdir=workdir, env=env)

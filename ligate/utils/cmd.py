@@ -29,9 +29,7 @@ def execute_command(
     logging.debug(f"Executing {env} `{' '.join(cmd)}` at `{workdir or os.getcwd()}`")
     result = subprocess.run(cmd, cwd=workdir, env=environment, **kwargs)
     if result.returncode != 0:
-        raise Exception(
-            f"`{' '.join(cmd)}` resulted in error. Exit code: {result.returncode}"
-        )
+        raise Exception(f"`{' '.join(cmd)}` resulted in error. Exit code: {result.returncode}")
     return result
 
 

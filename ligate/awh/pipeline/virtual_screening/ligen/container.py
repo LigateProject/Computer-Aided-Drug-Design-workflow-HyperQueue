@@ -57,9 +57,7 @@ class LigenContainerContext:
         host_path = self.files_host_dir / name
 
         if input:
-            logger.debug(
-                f"Copying {path} to {host_path} ({container_path} in container)"
-            )
+            logger.debug(f"Copying {path} to {host_path} ({container_path} in container)")
             shutil.copy(path, host_path)
         self.mapped_files.append(
             MappedFile(

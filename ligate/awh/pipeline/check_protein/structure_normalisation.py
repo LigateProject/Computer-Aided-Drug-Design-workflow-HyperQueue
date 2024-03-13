@@ -53,7 +53,7 @@ def load_structure(structure_path: Path):
             entity = io.LoadPDB(structure_path)
         except BaseException as e:
             raise AWHError(
-                f"promod3 didn't work correctly (error reading input PDB file)."
+                "promod3 didn't work correctly (error reading input PDB file)."
             ) from e
         if len(entity.residues) == 0:
             raise AWHError(f"No residues found in file: {structure_path}")
@@ -126,7 +126,7 @@ def normalize(ent, seqres):
                 aln = seq.alg.AlignToSEQRES(chain_sel, s, validate=False)
             except BaseException as e:
                 raise AWHError(
-                    f"Could not normalise structure due to alignment failure."
+                    "Could not normalise structure due to alignment failure."
                 ) from e
             aln.AttachView(1, chain_sel)
             aln_list.append(aln)

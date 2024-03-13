@@ -22,15 +22,12 @@ from . import LigConvContext
 logger = logging.getLogger(__name__)
 
 
-def prepare_ligand_poses_task(
-    job: Job, deps: List[Task], ctx: LigConvContext
-) -> LigandTaskMapping:
+def prepare_ligand_poses_task(job: Job, deps: List[Task], ctx: LigConvContext) -> LigandTaskMapping:
     task_state = {}
 
     ligands = set(
         itertools.chain.from_iterable(
-            (edge.start_ligand_name(), edge.end_ligand_name())
-            for edge in ctx.params.edges
+            (edge.start_ligand_name(), edge.end_ligand_name()) for edge in ctx.params.edges
         )
     )
 
@@ -70,18 +67,14 @@ def prepare_ligand_poses(ligand: Path, ctx: LigConvContext):
         # mv *.mol2 *.gro {pose_dir}
         files = list(
             iterate_files(ligand_dir, filter=lambda p: file_has_extension(p, "mol2"))
-        ) + list(
-            iterate_files(ligand_dir, filter=lambda p: file_has_extension(p, "gro"))
-        )
+        ) + list(iterate_files(ligand_dir, filter=lambda p: file_has_extension(p, "gro")))
         move_files(files, pose_1_dir)
 
         topology_dir = ctx.protein_dir.ligand_dir(ligand_name).topology_dir
         # mv *.itp *.pkl {topology_dir}
         files = list(
             iterate_files(ligand_dir, filter=lambda p: file_has_extension(p, "itp"))
-        ) + list(
-            iterate_files(ligand_dir, filter=lambda p: file_has_extension(p, "pkl"))
-        )
+        ) + list(iterate_files(ligand_dir, filter=lambda p: file_has_extension(p, "pkl")))
         move_files(files, topology_dir)
 
         # Normalize filenames and put them into the correct directories
@@ -115,16 +108,12 @@ def prepare_ligand_poses(ligand: Path, ctx: LigConvContext):
             extract_and_clean_pose(
                 pose_file,
                 pose_num,
-                ctx.protein_dir.ligand_dir(ligand_name)
-                .pose_dir(pose_num)
-                .structure_mol2,
+                ctx.protein_dir.ligand_dir(ligand_name).pose_dir(pose_num).structure_mol2,
                 ctx.tools.babel,
             )
             construct_additional_gromacs_files(
                 pose,
                 pose_num,
                 pose_1_ligand_gro,
-                ctx.protein_dir.ligand_dir(ligand_name)
-                .pose_dir(pose_num)
-                .structure_gro,
+                ctx.protein_dir.ligand_dir(ligand_name).pose_dir(pose_num).structure_gro,
             )

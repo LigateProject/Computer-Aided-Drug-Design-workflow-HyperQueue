@@ -149,9 +149,7 @@ def iterate_directories(path: GenericPath) -> List[Path]:
     The directories are sorted by their filepath.
     """
     path = Path(path)
-    dirs = [
-        path.absolute() / child for child in os.listdir(path) if (path / child).is_dir()
-    ]
+    dirs = [path.absolute() / child for child in os.listdir(path) if (path / child).is_dir()]
     return sorted(dirs)
 
 

@@ -58,19 +58,11 @@ def pdb2fasta(input_pdb: Path, output_fasta: Path):
         if "ATOM" in line:
             if line[21] not in sequence:
                 sequence.update({line[21]: ""})
-            if (
-                line[17:20] not in aminoAcids
-                and line[17:20] != "ACE"
-                and line[17:20] != "NME"
-            ):
+            if line[17:20] not in aminoAcids and line[17:20] != "ACE" and line[17:20] != "NME":
                 raise AWHError(
                     f"Non-standard residue ({line[17:20]}) found in protein coordinates!"
                 )
-            if (
-                line[22:27] != previousResidue
-                and line[17:20] != "ACE"
-                and line[17:20] != "NME"
-            ):
+            if line[22:27] != previousResidue and line[17:20] != "ACE" and line[17:20] != "NME":
                 sequence[line[21]] += aminoAcids[line[17:20]]
                 previousResidue = line[22:27]
         if "TER" in line:
@@ -151,7 +143,6 @@ def pdbtools_pdb_gap_count_gaps(lines: typing.Iterable[str]) -> int:
     model = 0
     n_gaps = 0
     for line in lines:
-
         if line.startswith("MODEL"):
             model = int(line[10:14])
 
