@@ -45,6 +45,8 @@ COPY deps/ost.sh deps/ost.sh
 RUN ./deps/ost.sh ${DEPS_BUILD_DIR} ${DEPS_INSTALL_DIR}
 COPY deps/promod.sh deps/promod.sh
 RUN ./deps/promod.sh ${DEPS_BUILD_DIR} ${DEPS_INSTALL_DIR}
+COPY deps/openbabel.sh deps/openbabel.sh
+RUN ./deps/openbabel.sh ${DEPS_BUILD_DIR} ${DEPS_INSTALL_DIR}
 COPY deps/gromacs.sh deps/gromacs.sh
 RUN ./deps/gromacs.sh ${DEPS_BUILD_DIR} ${DEPS_INSTALL_DIR}
 

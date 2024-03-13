@@ -82,8 +82,9 @@ def install(install_dir: str, build_dir: str, env_script: str, verbose: bool) ->
     click.echo(
         f"Environment variables written into {click.style(env_script, fg='green')}. Run {click.style(f'source {env_script}', fg='yellow')} to load the environment."
     )
+
     click.echo(
-        f"Run {click.style('python3 install.py check-env', fg='yellow')} to check if the environment was installed correctly."
+        f"Run {click.style(f'python3 {Path(__file__).name} check-env', fg='yellow')} to check if the environment was installed correctly."
     )
 
 
@@ -117,6 +118,7 @@ def install_dependencies(
     env.install_dep("boost", DEPS_DIR / "boost.sh")
     env.install_dep("ost", DEPS_DIR / "ost.sh")
     env.install_dep("promod", DEPS_DIR / "promod.sh")
+    env.install_dep("openbabel", DEPS_DIR / "openbabel.sh")
     env.install_dep("gromacs", DEPS_DIR / "gromacs.sh")
 
     # Download Tmbed model
@@ -130,8 +132,6 @@ def install_dependencies(
 # env.install_dep("stage", DEPS_DIR / "stage.sh", build_dir)
 # env.add_bin_dir(build_dir / "stage" / "build" / "bin")
 #
-# # OpenBabel
-# env.add_bin_dir(get_module_directory("openbabel") / "bin")
 # # Ambertools
 # if click.confirm(
 #     "Do you want to install AmberTools? (Choose no if you have your own version)"

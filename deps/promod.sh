@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Usage: ENVIRONMENT_SCRIPT=<path> PROMOD_VERSION=3.3.0 ./promod3.sh <build-dir> <install-dir>
+# Usage: ENVIRONMENT_SCRIPT=<path> PROMOD_VERSION=3.3.0 ./promod.sh <build-dir> <install-dir>
 
 set -eu
 
