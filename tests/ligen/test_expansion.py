@@ -1,19 +1,23 @@
 from pathlib import Path
 from typing import List
 
-from ligate.ligen.common import LigenTaskContext
-from ligate.ligen.expansion import ExpandConfig, expand_task
+from ligate.awh.pipeline.virtual_screening.ligen.common import LigenTaskContext
+from ligate.awh.pipeline.virtual_screening.expansion import ExpandConfig, expand_task
 from tests.conftest import get_data
 from tests.utils.io import check_files_are_equal
 
 
 def test_expand_single_molecule(ligen_ctx: LigenTaskContext, tmp_path: Path):
-    output_path = expand(ligen_ctx, get_data("ligen/smi/a/input.smi"), tmp_path / "out.smi")
+    output_path = expand(
+        ligen_ctx, get_data("ligen/smi/a/input.smi"), tmp_path / "out.smi"
+    )
     check_files_are_equal(get_data("ligen/smi/a/output.smi"), output_path)
 
 
 def test_expand_multiple_molecules(ligen_ctx: LigenTaskContext, tmp_path: Path):
-    output_path = expand(ligen_ctx, get_data("ligen/smi/c/input.smi"), tmp_path / "out.smi")
+    output_path = expand(
+        ligen_ctx, get_data("ligen/smi/c/input.smi"), tmp_path / "out.smi"
+    )
     check_files_are_equal(get_data("ligen/smi/c/output.smi"), output_path)
 
 

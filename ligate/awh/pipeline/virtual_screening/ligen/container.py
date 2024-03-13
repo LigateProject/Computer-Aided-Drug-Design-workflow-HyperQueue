@@ -57,7 +57,9 @@ class LigenContainerContext:
         host_path = self.files_host_dir / name
 
         if input:
-            logger.info(f"Copying {path} to {host_path} ({container_path} in container)")
+            logger.debug(
+                f"Copying {path} to {host_path} ({container_path} in container)"
+            )
             shutil.copy(path, host_path)
         self.mapped_files.append(
             MappedFile(
@@ -88,6 +90,8 @@ class LigenContainerContext:
                 str(self.container),
                 "bash",
                 "-c",
+                # mpirun is needed in order for Ligen to work, otherwise it sometimes crashes in
+                # MPI I/O
                 f"""mpirun -np 1 --bind-to none {command}""",
             ],
             env=env,

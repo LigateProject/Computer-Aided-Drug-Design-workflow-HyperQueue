@@ -3,7 +3,7 @@ from pathlib import Path
 
 import pytest
 
-from ligate.ligen.common import LigenTaskContext
+from ligate.awh.pipeline.virtual_screening.ligen.common import LigenTaskContext
 
 
 # Fixtures

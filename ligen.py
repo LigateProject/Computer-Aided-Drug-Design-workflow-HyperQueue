@@ -10,16 +10,19 @@ from hyperqueue import Job, LocalCluster
 from hyperqueue.cluster import WorkerConfig
 from hyperqueue.task.function import PythonEnv
 
-from ligate.ligen.common import LigenTaskContext
-from ligate.ligen.container import ensure_directory
-from ligate.ligen.expansion import (
+from ligate.awh.pipeline.virtual_screening.ligen.common import LigenTaskContext
+from ligate.awh.pipeline.virtual_screening.ligen.container import ensure_directory
+from ligate.awh.pipeline.virtual_screening.expansion import (
     ExpandConfig,
     SubmittedExpansion,
     create_configs_from_smi,
     expand_task,
-    submit_expansion,
+    hq_submit_expansion,
 )
-from ligate.ligen.virtual_screening import ScreeningConfig, submit_screening
+from ligate.awh.pipeline.virtual_screening.virtual_screening import (
+    ScreeningConfig,
+    submit_screening,
+)
 
 ROOT = Path(__file__).absolute().parent
 DATA_DIR = ROOT / "ligenApptainer" / "example"
@@ -81,7 +84,7 @@ def workflow(input_smi: Path, max_molecules: int = 100):
         job = Job(workdir, default_env=dict(HQ_PYLOG="DEBUG"))
         expand_tasks = []
         for config in expansion_configs:
-            expand_tasks.append(submit_expansion(ctx, config, job))
+            expand_tasks.append(hq_submit_expansion(ctx, config, job))
 
         [
             submit_screening(ctx, create_screening_config(task), job)

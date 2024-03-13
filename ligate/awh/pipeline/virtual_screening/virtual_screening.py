@@ -6,8 +6,8 @@ from hyperqueue import Job
 from hyperqueue.ffi.protocol import ResourceRequest
 from hyperqueue.task.task import Task
 
-from .common import LigenTaskContext
-from .container import ligen_container
+from .ligen.common import LigenTaskContext
+from .ligen.container import ligen_container
 from .expansion import SubmittedExpansion
 
 
