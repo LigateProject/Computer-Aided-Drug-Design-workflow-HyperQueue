@@ -12,8 +12,12 @@ from ligate.pipelines.awh import awh_pipeline
 from ligate.pipelines.awh.common import AWHTools
 from ligate.pipelines.awh.ctx import AWHContext
 from ligate.pipelines.ligconv import LigConvContext, ligconv_pipeline
-from ligate.pipelines.ligconv.common import Edge, LigConvParameters, LigConvTools, \
-    LigenOutputData
+from ligate.pipelines.ligconv.common import (
+    Edge,
+    LigConvParameters,
+    LigConvTools,
+    LigenOutputData,
+)
 from ligate.pipelines.ligconv.providers import LigConvEdgeDir
 from ligate.wrapper.babel import Babel
 from ligate.wrapper.gmx import GMX
@@ -38,23 +42,19 @@ def ligconv():
 
     ligen_output = LigenOutputData(
         protein_file=Path("ligen/output/p38/protein_amber/protein.pdb"),
-        ligand_dir=Path("ligen/output/p38/ligands_gaff2")
+        ligand_dir=Path("ligen/output/p38/ligands_gaff2"),
     )
     ligconv_params = LigConvParameters(
         protein_ff=ProteinForcefield.Amber99SB_ILDN,
         ligand_ff=LigandForcefield.Gaff2,
-        edges=[edge]
+        edges=[edge],
     )
 
     ligconv_ctx = LigConvContext(
         workdir=workdir,
         params=ligconv_params,
         ligen_data=ligen_output,
-        tools=LigConvTools(
-            gmx=gmx,
-            babel=babel,
-            stage=stage
-        )
+        tools=LigConvTools(gmx=gmx, babel=babel, stage=stage),
     )
 
     job = Job(workdir, default_env=dict(HQ_PYLOG="DEBUG"))
@@ -78,15 +78,13 @@ def awh():
 
     job = Job(workdir, default_env=dict(HQ_PYLOG="DEBUG"))
 
-    awh_ctx = AWHContext.from_ligconv_edge_dir(tools=AWHTools(
-        gmx=GMX()
-    ),
+    awh_ctx = AWHContext.from_ligconv_edge_dir(
+        tools=AWHTools(gmx=GMX()),
         edge_dir=LigConvEdgeDir(
-            Path("experiment/ligconv-hq/p38/edge_p38a_2aa_p38a_2bb/amber"),
-            edge
+            Path("experiment/ligconv-hq/p38/edge_p38a_2aa_p38a_2bb/amber"), edge
         ),
         protein_ff=ProteinForcefield.Amber99SB_ILDN,
-        workdir=workdir
+        workdir=workdir,
     )
 
     awh_pipeline(job, [], awh_ctx)
