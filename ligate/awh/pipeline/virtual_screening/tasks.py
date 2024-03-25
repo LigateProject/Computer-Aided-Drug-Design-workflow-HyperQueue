@@ -7,7 +7,7 @@ from hyperqueue.task.task import Task
 
 from ligate.awh.ligen.common import LigenTaskContext
 from ligate.awh.ligen.expansion import ExpansionConfig, ligen_expand_smi
-from ligate.awh.pipeline.virtual_screening.__init__ import (
+from ligate.awh.ligen.virtual_screening import (
     ScreeningConfig,
     ligen_screen_ligands,
 )
@@ -53,7 +53,7 @@ def hq_submit_screening(
             config,
         ),
         deps=(expansion_submit.task,),
-        name=f"screening-{config.output_path.name}",
+        name=f"screening-{config.output_scores_csv.name}",
         resources=ResourceRequest(cpus=config.cores),
     )
     return SubmittedScreening(config=config, task=task)

@@ -8,10 +8,26 @@ from ligate.awh.ligen.container import ligen_container
 
 @dataclass
 class ScreeningConfig:
-    input_mol2: Path
-    input_pdb: Path
-    input_expanded_smi: Path
-    output_path: Path
+    """
+    Performs virtual screening on a set of ligands, outputs a CSV with scores per each ligand.
+    """
+
+    """
+    MOL2 crystal structure, serves as a probe for the protein PDB.
+    """
+    input_crystal_structure_mol2: Path
+    """
+    Input protein in PDB format.
+    """
+    input_protein_pdb: Path
+    """
+    Expanded SMILES file in MOL2 format.
+    """
+    input_expanded_mol2: Path
+    """
+    Scores for input ligands in CSV format.
+    """
+    output_scores_csv: Path
 
     input_protein_name: str
 
@@ -23,10 +39,10 @@ class ScreeningConfig:
 
 def ligen_screen_ligands(ctx: LigenTaskContext, config: ScreeningConfig, dep=None):
     with ligen_container(container=ctx.container_path) as ligen:
-        input_smi = ligen.map_input(config.input_expanded_smi)
-        input_pdb = ligen.map_input(config.input_pdb)
-        input_mol2 = ligen.map_input(config.input_mol2)
-        output_csv = ligen.map_output(config.output_path)
+        input_smi = ligen.map_input(config.input_expanded_mol2)
+        input_pdb = ligen.map_input(config.input_protein_pdb)
+        input_mol2 = ligen.map_input(config.input_crystal_structure_mol2)
+        output_csv = ligen.map_output(config.output_scores_csv)
 
         description = {
             "name": "vscreen",

@@ -17,7 +17,7 @@ from ligate.awh.ligen.expansion import (
     create_expansion_configs_from_smi,
     ligen_expand_smi,
 )
-from ligate.awh.pipeline.virtual_screening.__init__ import (
+from ligate.awh.ligen.virtual_screening import (
     ScreeningConfig,
 )
 from ligate.awh.pipeline.virtual_screening.tasks import (
@@ -50,11 +50,11 @@ def expand(path: Path, name: Optional[str] = None):
 
 def create_screening_config(task: SubmittedExpansion) -> ScreeningConfig:
     return ScreeningConfig(
-        input_mol2=DATA_DIR / "crystal.mol2",
-        input_pdb=DATA_DIR / "protein.pdb",
-        input_expanded_smi=task.config.output_mol2,
+        input_crystal_structure_mol2=DATA_DIR / "crystal.mol2",
+        input_protein_pdb=DATA_DIR / "protein.pdb",
+        input_expanded_mol2=task.config.output_mol2,
         input_protein_name="1CVU",
-        output_path=Path(f"screening-{task.config.id}.csv"),
+        output_scores_csv=Path(f"screening-{task.config.id}.csv"),
         cores=8,
     )
 

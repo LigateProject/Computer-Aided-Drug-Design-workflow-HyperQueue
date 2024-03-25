@@ -12,7 +12,7 @@ from ligate.awh.ligen.common import LigenTaskContext
 from ligate.awh.ligen.expansion import (
     create_expansion_configs_from_smi,
 )
-from ligate.awh.pipeline.virtual_screening.__init__ import (
+from ligate.awh.ligen.virtual_screening import (
     ScreeningConfig,
 )
 from ligate.awh.pipeline.virtual_screening.tasks import (
@@ -34,11 +34,11 @@ def hq_submit_ligen_workflow(
 ):
     def create_screening_config(task: SubmittedExpansion) -> ScreeningConfig:
         return ScreeningConfig(
-            input_mol2=input_mol2,
-            input_pdb=input_protein,
-            input_expanded_smi=task.config.output_mol2,
+            input_crystal_structure_mol2=input_mol2,
+            input_protein_pdb=input_protein,
+            input_expanded_mol2=task.config.output_mol2,
             input_protein_name="1CVU",
-            output_path=Path(f"screening-{task.config.id}.csv"),
+            output_scores_csv=Path(f"screening-{task.config.id}.csv"),
             cores=8,
         )
 
@@ -90,10 +90,7 @@ if __name__ == "__main__":
         ligen_workdir,
         input_smi=DATA_DIR / "input-ab.smi",
         input_mol2=DATA_DIR / "crystal.mol2",
-        input_protein=awh_input.protein_pdb,
-        # Path(
-        #     "backup/ligenApptainer/example/protein.pdb"
-        # ).absolute(),
+        input_protein=Path("backup/ligenApptainer/example/protein.pdb").absolute(),
         job=job,
         deps=[task],
     )
