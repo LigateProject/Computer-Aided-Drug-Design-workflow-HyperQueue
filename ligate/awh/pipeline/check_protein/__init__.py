@@ -7,14 +7,18 @@ from ....utils.tracing import trace, trace_fn
 
 
 @trace_fn()
-def check_protein(protein: Path, workdir: Path):
+def check_protein(protein_pdb: Path, workdir: Path):
+    """
+    Checks if the input protein is OK and doesn't contain holes.
+    Raises an exception otherwise.
+    """
     fasta = Path("protein.fasta")
 
-    assert protein.suffix == ".pdb"
+    assert protein_pdb.suffix == ".pdb"
 
     with active_workdir(workdir):
-        copy_files([protein], ".")
-        input_protein = workdir / protein.name
+        copy_files([protein_pdb], ".")
+        input_protein = workdir / protein_pdb.name
 
         with trace("pdb2fasta"):
             pdb2fasta(input_protein, fasta)
