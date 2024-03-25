@@ -43,7 +43,7 @@ def expand(path: Path, name: Optional[str] = None):
     ligen_expand_smi(
         LigenTaskContext(workdir=Path(os.getcwd()), container_path=CONTAINER_PATH),
         ExpansionConfig(
-            id=name, input_smi=path, output_smi=Path(f"{name}.expanded.smi")
+            id=name, input_smi=path, output_mol2=Path(f"{name}.expanded.smi")
         ),
     )
 
@@ -52,7 +52,7 @@ def create_screening_config(task: SubmittedExpansion) -> ScreeningConfig:
     return ScreeningConfig(
         input_mol2=DATA_DIR / "crystal.mol2",
         input_pdb=DATA_DIR / "protein.pdb",
-        input_expanded_smi=task.config.output_smi,
+        input_expanded_smi=task.config.output_mol2,
         input_protein_name="1CVU",
         output_path=Path(f"screening-{task.config.id}.csv"),
         cores=8,

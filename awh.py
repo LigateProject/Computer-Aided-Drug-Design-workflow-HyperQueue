@@ -37,7 +37,7 @@ def hq_submit_ligen_workflow(
         return ScreeningConfig(
             input_mol2=input_mol2,
             input_pdb=input_protein,
-            input_expanded_smi=task.config.output_smi,
+            input_expanded_smi=task.config.output_mol2,
             input_protein_name="1CVU",
             output_path=Path(f"screening-{task.config.id}.csv"),
             cores=8,
