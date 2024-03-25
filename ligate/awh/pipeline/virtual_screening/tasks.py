@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from typing import List
 
 from hyperqueue import Job
 from hyperqueue.ffi.protocol import ResourceRequest
@@ -16,7 +17,7 @@ class SubmittedExpansion:
 
 
 def hq_submit_expansion(
-    ctx: LigenTaskContext, config: ExpansionConfig, job: Job
+    ctx: LigenTaskContext, config: ExpansionConfig, deps: List[Task], job: Job
 ) -> SubmittedExpansion:
     task = job.function(
         ligen_expand_smi,
@@ -25,6 +26,7 @@ def hq_submit_expansion(
             config,
         ),
         name=f"expansion-{config.input_smi.name}",
+        deps=deps,
     )
     return SubmittedExpansion(config=config, task=task)
 

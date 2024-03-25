@@ -88,7 +88,7 @@ def workflow(input_smi: Path, max_molecules: int = 100):
         job = Job(workdir, default_env=dict(HQ_PYLOG="DEBUG"))
         expand_tasks = []
         for config in expansion_configs:
-            expand_tasks.append(hq_submit_expansion(ctx, config, job))
+            expand_tasks.append(hq_submit_expansion(ctx, config, deps=[], job=job))
 
         [
             hq_submit_screening(ctx, create_screening_config(task), task, job)

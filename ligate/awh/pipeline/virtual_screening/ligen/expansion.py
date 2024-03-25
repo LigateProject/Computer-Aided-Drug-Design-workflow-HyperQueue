@@ -7,7 +7,6 @@ from .common import LigenTaskContext
 from .container import ligen_container
 from .....utils.io import split_file_by_lines
 
-
 logger = logging.getLogger(__name__)
 
 
@@ -40,11 +39,15 @@ def create_expansion_configs_from_smi(
     """
     configs = []
     basename = input_smi.stem
-    for index, section in enumerate(split_file_by_lines(input_smi, max_lines=max_molecules)):
+    for index, section in enumerate(
+        split_file_by_lines(input_smi, max_lines=max_molecules)
+    ):
         name = f"{basename}-{index}"
         input_path = workdir_inputs / f"{name}.smi"
         with open(input_path, "w") as f:
             f.write(section)
         output_path = workdir_outputs / f"{name}.mol2"
-        configs.append(ExpansionConfig(id=name, input_smi=input_path, output_smi=output_path))
+        configs.append(
+            ExpansionConfig(id=name, input_smi=input_path, output_smi=output_path)
+        )
     return configs
