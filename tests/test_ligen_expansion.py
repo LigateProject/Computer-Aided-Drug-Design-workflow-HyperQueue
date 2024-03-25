@@ -4,8 +4,8 @@ from typing import List
 
 import pytest
 
-from ligate.awh.pipeline.virtual_screening.ligen.common import LigenTaskContext
-from ligate.awh.pipeline.virtual_screening.ligen.expansion import (
+from ligate.awh.ligen.common import LigenTaskContext
+from ligate.awh.ligen.expansion import (
     ExpansionConfig,
     ligen_expand_smi,
 )

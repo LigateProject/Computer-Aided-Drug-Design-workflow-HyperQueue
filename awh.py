@@ -1,5 +1,4 @@
 import logging
-import shutil
 from pathlib import Path
 from typing import List
 
@@ -9,11 +8,11 @@ from hyperqueue.task.task import Task
 
 from ligate.awh.input import AWHInput
 from ligate.awh.pipeline.check_protein.tasks import hq_submit_check_protein
-from ligate.awh.pipeline.virtual_screening.ligen.common import LigenTaskContext
-from ligate.awh.pipeline.virtual_screening.ligen.expansion import (
+from ligate.awh.ligen.common import LigenTaskContext
+from ligate.awh.ligen.expansion import (
     create_expansion_configs_from_smi,
 )
-from ligate.awh.pipeline.virtual_screening.ligen.virtual_screening import (
+from ligate.awh.pipeline.virtual_screening.__init__ import (
     ScreeningConfig,
 )
 from ligate.awh.pipeline.virtual_screening.tasks import (

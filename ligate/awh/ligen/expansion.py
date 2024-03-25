@@ -5,7 +5,7 @@ from typing import List
 
 from .common import LigenTaskContext
 from .container import ligen_container
-from .....utils.io import split_file_by_lines
+from ligate.utils.io import split_file_by_lines
 
 logger = logging.getLogger(__name__)
 

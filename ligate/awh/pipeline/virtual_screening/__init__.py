@@ -2,8 +2,8 @@ import json
 from dataclasses import dataclass
 from pathlib import Path
 
-from .common import LigenTaskContext
-from .container import ligen_container
+from ligate.awh.ligen.common import LigenTaskContext
+from ligate.awh.ligen.container import ligen_container
 
 
 @dataclass

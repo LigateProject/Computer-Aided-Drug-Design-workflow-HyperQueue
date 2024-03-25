@@ -10,14 +10,14 @@ from hyperqueue import Job, LocalCluster
 from hyperqueue.cluster import WorkerConfig
 from hyperqueue.task.function import PythonEnv
 
-from ligate.awh.pipeline.virtual_screening.ligen.common import LigenTaskContext
-from ligate.awh.pipeline.virtual_screening.ligen.container import ensure_directory
-from ligate.awh.pipeline.virtual_screening.ligen.expansion import (
+from ligate.awh.ligen.common import LigenTaskContext
+from ligate.awh.ligen.container import ensure_directory
+from ligate.awh.ligen.expansion import (
     ExpansionConfig,
     create_expansion_configs_from_smi,
     ligen_expand_smi,
 )
-from ligate.awh.pipeline.virtual_screening.ligen.virtual_screening import (
+from ligate.awh.pipeline.virtual_screening.__init__ import (
     ScreeningConfig,
 )
 from ligate.awh.pipeline.virtual_screening.tasks import (
