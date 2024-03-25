@@ -5,12 +5,12 @@ from typing import List
 
 from .common import LigenTaskContext
 from .container import ligen_container
-from ligate.utils.io import split_file_by_lines
+from ...utils.io import split_file_by_lines
 
 logger = logging.getLogger(__name__)
 
 
-@dataclass
+@dataclass(frozen=True)
 class ExpansionConfig:
     """
     Describes the configuration of an expansion step performed by Ligen.

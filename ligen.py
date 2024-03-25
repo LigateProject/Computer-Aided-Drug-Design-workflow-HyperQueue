@@ -50,7 +50,7 @@ def expand(path: Path, name: Optional[str] = None):
 
 def create_screening_config(task: SubmittedExpansion) -> ScreeningConfig:
     return ScreeningConfig(
-        input_crystal_structure_mol2=DATA_DIR / "crystal.mol2",
+        input_probe_mol2=DATA_DIR / "crystal.mol2",
         input_protein_pdb=DATA_DIR / "protein.pdb",
         input_expanded_mol2=task.config.output_mol2,
         input_protein_name="1CVU",

@@ -1,18 +1,15 @@
 import json
-import logging
 from dataclasses import dataclass
 from pathlib import Path
 
 from .common import LigenTaskContext
 from .container import ligen_container
 
-logger = logging.getLogger(__name__)
-
 
 @dataclass(frozen=True)
-class ScreeningConfig:
+class DockingConfig:
     """
-    Performs virtual screening on a set of ligands, outputs a CSV with scores per each ligand.
+    Performs docking of a set of ligands, outputs a MOL2 with docked poses.
     """
 
     """
@@ -28,52 +25,59 @@ class ScreeningConfig:
     """
     input_expanded_mol2: Path
     """
-    Scores for input ligands in CSV format.
+    Docked poses for input ligands in MOL2 format.
     """
-    output_scores_csv: Path
+    output_poses_mol2: Path
 
     input_protein_name: str
 
     cores: int
     num_parser: int = 20
     num_workers_unfold: int = 20
-    num_workers_docknscore: int = 100
+    num_workers_dock: int = 32
+    num_workers_score: int = 32
 
 
-def ligen_screen_ligands(ctx: LigenTaskContext, config: ScreeningConfig):
-    logger.info(f"Starting virtual screening of {config.input_expanded_mol2}")
+def ligen_dock(ctx: LigenTaskContext, config: DockingConfig):
     with ligen_container(container=ctx.container_path) as ligen:
-        input_smi = ligen.map_input(config.input_expanded_mol2)
+        input_ligands_mol2 = ligen.map_input(config.input_expanded_mol2)
         input_pdb = ligen.map_input(config.input_protein_pdb)
-        input_mol2 = ligen.map_input(config.input_probe_mol2)
-        output_csv = ligen.map_output(config.output_scores_csv)
+        input_probe_mol2 = ligen.map_input(config.input_probe_mol2)
+        output_mol2 = ligen.map_output(config.output_poses_mol2)
 
         description = {
-            "name": "vscreen",
+            "name": "docking",
             "pipeline": [
                 {
                     "kind": "reader_mol2",
                     "name": "reader",
-                    "input_filepath": str(input_smi),
+                    "input_filepath": str(input_ligands_mol2),
                 },
                 {"kind": "parser_mol2", "number_of_workers": config.num_parser},
-                {"kind": "bucketizer_ligand", "name": "bucketizer"},
+                {"kind": "bucketizer_ligand", "name": "bucketizer_dock"},
                 {"kind": "unfold", "cpp_workers": config.num_workers_unfold},
                 {
-                    "kind": "dock_n_score",
-                    "wait_setup": "reader",
+                    "kind": "dock",
                     "number_of_restart": "256",
-                    "clipping_factor": "256",
+                    "clipping_factor": "2",
+                    "cpp_workers": config.num_workers_dock,
+                },
+                {"kind": "bucketizer_ligand", "name": "bucketizer_score"},
+                {
+                    "kind": "score",
                     "scoring_functions": ["d22"],
-                    "cpp_workers": config.num_workers_docknscore,
+                    "cpp_workers": config.num_workers_score,
                 },
                 {
-                    "kind": "writer_csv_bucket",
+                    "kind": "prop2name_bucket",
+                    "name": "prop2name",
+                    "properties_toadd": ["POSE_ID", "D22_SCORE"],
+                },
+                {
+                    "kind": "writer_mol2_bucket",
                     "name": "writer",
                     "wait_setup": "reader",
-                    "output_filepath": str(output_csv),
-                    "print_preamble": "1",
-                    "csv_fields": ["SCORE_PROTEIN_NAME", "D22_SCORE"],
+                    "output_filepath": str(output_mol2),
                 },
                 {"kind": "tracker_bucket", "wait_setup": "reader"},
                 {"kind": "sink_bucket", "number_of_workers": "1"},
@@ -85,7 +89,7 @@ def ligen_screen_ligands(ctx: LigenTaskContext, config: ScreeningConfig):
                         "input": {"format": "protein", "protein_path": str(input_pdb)},
                         "filtering": {
                             "algorithm": "probe",
-                            "path": str(input_mol2),
+                            "path": str(input_probe_mol2),
                             "radius": "8",
                         },
                         "pocket_identification": {"algorithm": "caviar_like"},
@@ -97,7 +101,6 @@ def ligen_screen_ligands(ctx: LigenTaskContext, config: ScreeningConfig):
                 }
             ],
         }
-
         ligen.run(
             "ligen",
             input=json.dumps(description).encode("utf8"),

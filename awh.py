@@ -34,7 +34,7 @@ def hq_submit_ligen_workflow(
 ):
     def create_screening_config(task: SubmittedExpansion) -> ScreeningConfig:
         return ScreeningConfig(
-            input_crystal_structure_mol2=input_mol2,
+            input_probe_mol2=input_mol2,
             input_protein_pdb=input_protein,
             input_expanded_mol2=task.config.output_mol2,
             input_protein_name="1CVU",

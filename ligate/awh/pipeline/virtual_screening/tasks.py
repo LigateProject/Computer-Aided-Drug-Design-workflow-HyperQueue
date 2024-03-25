@@ -5,12 +5,9 @@ from hyperqueue import Job
 from hyperqueue.ffi.protocol import ResourceRequest
 from hyperqueue.task.task import Task
 
-from ligate.awh.ligen.common import LigenTaskContext
-from ligate.awh.ligen.expansion import ExpansionConfig, ligen_expand_smi
-from ligate.awh.ligen.virtual_screening import (
-    ScreeningConfig,
-    ligen_screen_ligands,
-)
+from ...ligen.common import LigenTaskContext
+from ...ligen.expansion import ExpansionConfig, ligen_expand_smi
+from ...ligen.virtual_screening import ScreeningConfig, ligen_screen_ligands
 
 
 @dataclass
