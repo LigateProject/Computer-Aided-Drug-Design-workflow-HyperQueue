@@ -1,0 +1,10 @@
+@<TRIPOS>MOLECULE
+fake_crystal
+1  0  1  0  0
+SMALL
+FORMAL_CHARGES
+@<TRIPOS>ATOM
+    1 C1        12.4170    -4.2360    19.8640 C.2        1 LIG  0.0000
+@<TRIPOS>BOND
+@<TRIPOS>SUBSTRUCTURE
+1   ****   1

@@ -1,8 +1,5 @@
-import os
 from pathlib import Path
 from typing import List
-
-import pytest
 
 from ligate.awh.ligen.common import LigenTaskContext
 from ligate.awh.ligen.expansion import (
@@ -14,16 +11,12 @@ from tests.utils.io import check_files_are_equal
 
 
 def test_expand_single_molecule(ligen_ctx: LigenTaskContext, tmp_path: Path):
-    output_path = expand(
-        ligen_ctx, get_test_data("ligen/smi/a/input.smi"), tmp_path / "out.smi"
-    )
+    output_path = expand(ligen_ctx, get_test_data("ligen/smi/a/input.smi"), tmp_path / "out.smi")
     check_files_are_equal(get_test_data("ligen/smi/a/output.smi"), output_path)
 
 
 def test_expand_multiple_molecules(ligen_ctx: LigenTaskContext, tmp_path: Path):
-    output_path = expand(
-        ligen_ctx, get_test_data("ligen/smi/c/input.smi"), tmp_path / "out.smi"
-    )
+    output_path = expand(ligen_ctx, get_test_data("ligen/smi/c/input.smi"), tmp_path / "out.smi")
     check_files_are_equal(get_test_data("ligen/smi/c/output.smi"), output_path)
 
 
@@ -66,21 +59,3 @@ def expand(ligen_ctx: LigenTaskContext, input: Path, output: Path) -> Path:
         ),
     )
     return output
-
-
-# Fixtures
-@pytest.fixture(scope="session")
-def ligen_container() -> Path:
-    path = os.environ.get("LIGEN_CONTAINER")
-    if path is None:
-        raise Exception(
-            "Environment variable `LIGEN_CONTAINER` not set. Point it to a SIF apptainer image containing Ligen."
-        )
-    container = Path(path).absolute()
-    assert container.is_file()
-    return container
-
-
-@pytest.fixture(scope="session")
-def ligen_ctx(ligen_container) -> LigenTaskContext:
-    return LigenTaskContext(workdir=Path(os.getcwd()), container_path=ligen_container)

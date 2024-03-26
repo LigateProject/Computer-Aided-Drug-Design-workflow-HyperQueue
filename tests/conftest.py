@@ -10,6 +10,7 @@ ROOT_DIR = os.path.dirname(PYTEST_DIR)
 
 sys.path.insert(0, ROOT_DIR)
 
+from ligate.awh.ligen.common import LigenTaskContext  # noqa
 from ligate.utils.paths import GenericPath  # noqa
 from ligate.wrapper.babel import Babel  # noqa
 from ligate.wrapper.binarywrapper import BinaryWrapper  # noqa
@@ -62,6 +63,23 @@ def babel() -> Babel:
 @pytest.fixture(scope="function")
 def stage() -> Stage:
     return Stage()
+
+
+@pytest.fixture(scope="session")
+def ligen_container() -> Path:
+    path = os.environ.get("LIGEN_CONTAINER")
+    if path is None:
+        raise Exception(
+            "Environment variable `LIGEN_CONTAINER` not set. Point it to a SIF apptainer image containing Ligen."
+        )
+    container = Path(path).absolute()
+    assert container.is_file()
+    return container
+
+
+@pytest.fixture(scope="session")
+def ligen_ctx(ligen_container) -> LigenTaskContext:
+    return LigenTaskContext(workdir=Path(os.getcwd()), container_path=ligen_container)
 
 
 def wrapper_sanity_check(wrapper: BinaryWrapper, name: str, env_var: str):
