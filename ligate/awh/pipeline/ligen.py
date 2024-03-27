@@ -1,3 +1,4 @@
+import dataclasses
 from pathlib import Path
 from typing import List
 
@@ -15,22 +16,43 @@ from .virtual_screening.tasks import (
 from ...utils.io import ensure_directory
 
 
-def hq_submit_ligen_workflow(
+@dataclasses.dataclass
+class VirtualScreeningPipelineConfig:
+    input_smi: Path
+    input_mol2: Path
+    input_protein: Path
+
+    max_molecules_per_smi: int = 10
+
+
+@dataclasses.dataclass
+class SubmittedVirtualScreeningPipeline:
+    tasks: List[Task]
+    output_csv: Path
+
+
+def merge_csvs(csv_paths: List[Path], output: Path):
+    import pandas as pd
+
+    df = pd.concat((pd.read_csv(csv) for csv in csv_paths))
+    df.to_csv(output, index=False)
+
+
+def hq_submit_ligen_virtual_screening_workflow(
     ctx: LigenTaskContext,
     workdir: Path,
-    input_smi: Path,
-    input_mol2: Path,
-    input_protein: Path,
+    config: VirtualScreeningPipelineConfig,
     job: Job,
     deps: List[Task],
-):
+) -> SubmittedVirtualScreeningPipeline:
     workdir_inputs = ensure_directory(workdir / "inputs")
     workdir_outputs = ensure_directory(workdir / "outputs")
+    output_csv = workdir_outputs / "scores.csv"
 
     def create_screening_config(task: SubmittedExpansion) -> ScreeningConfig:
         return ScreeningConfig(
-            input_probe_mol2=input_mol2,
-            input_protein_pdb=input_protein,
+            input_probe_mol2=config.input_mol2,
+            input_protein_pdb=config.input_protein,
             input_expanded_mol2=task.config.output_mol2,
             input_protein_name="1CVU",
             output_scores_csv=workdir_outputs / f"screening-{task.config.id}.csv",
@@ -38,14 +60,22 @@ def hq_submit_ligen_workflow(
         )
 
     expansion_configs = create_expansion_configs_from_smi(
-        input_smi=input_smi,
+        input_smi=config.input_smi,
         workdir_inputs=workdir_inputs,
         workdir_outputs=workdir_outputs,
-        max_molecules=10,
+        max_molecules=config.max_molecules_per_smi,
     )
 
     expand_tasks = []
-    for config in expansion_configs:
-        expand_tasks.append(hq_submit_expansion(ctx, config, deps, job))
+    for c in expansion_configs:
+        expand_tasks.append(hq_submit_expansion(ctx, c, deps, job))
 
-    [hq_submit_screening(ctx, create_screening_config(task), task, job) for task in expand_tasks]
+    screening_configs = [create_screening_config(task) for task in expand_tasks]
+    screen_tasks = [
+        hq_submit_screening(ctx, c, task, job).task
+        for (c, task) in zip(screening_configs, expand_tasks)
+    ]
+    csv_paths = [config.output_scores_csv for config in screening_configs]
+    merge_csv_task = job.function(merge_csvs, args=(csv_paths, output_csv), deps=screen_tasks)
+
+    return SubmittedVirtualScreeningPipeline(output_csv=output_csv, tasks=[merge_csv_task])
