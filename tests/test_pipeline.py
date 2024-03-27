@@ -10,7 +10,7 @@ from ligate.utils.paths import active_workdir
 from .utils.io import check_dirs_are_equal
 
 
-def test_ligen_pipeline(ligen_ctx: LigenTaskContext, tmp_path, data_dir):
+def test_virtual_screening_pipeline(ligen_ctx: LigenTaskContext, tmp_path, data_dir):
     with active_workdir(tmp_path):
         job = Job()
         workdir = tmp_path / "ligen"

@@ -53,7 +53,7 @@ class VirtualScreeningPipelineConfig:
 @dataclasses.dataclass
 class SubmittedVirtualScreeningPipeline:
     tasks: List[Task]
-    output_csv: Path
+    output_scores_csv: Path
 
 
 def merge_csvs(csv_paths: List[Path], output: Path):
@@ -106,5 +106,5 @@ def hq_submit_ligen_virtual_screening_workflow(
     )
 
     return SubmittedVirtualScreeningPipeline(
-        output_csv=output_csv, tasks=[merge_csv_task]
+        output_scores_csv=output_csv, tasks=[merge_csv_task]
     )

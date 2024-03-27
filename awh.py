@@ -8,6 +8,10 @@ from hyperqueue.visualization import visualize_job
 from ligate.awh.input import AWHInput
 from ligate.awh.ligen.common import LigenTaskContext
 from ligate.awh.pipeline.check_protein.tasks import hq_submit_check_protein
+from ligate.awh.pipeline.select_ligands import (
+    LigandSelectionConfig,
+    hq_submit_select_ligands,
+)
 from ligate.awh.pipeline.virtual_screening import (
     VirtualScreeningPipelineConfig,
     hq_submit_ligen_virtual_screening_workflow,
@@ -29,9 +33,9 @@ if __name__ == "__main__":
     awh_input = AWHInput(protein_pdb=DATA_DIR / "protein.pdb")
 
     ligen_container_path = Path("ligen.sif").absolute()
-    ligen_workdir = WORKDIR / "ligen"
+    vscreening_workdir = WORKDIR / "ligen-vscreening"
     ligen_ctx = LigenTaskContext(
-        workdir=ligen_workdir, container_path=ligen_container_path
+        workdir=vscreening_workdir, container_path=ligen_container_path
     )
 
     job = Job(default_workdir=WORKDIR / "hq", default_env=dict(HQ_PYLOG="DEBUG"))
@@ -45,11 +49,19 @@ if __name__ == "__main__":
     )
     output = hq_submit_ligen_virtual_screening_workflow(
         ligen_ctx,
-        ligen_workdir,
+        vscreening_workdir,
         config=screening_config,
         job=job,
         deps=[task],
     )
+
+    selection_config = LigandSelectionConfig(
+        input_smi=screening_config.input_smi,
+        scores_csv=output.output_scores_csv,
+        output_smi=WORKDIR / "selected-ligands.smi",
+        n_ligands=1,
+    )
+    hq_submit_select_ligands(selection_config, job, output.tasks)
 
     visualize_job(job, "job.dot")
 
