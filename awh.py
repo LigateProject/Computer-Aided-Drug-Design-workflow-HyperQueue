@@ -30,7 +30,7 @@ if __name__ == "__main__":
 
     WORKDIR = ensure_directory(WORKDIR, clear=True)
 
-    awh_input = AWHInput(protein_pdb=DATA_DIR / "protein.pdb")
+    protein_pdb = DATA_DIR / "protein.pdb"
 
     ligen_container_path = Path("ligen.sif").absolute()
     vscreening_workdir = WORKDIR / "ligen-vscreening"
@@ -39,12 +39,12 @@ if __name__ == "__main__":
     )
 
     job = Job(default_workdir=WORKDIR / "hq", default_env=dict(HQ_PYLOG="DEBUG"))
-    task = hq_submit_check_protein(awh_input.protein_pdb, WORKDIR, job)
+    task = hq_submit_check_protein(protein_pdb, WORKDIR, job)
 
     screening_config = VirtualScreeningPipelineConfig(
         input_smi=DATA_DIR / "ligands.smi",
         input_mol2=DATA_DIR / "crystal.mol2",
-        input_protein=awh_input.protein_pdb,
+        input_protein=protein_pdb,
         max_molecules_per_smi=1,
     )
     output = hq_submit_ligen_virtual_screening_workflow(
