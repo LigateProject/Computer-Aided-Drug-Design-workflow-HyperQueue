@@ -31,5 +31,7 @@ def select_ligands(config: LigandSelectionConfig):
                     print(line, file=output)
 
 
-def hq_submit_select_ligands(config: LigandSelectionConfig, job: Job, deps: List[Task]):
-    job.function(select_ligands, args=(config,), deps=deps)
+def hq_submit_select_ligands(
+    config: LigandSelectionConfig, job: Job, deps: List[Task]
+) -> Task:
+    return job.function(select_ligands, args=(config,), deps=deps)

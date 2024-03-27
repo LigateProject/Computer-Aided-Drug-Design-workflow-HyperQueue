@@ -20,7 +20,7 @@ def test_virtual_screening_pipeline(ligen_ctx: LigenTaskContext, tmp_path, data_
 
         screening_config = VirtualScreeningPipelineConfig(
             input_smi=awh_input / "ligands.smi",
-            input_mol2=awh_input / "crystal.mol2",
+            input_probe_mol2=awh_input / "crystal.mol2",
             input_protein=awh_input / "protein.pdb",
             max_molecules_per_smi=1,
         )

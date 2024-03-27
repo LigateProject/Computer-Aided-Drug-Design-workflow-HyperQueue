@@ -44,7 +44,7 @@ def hq_submit_screening(
 @dataclasses.dataclass
 class VirtualScreeningPipelineConfig:
     input_smi: Path
-    input_mol2: Path
+    input_probe_mol2: Path
     input_protein: Path
 
     max_molecules_per_smi: int = 10
@@ -76,7 +76,7 @@ def hq_submit_ligen_virtual_screening_workflow(
 
     def create_screening_config(task: SubmittedExpansion) -> ScreeningConfig:
         return ScreeningConfig(
-            input_probe_mol2=config.input_mol2,
+            input_probe_mol2=config.input_probe_mol2,
             input_protein_pdb=config.input_protein,
             input_expanded_mol2=task.config.output_mol2,
             input_protein_name="1CVU",
