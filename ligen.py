@@ -20,11 +20,10 @@ from ligate.awh.ligen.expansion import (
 from ligate.awh.ligen.virtual_screening import (
     ScreeningConfig,
 )
-from ligate.awh.pipeline.virtual_screening.tasks import (
-    SubmittedExpansion,
-    hq_submit_expansion,
+from ligate.awh.pipeline.virtual_screening import (
     hq_submit_screening,
 )
+from ligate.awh.pipeline.expansion import SubmittedExpansion, hq_submit_expansion
 
 ROOT = Path(__file__).absolute().parent
 DATA_DIR = ROOT / "ligenApptainer" / "example"

@@ -1,19 +1,44 @@
 import dataclasses
+from dataclasses import dataclass
 from pathlib import Path
 from typing import List
 
 from hyperqueue import Job
+from hyperqueue.ffi.protocol import ResourceRequest
 from hyperqueue.task.task import Task
 
+from .expansion import SubmittedExpansion, hq_submit_expansion
 from ..ligen.common import LigenTaskContext
-from ..ligen.expansion import create_expansion_configs_from_smi
-from ..ligen.virtual_screening import ScreeningConfig
-from .virtual_screening.tasks import (
-    SubmittedExpansion,
-    hq_submit_expansion,
-    hq_submit_screening,
+from ..ligen.expansion import (
+    create_expansion_configs_from_smi,
 )
+from ..ligen.virtual_screening import ScreeningConfig, ligen_screen_ligands
 from ...utils.io import ensure_directory
+
+
+@dataclass
+class SubmittedScreening:
+    config: ScreeningConfig
+    task: Task
+
+
+def hq_submit_screening(
+    ctx: LigenTaskContext,
+    config: ScreeningConfig,
+    expansion_submit: SubmittedExpansion,
+    job: Job,
+) -> SubmittedScreening:
+    task = job.function(
+        ligen_screen_ligands,
+        args=(
+            ctx,
+            config,
+        ),
+        deps=(expansion_submit.task,),
+        name=f"screening-{config.output_scores_csv.name}",
+        resources=ResourceRequest(cpus=config.cores),
+    )
+    return SubmittedScreening(config=config, task=task)
 
 
 @dataclasses.dataclass
@@ -76,6 +101,10 @@ def hq_submit_ligen_virtual_screening_workflow(
         for (c, task) in zip(screening_configs, expand_tasks)
     ]
     csv_paths = [config.output_scores_csv for config in screening_configs]
-    merge_csv_task = job.function(merge_csvs, args=(csv_paths, output_csv), deps=screen_tasks)
+    merge_csv_task = job.function(
+        merge_csvs, args=(csv_paths, output_csv), deps=screen_tasks
+    )
 
-    return SubmittedVirtualScreeningPipeline(output_csv=output_csv, tasks=[merge_csv_task])
+    return SubmittedVirtualScreeningPipeline(
+        output_csv=output_csv, tasks=[merge_csv_task]
+    )

@@ -8,7 +8,7 @@ from hyperqueue.visualization import visualize_job
 from ligate.awh.input import AWHInput
 from ligate.awh.ligen.common import LigenTaskContext
 from ligate.awh.pipeline.check_protein.tasks import hq_submit_check_protein
-from ligate.awh.pipeline.ligen import (
+from ligate.awh.pipeline.virtual_screening import (
     VirtualScreeningPipelineConfig,
     hq_submit_ligen_virtual_screening_workflow,
 )

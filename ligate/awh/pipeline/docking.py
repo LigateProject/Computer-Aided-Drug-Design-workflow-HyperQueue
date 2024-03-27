@@ -4,9 +4,9 @@ from hyperqueue import Job
 from hyperqueue.ffi.protocol import ResourceRequest
 from hyperqueue.task.task import Task
 
-from ...ligen.common import LigenTaskContext
-from ...ligen.docking import DockingConfig, ligen_dock
-from ..virtual_screening.tasks import SubmittedExpansion
+from ..ligen.common import LigenTaskContext
+from ..ligen.docking import DockingConfig, ligen_dock
+from .expansion import SubmittedExpansion
 
 
 @dataclass

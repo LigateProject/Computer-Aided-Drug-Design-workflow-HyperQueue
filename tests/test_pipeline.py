@@ -2,7 +2,7 @@ import hyperqueue
 from hyperqueue import Job
 
 from ligate.awh.ligen.common import LigenTaskContext
-from ligate.awh.pipeline.ligen import (
+from ligate.awh.pipeline.virtual_screening import (
     VirtualScreeningPipelineConfig,
     hq_submit_ligen_virtual_screening_workflow,
 )
