@@ -74,6 +74,7 @@ def ligen_screen_ligands(ctx: LigenTaskContext, config: ScreeningConfig):
                     "output_filepath": str(output_csv),
                     "print_preamble": "1",
                     "csv_fields": ["SCORE_PROTEIN_NAME", "D22_SCORE"],
+                    "separator": ",",
                 },
                 {"kind": "tracker_bucket", "wait_setup": "reader"},
                 {"kind": "sink_bucket", "number_of_workers": "1"},
