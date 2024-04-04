@@ -11,6 +11,8 @@ a task graph.
 
 There is a bunch of external dependencies required to run the workflow. They can be installed in two ways, with a Dockerfile or natively on the target system.
 
+Before installing the dependencies, you have to download `AmbertTools23.tar.bz` from https://ambermd.org/GetAmber.php (registration is required to download it), and put it into the `deps` directory.
+
 ### Docker installation
 Install Docker and run:
 ```bash

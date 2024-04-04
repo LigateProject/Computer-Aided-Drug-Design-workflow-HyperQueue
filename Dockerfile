@@ -25,7 +25,8 @@ RUN apt-get update -y && \
         libsqlite3-dev \
         libpng-dev \
         libfftw3-dev \
-        libtiff-dev
+        libtiff-dev \
+        libbz2-dev
 
 RUN python3 -m pip install -U setuptools wheel pip
 
@@ -50,6 +51,10 @@ RUN ./deps/openbabel.sh ${DEPS_BUILD_DIR} ${DEPS_INSTALL_DIR}
 COPY deps/gromacs.sh deps/gromacs.sh
 RUN ./deps/gromacs.sh ${DEPS_BUILD_DIR} ${DEPS_INSTALL_DIR}
 
+COPY deps/AmberTools23.tar.bz2 deps/AmberTools23.tar.bz2
+COPY deps/ambertools-23.sh deps/ambertools-23.sh
+RUN ./deps/ambertools-23.sh ${DEPS_BUILD_DIR} ${DEPS_INSTALL_DIR}
+
 # We need to install Poetry outside of the target environment for the project (which in this case
 # is just the global interpreter), otherwise it will break.
 ENV POETRY_VIRTUALENVS_CREATE=false
@@ -71,5 +76,5 @@ RUN pipx run poetry install --extras awh
 RUN bash -c "source ${ENVIRONMENT_SCRIPT} && python3 env.py check-env || exit 0"
 
 # Clean up space
-#RUN rm -rf ${DEPS_BUILD_DIR}
-#RUN rm -rf /var/lib/apt/lists/*
+RUN rm -rf ${DEPS_BUILD_DIR}
+RUN rm -rf /var/lib/apt/lists/*

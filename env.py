@@ -129,14 +129,6 @@ def install_dependencies(
     return env
 
 
-# # Ambertools
-# if click.confirm(
-#     "Do you want to install AmberTools? (Choose no if you have your own version)"
-# ):
-#     install_dep("AmberTools", DEPS_DIR / "ambertools-23.sh", build_dir)
-#     env.add_source(build_dir / "amber22_src" / "install" / "amber.sh")
-
-
 def run_command(
     text: str, args: List[str], env: Dict[str, str] | None = None, verbose: bool = False
 ):

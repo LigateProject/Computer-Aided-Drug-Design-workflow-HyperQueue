@@ -43,13 +43,16 @@ export CPLUS_INCLUDE_PATH="${CPLUS_INCLUDE_PATH:-}:${PYTHON_INCLUDE_DIRS}"
 
 ./bootstrap.sh --with-python="$(which python3)" --prefix="${BOOST_INSTALL_DIR}"
 ./b2 install -j"${BUILD_THREADS}" \
+  --with-chrono \
   --with-filesystem \
   --with-iostreams \
+  --with-graph \
   --with-program_options \
   --with-python \
   --with-regex \
   --with-system \
   --with-test \
+  --with-timer \
   --with-thread
 
 # Save the Boost lib directory into the environment script
