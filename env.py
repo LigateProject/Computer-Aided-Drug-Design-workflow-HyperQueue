@@ -120,6 +120,7 @@ def install_dependencies(
     env.install_dep("promod", DEPS_DIR / "promod.sh")
     env.install_dep("openbabel", DEPS_DIR / "openbabel.sh")
     env.install_dep("gromacs", DEPS_DIR / "gromacs.sh")
+    env.install_dep("stage", DEPS_DIR / "stage.sh")
 
     # Download Tmbed model
     if not tmbed_model_exists():
@@ -128,10 +129,6 @@ def install_dependencies(
     return env
 
 
-# # Stage
-# env.install_dep("stage", DEPS_DIR / "stage.sh", build_dir)
-# env.add_bin_dir(build_dir / "stage" / "build" / "bin")
-#
 # # Ambertools
 # if click.confirm(
 #     "Do you want to install AmberTools? (Choose no if you have your own version)"
