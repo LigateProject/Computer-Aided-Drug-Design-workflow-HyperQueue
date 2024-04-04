@@ -38,13 +38,13 @@ You will then need to install several dependencies. You can examine the [Dockerf
     $ source venv/bin/activate
     (venv) $ python3 -m pip install -U setuptools wheel pip 
     ```
-2) Install `Poetry`
+2) Install `pipx` so that you can run Poetry
     ```bash
-    (venv) $ python3 -m pip install poetry 
+    (venv) $ python3 -m pip pipx 
     ```
 3) Install Python dependencies
     ```bash
-    (venv) $ poetry install
+    (venv) $ pipx run poetry install --extras awh
     ```
 4) Install native dependencies
    ```bash
@@ -60,12 +60,3 @@ You will then need to install several dependencies. You can examine the [Dockerf
    ```bash
    (venv) $ python3 main.py check-env
    ```
-
-## Running the pipeline
-```bash
-# Conversion from Ligen data to Gromacs compatible data
-$ python3 pipeline.py ligconv
-
-# AWH pipeline
-$ python3 pipeline.py awh
-```
