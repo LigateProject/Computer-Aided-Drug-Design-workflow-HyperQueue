@@ -26,7 +26,10 @@ RUN apt-get update -y && \
         libpng-dev \
         libfftw3-dev \
         libtiff-dev \
-        libbz2-dev
+        libbz2-dev \
+        gfortran \
+        flex \
+        bison
 
 RUN python3 -m pip install -U setuptools wheel pip
 
@@ -53,7 +56,6 @@ RUN ./deps/gromacs.sh ${DEPS_BUILD_DIR} ${DEPS_INSTALL_DIR}
 COPY deps/stage.sh deps/stage.sh
 RUN ./deps/stage.sh ${DEPS_BUILD_DIR} ${DEPS_INSTALL_DIR}
 
-RUN apt-get update && apt-get install -y gfortran flex bison
 COPY deps/AmberTools23.tar.bz2 deps/AmberTools23.tar.bz2
 COPY deps/ambertools-23.sh deps/ambertools-23.sh
 RUN ./deps/ambertools-23.sh ${DEPS_BUILD_DIR} ${DEPS_INSTALL_DIR}
@@ -76,8 +78,9 @@ RUN python3 env.py install ${DEPS_INSTALL_DIR} --build-dir ${DEPS_BUILD_DIR}
 COPY ligate ligate
 RUN pipx run poetry install --extras awh
 
-RUN bash -c "source ${ENVIRONMENT_SCRIPT} && python3 env.py check-env || exit 0"
+RUN bash -c "source ${ENVIRONMENT_SCRIPT} && python3 env.py check-env"
 
 # Clean up space
 RUN rm -rf ${DEPS_BUILD_DIR}
 RUN rm -rf /var/lib/apt/lists/*
+RUN pipx run poetry cache clear --all .
