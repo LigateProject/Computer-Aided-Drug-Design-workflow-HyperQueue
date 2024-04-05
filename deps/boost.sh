@@ -44,6 +44,8 @@ export CPLUS_INCLUDE_PATH="${CPLUS_INCLUDE_PATH:-}:${PYTHON_INCLUDE_DIRS}"
 ./bootstrap.sh --with-python="$(which python3)" --prefix="${BOOST_INSTALL_DIR}"
 ./b2 install -j"${BUILD_THREADS}" \
   --with-chrono \
+  --with-context \
+  --with-fiber \
   --with-filesystem \
   --with-iostreams \
   --with-graph \
