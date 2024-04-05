@@ -50,7 +50,10 @@ COPY deps/openbabel.sh deps/openbabel.sh
 RUN ./deps/openbabel.sh ${DEPS_BUILD_DIR} ${DEPS_INSTALL_DIR}
 COPY deps/gromacs.sh deps/gromacs.sh
 RUN ./deps/gromacs.sh ${DEPS_BUILD_DIR} ${DEPS_INSTALL_DIR}
+COPY deps/stage.sh deps/stage.sh
+RUN ./deps/stage.sh ${DEPS_BUILD_DIR} ${DEPS_INSTALL_DIR}
 
+RUN apt-get update && apt-get install -y gfortran flex bison
 COPY deps/AmberTools23.tar.bz2 deps/AmberTools23.tar.bz2
 COPY deps/ambertools-23.sh deps/ambertools-23.sh
 RUN ./deps/ambertools-23.sh ${DEPS_BUILD_DIR} ${DEPS_INSTALL_DIR}

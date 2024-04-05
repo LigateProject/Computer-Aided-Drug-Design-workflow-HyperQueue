@@ -121,6 +121,7 @@ def install_dependencies(
     env.install_dep("openbabel", DEPS_DIR / "openbabel.sh")
     env.install_dep("gromacs", DEPS_DIR / "gromacs.sh")
     env.install_dep("stage", DEPS_DIR / "stage.sh")
+    env.install_dep("ambertools", DEPS_DIR / "ambertools.sh")
 
     # Download Tmbed model
     if not tmbed_model_exists():
