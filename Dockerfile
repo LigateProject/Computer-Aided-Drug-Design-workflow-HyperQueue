@@ -57,8 +57,8 @@ COPY deps/stage.sh deps/stage.sh
 RUN ./deps/stage.sh ${DEPS_BUILD_DIR} ${DEPS_INSTALL_DIR}
 
 COPY deps/AmberTools23.tar.bz2 deps/AmberTools23.tar.bz2
-COPY deps/ambertools-23.sh deps/ambertools-23.sh
-RUN ./deps/ambertools-23.sh ${DEPS_BUILD_DIR} ${DEPS_INSTALL_DIR}
+COPY deps/ambertools.sh deps/ambertools.sh
+RUN ./deps/ambertools.sh ${DEPS_BUILD_DIR} ${DEPS_INSTALL_DIR}
 
 # We need to install Poetry outside of the target environment for the project (which in this case
 # is just the global interpreter), otherwise it will break.
