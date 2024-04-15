@@ -34,7 +34,7 @@ def ligen_expand_smi(ctx: LigenTaskContext, config: ExpansionConfig):
         input_smi = ligen.map_input(config.input_smi)
         output_mol2 = ligen.map_output(config.output_mol2)
         ligen.run(
-            f"ligen-type < {input_smi} | ligen-coordinates | ligen-minimize > {output_mol2}",
+            f"ligen-coordgen < {input_smi} > {output_mol2}",
         )
     logger.info(f"Finished expansion of {config.input_smi}")
 

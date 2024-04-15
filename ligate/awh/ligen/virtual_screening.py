@@ -56,19 +56,49 @@ def ligen_screen_ligands(ctx: LigenTaskContext, config: ScreeningConfig):
                     "name": "reader",
                     "input_filepath": str(input_smi),
                 },
-                {"kind": "parser_mol2", "number_of_workers": config.num_parser},
-                {"kind": "bucketizer_ligand", "name": "bucketizer"},
+                {
+                    "kind": "parser_mol2",
+                    "name": "parser",
+                    "number_of_workers": config.num_parser,
+                },
+                {"kind": "bucketizer_ligand", "name": "bucketizer_dock"},
                 {"kind": "unfold", "cpp_workers": config.num_workers_unfold},
                 {
-                    "kind": "dock_n_score",
-                    "wait_setup": "reader",
+                    "kind": "dock",
+                    "name": "dock",
                     "number_of_restart": "256",
                     "clipping_factor": "256",
+                    "cpp_workers": config.num_workers_docknscore,
+                },
+                {"kind": "bucketizer_ligand", "name": "bucketizer_score"},
+                {
+                    "kind": "score",
+                    "name": "score",
                     "scoring_functions": ["d22"],
                     "cpp_workers": config.num_workers_docknscore,
                 },
                 {
-                    "kind": "writer_csv_bucket",
+                    "kind": "filter_bucket",
+                    "name": "ps",
+                    "property_name": "D22_SCORE",
+                    "keep_top": "20",
+                },
+                {
+                    "kind": "d23rtmb_ligand",
+                    "name": "d23",
+                    "protein_filepath": str(input_pdb),
+                    "probe_filepath": str(input_mol2),
+                    "prefix": "micromamba --name d23rtmb run -e BABEL_LIBDIR=/opt/micromamba/envs/d23rtmb/lib/openbabel/3.1.0",
+                    "cuda": "0",
+                },
+                {
+                    "kind": "filter_ligand",
+                    "name": "ranker",
+                    "property_name": "D23RTMB_SCORE",
+                    "keep_top": "1",
+                },
+                {
+                    "kind": "writer_csv_ligand",
                     "name": "writer",
                     "wait_setup": "reader",
                     "output_filepath": str(output_csv),
@@ -76,18 +106,19 @@ def ligen_screen_ligands(ctx: LigenTaskContext, config: ScreeningConfig):
                     "csv_fields": ["SCORE_PROTEIN_NAME", "D22_SCORE"],
                     "separator": ",",
                 },
-                {"kind": "tracker_bucket", "wait_setup": "reader"},
-                {"kind": "sink_bucket", "number_of_workers": "1"},
             ],
             "targets": [
                 {
                     "name": config.input_protein_name,
                     "configuration": {
-                        "input": {"format": "protein", "protein_path": str(input_pdb)},
+                        "input": {
+                            "format": "protein",
+                            "protein_path": str(input_pdb),
+                        },
                         "filtering": {
                             "algorithm": "probe",
                             "path": str(input_mol2),
-                            "radius": "8",
+                            "radius": "10",
                         },
                         "pocket_identification": {"algorithm": "caviar_like"},
                         "anchor_points": {
