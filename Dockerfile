@@ -31,14 +31,15 @@ RUN apt-get update -y && \
         flex \
         bison
 
-RUN python3 -m pip install -U setuptools wheel pip
+RUN python3 -m pip install --no-cache -U setuptools wheel pip
+RUN python3 -m pip install --no-cache uv
 
 RUN mkdir -p ${DEPS_BUILD_DIR} ${DEPS_INSTALL_DIR}
 
 WORKDIR /cadd
 
 # Python dependencies needed for some of the native dependencies
-RUN python3 -m pip install numpy==1.26.4 cython==3.0.8
+RUN uv pip install --system --no-cache numpy==1.26.4 cython==3.0.8
 
 # Pre-install the dependencies for a more interactive Docker image build
 COPY deps/openmm.sh deps/openmm.sh
@@ -62,25 +63,19 @@ RUN ./deps/ambertools.sh ${DEPS_BUILD_DIR} ${DEPS_INSTALL_DIR}
 
 # We need to install Poetry outside of the target environment for the project (which in this case
 # is just the global interpreter), otherwise it will break.
-ENV POETRY_VIRTUALENVS_CREATE=false
-RUN pip install pipx
-
-# Install Python dependencies
 COPY pyproject.toml pyproject.toml
-COPY poetry.lock poetry.lock
-RUN pipx run poetry install --extras awh --no-root
+COPY requirements.txt requirements.txt
+COPY ligate ligate
+RUN UV_HTTP_TIMEOUT=1000 uv pip sync --system --no-cache requirements.txt
 
 # Finish the installation of the native dependencies
 COPY env.py env.py
 RUN python3 env.py install ${DEPS_INSTALL_DIR} --build-dir ${DEPS_BUILD_DIR}
 
 # Install the project
-COPY ligate ligate
-RUN pipx run poetry install --extras awh
-
 RUN bash -c "source ${ENVIRONMENT_SCRIPT} && python3 env.py check-env"
 
 # Clean up space
 RUN rm -rf ${DEPS_BUILD_DIR}
 RUN rm -rf /var/lib/apt/lists/*
-RUN pipx run poetry cache clear --all .
+RUN rm -rf python3 -m pip cache purge

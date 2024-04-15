@@ -13,6 +13,8 @@ There is a bunch of external dependencies required to run the workflow. They can
 
 Before installing the dependencies, you have to download `AmbertTools23.tar.bz` from https://ambermd.org/GetAmber.php (registration is required to download it), and put it into the `deps` directory.
 
+To use the Python packages, you should have Python 3.10 or 3.11.
+
 ### Docker installation
 Install Docker and run:
 ```bash
@@ -39,26 +41,23 @@ You will then need to install several dependencies. You can examine the [Dockerf
     $ python3 -m venv venv
     $ source venv/bin/activate
     (venv) $ python3 -m pip install -U setuptools wheel pip 
+    (venv) $ python3 -m pip install uv
     ```
-2) Install `pipx` so that you can run Poetry
+2) Install Python dependencies
     ```bash
-    (venv) $ python3 -m pip pipx 
+    (venv) $ uv pip sync requirements.txt
     ```
-3) Install Python dependencies
-    ```bash
-    (venv) $ pipx run poetry install --extras awh
-    ```
-4) Install native dependencies
+3) Install native dependencies
    ```bash
    (venv) $ python3 env.py install
    ```
    - The installation step will generate an `env.sh` file, which you should load before using this
    package (and before executing the `check-env` command):
    ```bash
-   (venv) $ source awh-env.sh
+   (venv) $ source env.sh
    ```
-   - You can also run the scripts in the `deps` directory manualy, in the same order as in the Dockerfile.
-5) Check if everything has been installed correctly
+   - You can also run the scripts in the `deps` directory manualy, in the same order as in the [Dockerfile](Dockerfile).
+4) Check if everything has been installed correctly
    ```bash
    (venv) $ python3 main.py check-env
    ```
