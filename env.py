@@ -4,8 +4,6 @@ have been correctly installed.
 
 It should not depend on any other external dependencies than click.
 """
-import contextlib
-import dataclasses
 import importlib
 import logging
 import os
@@ -14,7 +12,7 @@ import subprocess
 import tempfile
 from importlib.metadata import version
 from pathlib import Path
-from typing import Callable, Dict, List, Optional
+from typing import Callable, Dict, List
 
 import click
 
@@ -102,7 +100,6 @@ class InstallationEnv:
             f"Installing {click.style(name, fg='blue')}",
             [str(script), str(self.build_dir), str(self.install_dir)],
             env=dict(ENVIRONMENT_SCRIPT=str(temp_env)),
-            verbose=self.verbose,
         )
         with open(temp_env) as f:
             env = f.read().strip()
@@ -131,7 +128,7 @@ def install_dependencies(
 
 
 def run_command(
-    text: str, args: List[str], env: Dict[str, str] | None = None, verbose: bool = False
+    text: str, args: List[str], env: Dict[str, str] | None = None
 ):
     click.echo(f"{text}...")
     try:
@@ -139,17 +136,30 @@ def run_command(
         if env is not None:
             environment.update(env)
 
-        if verbose:
-            subprocess.check_call(args, env=environment)
-        else:
-            output = subprocess.run(args, env=environment, capture_output=True)
-            stdout = output.stdout.decode("utf-8")
-            stderr = output.stderr.decode("utf-8")
-            if output.returncode != 0:
-                raise Exception(
-                    f"Command {' '.join(args)} has failed\nStdout:\n{stdout}\n\nStderr:\n{stderr}"
-                )
+        # Stream stderr to stdout line by line
+        process = subprocess.Popen(args, env=environment, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL)
+        stderr = ""
+        max_line_width = 100
 
+        def print_line(line: str):
+            line = line.strip()
+            print(f"\r{' ' * max_line_width}", end="")
+            if len(line) > max_line_width:
+                half = max_line_width // 2 - 3
+                line = line[:half] + " ... " + line[-half:]
+            print(f"\r{line}", end="")
+
+        for line in iter(process.stdout.readline, b""):
+            line = line.decode()
+            stderr += line
+            print_line(line)
+
+        print_line("")
+        process.wait()
+        if process.returncode != 0:
+            raise Exception(
+                f"Command {' '.join(args)} has failed with  code {process.returncode}\nStderr:\n{stderr}\n"
+            )
         click.echo(f"{text} {click.style('succeeded', fg='green')}")
     except BaseException:
         click.echo(f"{text} {click.style('failed', fg='red')}")
