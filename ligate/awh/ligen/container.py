@@ -1,6 +1,5 @@
 import contextlib
 import logging
-import os
 import shutil
 import subprocess
 import tempfile
@@ -76,33 +75,32 @@ class LigenContainerContext:
         return self.map_file(path, input=False)
 
     def run(self, command: str, input: Optional[bytes] = None):
-        env = os.environ.copy()
-        env["APPTAINER_TMPDIR"] = str(self.apptainer_dir)
-
-        subprocess.check_output(
-            [
-                "apptainer",
-                "exec",
-                "--bind",
-                f"{self.files_host_dir}:{self.files_container_dir}",
-                str(self.container),
-                "bash",
-                "-c",
-                # mpirun is needed in order for Ligen to work, otherwise it sometimes crashes in
-                # MPI I/O
-                f"""mpirun -np 1 --bind-to none {command}""",
-            ],
-            env=env,
-            input=input,
-        )
-
-        # Copy output files from the tmpdir to their destination
-        for file in self.mapped_files:
-            if not file.input:
-                host_path = file.host_path
-                if not host_path.is_file():
-                    raise Exception(f"Output file `{file.host_path}` not found")
-                shutil.copy(host_path, file.target_path)
+        with tempfile.TemporaryDirectory() as tmpdir:
+            subprocess.check_output(
+                [
+                    "apptainer",
+                    "exec",
+                    "--bind", f"{self.files_host_dir}:{self.files_container_dir}",
+                    # Some processes inside the container can share /tmp, which doesn't end well
+                    "--no-mount", "tmp",
+                    "--bind", f"{tmpdir}:/tmp",
+                    str(self.container),
+                    "bash",
+                    "-c",
+                    # mpirun is needed in order for Ligen to work, otherwise it sometimes crashes in
+                    # MPI I/O
+                    f"""mpirun -np 1 --bind-to none {command}""",
+                ],
+                input=input,
+            )
+    
+            # Copy output files from the tmpdir to their destination
+            for file in self.mapped_files:
+                if not file.input:
+                    host_path = file.host_path
+                    if not host_path.is_file():
+                        raise Exception(f"Output file `{file.host_path}` not found")
+                    shutil.copy(host_path, file.target_path)
 
 
 def ensure_directory(path: GenericPath) -> Path:
