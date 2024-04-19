@@ -103,7 +103,7 @@ def ligen_screen_ligands(ctx: LigenTaskContext, config: ScreeningConfig):
                     "wait_setup": "reader",
                     "output_filepath": str(output_csv),
                     "print_preamble": "1",
-                    "csv_fields": ["SCORE_PROTEIN_NAME", "D22_SCORE"],
+                    "csv_fields": ["SCORE_PROTEIN_NAME", "D23RTMB_SCORE"],
                     "separator": ",",
                 },
             ],

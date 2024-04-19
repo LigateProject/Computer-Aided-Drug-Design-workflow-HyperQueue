@@ -21,7 +21,7 @@ def select_ligands(config: LigandSelectionConfig):
     import pandas as pd
 
     df = pd.read_csv(config.scores_csv)
-    df = df.sort_values(by="D22_SCORE", ascending=False)
+    df = df.sort_values(by="D23RTMB_SCORE", ascending=False)
     selected = frozenset(df.iloc[: config.n_ligands]["NAME"])
     with open(config.output_smi, "w") as output:
         with open(config.input_smi) as input:
