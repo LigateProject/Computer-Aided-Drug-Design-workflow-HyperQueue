@@ -65,14 +65,14 @@ def ligen_dock(ctx: LigenTaskContext, config: DockingConfig):
                     "name": "dock",
                     "number_of_restart": "256",
                     "clipping_factor": "256",
-                    "cpp_workers": config.num_workers_docknscore,
+                    "cpp_workers": config.num_workers_dock,
                 },
                 {"kind": "bucketizer_ligand", "name": "bucketizer_score"},
                 {
                     "kind": "score",
                     "name": "score",
                     "scoring_functions": ["d22"],
-                    "cpp_workers": config.num_workers_docknscore,
+                    "cpp_workers": config.num_workers_score,
                 },
                 {
                     "kind": "filter_bucket",
