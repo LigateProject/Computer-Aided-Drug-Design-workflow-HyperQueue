@@ -79,7 +79,7 @@ def hq_submit_ligen_virtual_screening_workflow(
             input_probe_mol2=config.input_probe_mol2,
             input_protein_pdb=config.input_protein,
             input_expanded_mol2=task.config.output_mol2,
-            input_protein_name="1CVU",
+            input_protein_name="10gs",
             output_scores_csv=workdir_outputs / f"screening-{task.config.id}.csv",
             cores=8,
         )

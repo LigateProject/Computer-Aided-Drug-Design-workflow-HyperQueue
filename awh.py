@@ -28,7 +28,7 @@ if __name__ == "__main__":
         datefmt="%d-%m-%Y %H:%M:%S",
     )
 
-    DATA_DIR = Path("data/awh-2").absolute()
+    DATA_DIR = Path("data/awh-3").absolute()
     WORKDIR = Path("workdir").absolute()
 
     WORKDIR = ensure_directory(WORKDIR, clear=True)
@@ -46,7 +46,7 @@ if __name__ == "__main__":
 
     # Perform virtual screening. Expand SMI into MOL2, and generate a CSV with scores for each
     # ligand in the input SMI file.
-    probe_mol2 = DATA_DIR / "crystal.mol2"
+    probe_mol2 = DATA_DIR / "probe.mol2"
     screening_config = VirtualScreeningPipelineConfig(
         input_smi=DATA_DIR / "ligands.smi",
         input_probe_mol2=probe_mol2,
@@ -68,7 +68,7 @@ if __name__ == "__main__":
         input_smi=screening_config.input_smi,
         scores_csv=output.output_scores_csv,
         output_smi=best_ligands_smi,
-        n_ligands=1,
+        n_ligands=42,
     )
     select_task = hq_submit_select_ligands(selection_config, job, output.tasks)
 
