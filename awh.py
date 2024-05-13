@@ -51,7 +51,7 @@ if __name__ == "__main__":
         input_smi=DATA_DIR / "ligands.smi",
         input_probe_mol2=probe_mol2,
         input_protein=protein_pdb,
-        max_molecules_per_smi=1,
+        max_molecules_per_smi=4,
     )
     output = hq_submit_ligen_virtual_screening_workflow(
         ligen_ctx,

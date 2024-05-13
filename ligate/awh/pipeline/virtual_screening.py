@@ -69,6 +69,7 @@ def hq_submit_ligen_virtual_screening_workflow(
     config: VirtualScreeningPipelineConfig,
     job: Job,
     deps: List[Task],
+    ligen_cores: int = 4
 ) -> SubmittedVirtualScreeningPipeline:
     workdir_inputs = ensure_directory(workdir / "inputs")
     workdir_outputs = ensure_directory(workdir / "outputs")
@@ -81,7 +82,13 @@ def hq_submit_ligen_virtual_screening_workflow(
             input_expanded_mol2=task.config.output_mol2,
             input_protein_name="10gs",
             output_scores_csv=workdir_outputs / f"screening-{task.config.id}.csv",
-            cores=8,
+            # Use at most <ligen_cores> threads for each SMI file.
+            # If each SMI file contains less ligands than <ligen_cores>, we should tell HQ that we
+            # don't even use so many cores.
+            cores=min(config.max_molecules_per_smi, ligen_cores),
+            num_parser=ligen_cores,
+            num_workers_unfold=ligen_cores,
+            num_workers_docknscore=ligen_cores,
         )
 
     expansion_configs = create_expansion_configs_from_smi(
