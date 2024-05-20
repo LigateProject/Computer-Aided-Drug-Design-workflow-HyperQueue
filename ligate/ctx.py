@@ -1,14 +1,14 @@
 import dataclasses
 from pathlib import Path
 
-from .wrapper.gmx import GMX
+from .wrapper.gromacs import Gromacs
 
 
 @dataclasses.dataclass
 class Context:
     workdir: Path
     mdpdir: Path
-    gmx: GMX
+    gmx: Gromacs
 
     def __post_init__(self):
         self.workdir = self.workdir.resolve()

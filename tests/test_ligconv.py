@@ -13,12 +13,12 @@ from ligate.ligconv.topology import (
     pos_res_for_ligand_to_fix_structure,
 )
 from ligate.utils.paths import active_workdir
-from ligate.wrapper.gmx import GMX
+from ligate.wrapper.gromacs import Gromacs
 
 from .utils.io import check_files_are_equal, remove_lines
 
 
-def test_convert_pdb_to_gmx(gmx: GMX, data_dir, tmp_path):
+def test_convert_pdb_to_gmx(gmx: Gromacs, data_dir, tmp_path):
     pdb_path = data_dir / "ligen/p38/protein_amber/protein.pdb"
     convert_pdb_to_gmx(gmx, pdb_path, tmp_path)
 

@@ -14,7 +14,7 @@ from ligate.awh.ligen.common import LigenTaskContext  # noqa
 from ligate.utils.paths import GenericPath  # noqa
 from ligate.wrapper.babel import Babel  # noqa
 from ligate.wrapper.binarywrapper import BinaryWrapper  # noqa
-from ligate.wrapper.gmx import GMX  # noqa
+from ligate.wrapper.gromacs import Gromacs  # noqa
 from ligate.wrapper.stage import Stage  # noqa
 
 
@@ -45,9 +45,9 @@ def data_dir() -> Path:
 
 
 @pytest.fixture(scope="function")
-def gmx() -> GMX:
+def gmx() -> Gromacs:
     gmx_path = os.environ.get("GMX_PATH")
-    gmx = GMX(gmx_path)
+    gmx = Gromacs(gmx_path)
     wrapper_sanity_check(gmx, "Gromacs", "GMX_PATH")
     return gmx
 

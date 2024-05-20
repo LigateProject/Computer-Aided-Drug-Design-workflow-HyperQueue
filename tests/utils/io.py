@@ -1,5 +1,8 @@
+import contextlib
 import difflib
 import os
+import shutil
+import tempfile
 from pathlib import Path
 from typing import List
 
@@ -13,7 +16,7 @@ def check_files_are_equal(expected: GenericPath, actual: GenericPath, bless=True
     bless_mode = get_bless_mode() if bless else BlessMode.NoBless
 
     try:
-        expected_file = open(expected)
+        expected_file = open(expected, "rb")
     except FileNotFoundError:
         if bless_mode.can_create():
             bless_file(expected, actual, bless_mode)
@@ -24,7 +27,7 @@ def check_files_are_equal(expected: GenericPath, actual: GenericPath, bless=True
             "create it."
         )
 
-    with open(actual) as actual_file:
+    with open(actual, "rb") as actual_file:
         expected_file = expected_file.read()
         actual_file = actual_file.read()
 
@@ -35,8 +38,8 @@ def check_files_are_equal(expected: GenericPath, actual: GenericPath, bless=True
 
             error = f"{expected} and {actual} do not match\n"
             for line in difflib.unified_diff(
-                expected_file.splitlines(),
-                actual_file.splitlines(),
+                expected_file.decode().splitlines(),
+                actual_file.decode().splitlines(),
                 fromfile=str(expected),
                 tofile=str(actual),
             ):
@@ -95,3 +98,19 @@ def remove_lines(path: GenericPath, lines: List[int]):
 def read_file(path: GenericPath) -> str:
     with open(path) as f:
         return f.read()
+
+
+@contextlib.contextmanager
+def check_immutable_dir(path: Path):
+    """
+    Context manager that checks that `path` has not been modified after the manager exits.
+    """
+    assert path.is_dir()
+
+    with tempfile.TemporaryDirectory() as dir:
+        original_copy = Path(dir) / "original"
+        shutil.copytree(path, original_copy)
+        try:
+            yield
+        finally:
+            check_dirs_are_equal(original_copy, path, bless=False)

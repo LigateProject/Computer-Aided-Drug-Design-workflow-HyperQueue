@@ -20,7 +20,7 @@ from ligate.pipelines.ligconv.common import (
 )
 from ligate.pipelines.ligconv.providers import LigConvEdgeDir
 from ligate.wrapper.babel import Babel
-from ligate.wrapper.gmx import GMX
+from ligate.wrapper.gromacs import Gromacs
 from ligate.wrapper.stage import Stage
 
 edge = Edge("p38a_2aa", "p38a_2bb")
@@ -33,7 +33,7 @@ def cli():
 
 @cli.command()
 def ligconv():
-    gmx = GMX()
+    gmx = Gromacs()
     babel = Babel()
     stage = Stage()
 
@@ -79,7 +79,7 @@ def awh():
     job = Job(workdir, default_env=dict(HQ_PYLOG="DEBUG"))
 
     awh_ctx = AWHContext.from_ligconv_edge_dir(
-        tools=AWHTools(gmx=GMX()),
+        tools=AWHTools(gmx=Gromacs()),
         edge_dir=LigConvEdgeDir(
             Path("experiment/ligconv-hq/p38/edge_p38a_2aa_p38a_2bb/amber"), edge
         ),

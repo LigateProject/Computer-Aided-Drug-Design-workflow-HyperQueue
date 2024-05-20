@@ -5,7 +5,7 @@ from typing import List
 from ...ligconv.common import LigandForcefield, ProteinForcefield
 from ...utils.paths import normalize_path
 from ...wrapper.babel import Babel
-from ...wrapper.gmx import GMX
+from ...wrapper.gromacs import Gromacs
 from ...wrapper.stage import Stage
 
 
@@ -73,6 +73,6 @@ class LigConvTools:
     Tools required to perform the LigConv pipeline.
     """
 
-    gmx: GMX
+    gmx: Gromacs
     babel: Babel
     stage: Stage

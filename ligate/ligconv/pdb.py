@@ -4,7 +4,7 @@ from pathlib import Path
 from typing import List
 
 from ..utils.paths import GenericPath, active_workdir
-from ..wrapper.gmx import GMX
+from ..wrapper.gromacs import Gromacs
 
 
 @dataclasses.dataclass
@@ -13,7 +13,7 @@ class GromacsTopologyFiles:
 
 
 def convert_pdb_to_gmx(
-    gmx: GMX, pdb_path: GenericPath, output_dir: GenericPath
+    gmx: Gromacs, pdb_path: GenericPath, output_dir: GenericPath
 ) -> GromacsTopologyFiles:
     """
     Generates `conf.gro` and topology files from a protein PDB file.

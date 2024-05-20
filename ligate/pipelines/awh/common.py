@@ -2,7 +2,7 @@ import dataclasses
 import enum
 from pathlib import Path
 
-from ...wrapper.gmx import GMX
+from ...wrapper.gromacs import Gromacs
 
 DATA_DIR = Path(__file__).absolute().parent / "data"
 
@@ -21,4 +21,4 @@ class LigandOrProtein(enum.Enum):
 
 @dataclasses.dataclass
 class AWHTools:
-    gmx: GMX
+    gmx: Gromacs

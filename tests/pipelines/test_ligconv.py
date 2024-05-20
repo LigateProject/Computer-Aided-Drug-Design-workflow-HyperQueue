@@ -12,12 +12,12 @@ from ligate.pipelines.ligconv.common import (
     LigenOutputData,
 )
 from ligate.wrapper.babel import Babel
-from ligate.wrapper.gmx import GMX
+from ligate.wrapper.gromacs import Gromacs
 from ligate.wrapper.stage import Stage
 
 
 @pytest.mark.slow
-def test_ligconv_pipeline(gmx: GMX, babel: Babel, stage: Stage, tmp_path, data_dir):
+def test_ligconv_pipeline(gmx: Gromacs, babel: Babel, stage: Stage, tmp_path, data_dir):
     workdir = tmp_path / "experiment"
 
     ligen_output = LigenOutputData(
