@@ -1,4 +1,5 @@
 import logging
+import shutil
 from pathlib import Path
 
 import hyperqueue.cluster
@@ -7,6 +8,8 @@ from hyperqueue.visualization import visualize_job
 
 from ligate.awh.ligen.common import LigenTaskContext
 from ligate.awh.pipeline.check_protein.tasks import hq_submit_check_protein
+from ligate.awh.pipeline.create_hybrid_ligands import CreateHybridLigandsParams
+from ligate.awh.pipeline.create_hybrid_ligands.tasks import hq_submit_hybrid_ligands
 from ligate.awh.pipeline.docking import (
     DockingPipelineConfig,
     SubmittedDockingPipeline, hq_submit_ligen_docking_workflow,
@@ -20,6 +23,7 @@ from ligate.awh.pipeline.virtual_screening import (
     hq_submit_ligen_virtual_screening_workflow,
 )
 from ligate.utils.io import ensure_directory
+from ligate.wrapper.gromacs import Gromacs
 
 
 def ligen_workflow(
@@ -75,6 +79,23 @@ def ligen_workflow(
     )
 
 
+def awh_workflow(
+        job: Job,
+        input_dir: Path,
+        workdir: Path,
+):
+    actual_input_dir = workdir / "gromacs-ligen-integration"
+    shutil.copytree(input_dir, actual_input_dir)
+
+    gmx = Gromacs("installed/gromacs/bin/gmx")
+
+    task = hq_submit_hybrid_ligands(
+        CreateHybridLigandsParams(directory=actual_input_dir, cores=8),
+        gmx=gmx,
+        job=job
+    )
+
+
 if __name__ == "__main__":
     logging.basicConfig(
         level=logging.DEBUG,
@@ -94,7 +115,10 @@ if __name__ == "__main__":
     )
 
     job = Job(default_workdir=WORKDIR / "hq", default_env=dict(HQ_PYLOG="DEBUG"))
-    output = ligen_workflow(job, WORKDIR, DATA_DIR, ligen_ctx)
+    # output = ligen_workflow(job, WORKDIR, DATA_DIR, ligen_ctx)
+    awh_workflow(job, Path(
+        "backup/ligate-workflows/referenceData/02_refOut_GROMACS_LiGen_integration").absolute(),
+                 WORKDIR)
 
     visualize_job(job, "job.dot")
 
@@ -104,4 +128,3 @@ if __name__ == "__main__":
         client = cluster.client()
         submitted = client.submit(job)
         client.wait_for_jobs([submitted])
-    print(f"Docked MOL2 can be found at {output.docked_mol2}")
