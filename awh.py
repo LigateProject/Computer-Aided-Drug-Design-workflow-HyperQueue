@@ -16,11 +16,12 @@ from ligate.awh.pipeline.docking import (
     SubmittedDockingPipeline, hq_submit_ligen_docking_workflow,
 )
 from ligate.awh.pipeline.hq import HqCtx
+from ligate.awh.pipeline.minimization import MinimizationParams
+from ligate.awh.pipeline.minimization.tasks import hq_submit_minimization
 from ligate.awh.pipeline.select_ligands import (
     LigandSelectionConfig,
     hq_submit_select_ligands,
 )
-from ligate.awh.pipeline.solvate.tasks import hq_submit_solvate
 from ligate.awh.pipeline.virtual_screening import (
     VirtualScreeningPipelineConfig,
     hq_submit_ligen_virtual_screening_workflow,
@@ -118,9 +119,12 @@ def awh_workflow(
     # )
     # task = snapshot_task(actual_input_dir, "after-hybrid-ligands", [task])
 
+    minimization_params = MinimizationParams(steps=10)
+
     edge_set = construct_edge_set_from_dir(actual_input_dir)
-    solvated = hq_submit_solvate(edge_set=edge_set, gmx=gmx, hq=hq_ctx)
-    task = snapshot_task(actual_input_dir, "after-solvate", solvated.tasks())
+    solvated = hq_submit_minimization(edge_set=edge_set, params=minimization_params, gmx=gmx,
+                                      hq=hq_ctx)
+    task = snapshot_task(actual_input_dir, "after-minimization", solvated.tasks())
 
 
 if __name__ == "__main__":

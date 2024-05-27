@@ -1,4 +1,7 @@
+import contextlib
+import tempfile
 from pathlib import Path
+from typing import Generator
 
 from jinja2 import Template
 
@@ -15,3 +18,16 @@ def render_mdp(input: Path, output: GenericPath, **parameters):
 
     with open(output, "w") as f:
         f.write(template.render(**parameters))
+
+
+@contextlib.contextmanager
+def rendered_mdp(input: Path, **parameters) -> Generator[Path, None, None]:
+    """
+    Renders a MDP template into a temporary file and yields the filename.
+    The file will be deleted once the context manager is closed.
+    """
+    template = load_template(input)
+
+    with tempfile.NamedTemporaryFile(mode="w", suffix=".mdp") as f:
+        f.write(template.render(**parameters))
+        yield Path(f.name)
