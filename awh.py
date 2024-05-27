@@ -9,7 +9,7 @@ from ligate.awh.ligen.common import LigenTaskContext
 from ligate.awh.pipeline.check_protein.tasks import hq_submit_check_protein
 from ligate.awh.pipeline.docking import (
     DockingPipelineConfig,
-    hq_submit_ligen_docking_workflow,
+    SubmittedDockingPipeline, hq_submit_ligen_docking_workflow,
 )
 from ligate.awh.pipeline.select_ligands import (
     LigandSelectionConfig,
@@ -21,34 +21,26 @@ from ligate.awh.pipeline.virtual_screening import (
 )
 from ligate.utils.io import ensure_directory
 
-if __name__ == "__main__":
-    logging.basicConfig(
-        level=logging.DEBUG,
-        format="%(asctime)s %(name)s:%(levelname)-4s %(message)s",
-        datefmt="%d-%m-%Y %H:%M:%S",
-    )
 
-    DATA_DIR = Path("data/awh-3").absolute()
-    WORKDIR = Path("workdir").absolute()
+def ligen_workflow(
+        job: Job,
+        workdir: Path,
+        data_dir: Path,
+        ligen_ctx: LigenTaskContext
+) -> SubmittedDockingPipeline:
+    """
+    Checks the input protein, performs virtual screening and docking of the most
+    promising ligands.
+    """
+    protein_pdb = data_dir / "protein.pdb"
 
-    WORKDIR = ensure_directory(WORKDIR, clear=True)
-
-    protein_pdb = DATA_DIR / "protein.pdb"
-
-    ligen_container_path = Path("ligen.sif").absolute()
-    vscreening_workdir = WORKDIR / "ligen-vscreening"
-    ligen_ctx = LigenTaskContext(
-        workdir=vscreening_workdir, container_path=ligen_container_path
-    )
-
-    job = Job(default_workdir=WORKDIR / "hq", default_env=dict(HQ_PYLOG="DEBUG"))
-    task = hq_submit_check_protein(protein_pdb, WORKDIR, job)
+    task = hq_submit_check_protein(protein_pdb, workdir, job)
 
     # Perform virtual screening. Expand SMI into MOL2, and generate a CSV with scores for each
     # ligand in the input SMI file.
-    probe_mol2 = DATA_DIR / "probe.mol2"
+    probe_mol2 = data_dir / "probe.mol2"
     screening_config = VirtualScreeningPipelineConfig(
-        input_smi=DATA_DIR / "ligands.smi",
+        input_smi=data_dir / "ligands.smi",
         input_probe_mol2=probe_mol2,
         input_protein=protein_pdb,
         max_molecules_per_smi=4,
@@ -63,7 +55,7 @@ if __name__ == "__main__":
 
     # Select best N ligands based on the assigned scores, and generate a new SMI file with the
     # best ligands.
-    best_ligands_smi = WORKDIR / "selected-ligands.smi"
+    best_ligands_smi = workdir / "selected-ligands.smi"
     selection_config = LigandSelectionConfig(
         input_smi=screening_config.input_smi,
         scores_csv=output.output_scores_csv,
@@ -78,9 +70,31 @@ if __name__ == "__main__":
         input_probe_mol2=probe_mol2,
         input_protein=protein_pdb,
     )
-    output = hq_submit_ligen_docking_workflow(
-        ligen_ctx, WORKDIR / "ligen-docking", docking_config, job, deps=[select_task]
+    return hq_submit_ligen_docking_workflow(
+        ligen_ctx, workdir / "ligen-docking", docking_config, job, deps=[select_task]
     )
+
+
+if __name__ == "__main__":
+    logging.basicConfig(
+        level=logging.DEBUG,
+        format="%(asctime)s %(name)s:%(levelname)-4s %(message)s",
+        datefmt="%d-%m-%Y %H:%M:%S",
+    )
+
+    DATA_DIR = Path("data/awh-3").absolute()
+    WORKDIR = Path("workdir").absolute()
+
+    WORKDIR = ensure_directory(WORKDIR, clear=True)
+
+    ligen_container_path = Path("ligen.sif").absolute()
+    vscreening_workdir = WORKDIR / "ligen-vscreening"
+    ligen_ctx = LigenTaskContext(
+        workdir=vscreening_workdir, container_path=ligen_container_path
+    )
+
+    job = Job(default_workdir=WORKDIR / "hq", default_env=dict(HQ_PYLOG="DEBUG"))
+    output = ligen_workflow(job, WORKDIR, DATA_DIR, ligen_ctx)
 
     visualize_job(job, "job.dot")
 
