@@ -177,6 +177,14 @@ def check_has_extension(path: GenericPath, extension: str):
         )
 
 
+def check_file_nonempty(path: GenericPath):
+    path = Path(path)
+    if not path.is_file():
+        raise Exception("Expected {path} to be a non-empty file, but it does not exist")
+    if os.path.getsize(path) == 0:
+        raise Exception("Expected {path} to be a non-empty file, but it is empty")
+
+
 # General utility
 def remap_paths_to_dir(paths: List[GenericPath], dir: Path) -> List[Path]:
     """

@@ -1,28 +1,31 @@
 import logging
 import shutil
 from pathlib import Path
+from typing import List
 
 import hyperqueue.cluster
 from hyperqueue import Job
+from hyperqueue.task.task import Task
 from hyperqueue.visualization import visualize_job
 
 from ligate.awh.ligen.common import LigenTaskContext
 from ligate.awh.pipeline.check_protein.tasks import hq_submit_check_protein
-from ligate.awh.pipeline.create_hybrid_ligands import CreateHybridLigandsParams
-from ligate.awh.pipeline.create_hybrid_ligands.tasks import hq_submit_hybrid_ligands
+from ligate.awh.pipeline.common import construct_edge_set_from_dir
 from ligate.awh.pipeline.docking import (
     DockingPipelineConfig,
     SubmittedDockingPipeline, hq_submit_ligen_docking_workflow,
 )
+from ligate.awh.pipeline.hq import HqCtx
 from ligate.awh.pipeline.select_ligands import (
     LigandSelectionConfig,
     hq_submit_select_ligands,
 )
+from ligate.awh.pipeline.solvate.tasks import hq_submit_solvate
 from ligate.awh.pipeline.virtual_screening import (
     VirtualScreeningPipelineConfig,
     hq_submit_ligen_virtual_screening_workflow,
 )
-from ligate.utils.io import ensure_directory
+from ligate.utils.io import delete_path, ensure_directory
 from ligate.wrapper.gromacs import Gromacs
 
 
@@ -84,16 +87,40 @@ def awh_workflow(
         input_dir: Path,
         workdir: Path,
 ):
-    actual_input_dir = workdir / "gromacs-ligen-integration"
-    shutil.copytree(input_dir, actual_input_dir)
-
     gmx = Gromacs("installed/gromacs/bin/gmx")
 
-    task = hq_submit_hybrid_ligands(
-        CreateHybridLigandsParams(directory=actual_input_dir, cores=8),
-        gmx=gmx,
-        job=job
-    )
+    reference_dir = ensure_directory("workdir-reference")
+
+    def snapshot_dir(dir: Path, name: str):
+        target = reference_dir / name
+        if target.is_dir():
+            delete_path(target)
+        shutil.copytree(dir, reference_dir / name)
+
+    def snapshot_task(dir: Path, name: str, tasks: List[Task]) -> Task:
+        return job.function(lambda: snapshot_dir(dir, name), deps=tasks)
+
+    def ref_dir(name: str) -> Path:
+        return reference_dir / name
+
+    # start_step = "gromacs-ligen-integration"
+    start_step = "after-hybrid-ligands"
+    actual_input_dir = workdir / start_step
+    # shutil.copytree(input_dir, actual_input_dir)
+    shutil.copytree(ref_dir(start_step), actual_input_dir)
+    # snapshot_dir(actual_input_dir, f"after-{start_step}")
+
+    hq_ctx = HqCtx(job=job)
+    # task = hq_submit_hybrid_ligands(
+    #     CreateHybridLigandsParams(directory=actual_input_dir, cores=8),
+    #     gmx=gmx,
+    #     hq=hq_ctx
+    # )
+    # task = snapshot_task(actual_input_dir, "after-hybrid-ligands", [task])
+
+    edge_set = construct_edge_set_from_dir(actual_input_dir)
+    solvated = hq_submit_solvate(edge_set=edge_set, gmx=gmx, hq=hq_ctx)
+    task = snapshot_task(actual_input_dir, "after-solvate", solvated.tasks())
 
 
 if __name__ == "__main__":
