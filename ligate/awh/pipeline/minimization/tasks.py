@@ -1,10 +1,12 @@
 import dataclasses
 from typing import List
 
+from hyperqueue.ffi.protocol import ResourceRequest
 from hyperqueue.task.task import Task
 
 from . import MinimizationParams
 from .add_ions import add_ions
+from .minimization import energy_minimize
 from .solvate import solvate
 from ..common import EdgeSet
 from ..hq import HqCtx
@@ -38,6 +40,7 @@ class SubmittedMinimization:
 def minimize(input: ComplexOrLigand, params: MinimizationParams, gmx: Gromacs):
     solvate(input, gmx)
     add_ions(input, params, gmx)
+    energy_minimize(input, params, gmx)
 
 
 def hq_submit_minimization(
@@ -55,12 +58,14 @@ def hq_submit_minimization(
                 minimize,
                 args=(Ligand(pose_dir), params, gmx),
                 name=f"minimize-{ligand.name()}-{pose}-ligand",
+                resources=ResourceRequest(cpus=params.cores),
                 deps=hq.deps
             )
             complex_task = hq.job.function(
                 minimize,
                 args=(Complex(pose_dir), params, gmx),
                 name=f"minimize-{ligand.name()}-{pose}-complex",
+                resources=ResourceRequest(cpus=params.cores),
                 deps=hq.deps
             )
             poses.append(SolvatedPose(

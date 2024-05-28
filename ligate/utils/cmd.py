@@ -45,3 +45,9 @@ def normalize_arguments(input: List[Any]) -> List[str]:
                 f"Invalid type `{type(item)}` with value `{item}` passed as an executable argument"
             )
     return output
+
+
+def replace_env(**kwargs) -> Dict[str, str]:
+    env = os.environ.copy()
+    env.update(kwargs)
+    return env

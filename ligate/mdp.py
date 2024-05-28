@@ -28,6 +28,8 @@ def rendered_mdp(input: Path, **parameters) -> Generator[Path, None, None]:
     """
     template = load_template(input)
 
-    with tempfile.NamedTemporaryFile(mode="w", suffix=".mdp") as f:
-        f.write(template.render(**parameters))
-        yield Path(f.name)
+    with tempfile.TemporaryDirectory() as dir:
+        path = Path(dir) / input.name
+        with open(path, "w") as f:
+            f.write(template.render(**parameters))
+        yield path

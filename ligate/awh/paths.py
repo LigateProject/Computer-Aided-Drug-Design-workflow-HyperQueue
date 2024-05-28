@@ -28,7 +28,7 @@ class ComplexOrLigand(PathProvider):
         raise NotImplementedError
 
     @property
-    def add_ions_output(self) -> Path:
+    def ions_output(self) -> Path:
         raise NotImplementedError
 
 
@@ -54,8 +54,8 @@ class Complex(ComplexOrLigand):
         return self.file_path("topol_amber.top")
 
     @property
-    def add_ions_output(self) -> Path:
-        return self.file_path("addIons_complex.tpr")
+    def ions_output(self) -> Path:
+        return self.file_path("ions_complex.gro")
 
 
 class Ligand(ComplexOrLigand):
@@ -80,5 +80,5 @@ class Ligand(ComplexOrLigand):
         return self.file_path("topol_ligandInWater.top")
 
     @property
-    def add_ions_output(self) -> Path:
-        return self.file_path("addIons_ligand.tpr")
+    def ions_output(self) -> Path:
+        return self.file_path("ions_ligand.gro")

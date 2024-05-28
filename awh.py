@@ -104,12 +104,13 @@ def awh_workflow(
     def ref_dir(name: str) -> Path:
         return reference_dir / name
 
-    # start_step = "gromacs-ligen-integration"
+    # Copy the original input directory
+    snapshot_dir(input_dir, "after-gromacs-ligen-integration")
+
+    # start_step = "after-gromacs-ligen-integration"
     start_step = "after-hybrid-ligands"
-    actual_input_dir = workdir / start_step
-    # shutil.copytree(input_dir, actual_input_dir)
+    actual_input_dir = workdir / "cadd"
     shutil.copytree(ref_dir(start_step), actual_input_dir)
-    # snapshot_dir(actual_input_dir, f"after-{start_step}")
 
     hq_ctx = HqCtx(job=job)
     # task = hq_submit_hybrid_ligands(
@@ -119,7 +120,7 @@ def awh_workflow(
     # )
     # task = snapshot_task(actual_input_dir, "after-hybrid-ligands", [task])
 
-    minimization_params = MinimizationParams(steps=10)
+    minimization_params = MinimizationParams(steps=10, cores=4)
 
     edge_set = construct_edge_set_from_dir(actual_input_dir)
     solvated = hq_submit_minimization(edge_set=edge_set, params=minimization_params, gmx=gmx,

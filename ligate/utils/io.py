@@ -29,6 +29,11 @@ def delete_files(paths: List[GenericPath]):
         delete_file(path)
 
 
+def delete_files_filter(directory: Path, filter: Callable[[Path], bool]):
+    for file in iterate_files(directory, filter):
+        delete_file(file)
+
+
 # Copying
 def copy_files(files: List[GenericPath], target_dir: GenericPath):
     """
