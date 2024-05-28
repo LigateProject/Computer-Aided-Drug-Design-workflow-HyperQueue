@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from ...paths import ComplexOrLigand
+from ...common import ComplexOrLigand
 from ....utils.io import check_file_nonempty, replace_in_place
 from ....utils.tracing import trace_fn
 from ....wrapper.gromacs import Gromacs

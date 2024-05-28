@@ -1,26 +1,45 @@
 import dataclasses
 from pathlib import Path
-from typing import List
+from typing import Generator, List, Optional, Tuple
 
+from hyperqueue.task.task import Task
+
+from ..common import ComplexOrLigand
 from ...utils.io import iterate_directories
+
+
+Pose = str
 
 
 @dataclasses.dataclass
 class Edge:
     directory: Path
-    poses: List[str]
+    poses: List[Pose]
 
     def name(self) -> str:
         return self.directory.name
 
-    def pose_dir(self, name: str) -> Path:
+    def pose_dir(self, name: Pose) -> Path:
         return self.directory / name
 
 
 @dataclasses.dataclass
 class EdgeSet:
     directory: Path
-    ligands: List[Edge]
+    edges: List[Edge]
+
+    def iterate_poses(self) -> Generator[Tuple[Edge, Pose], None, None]:
+        for edge in self.edges:
+            for pose in edge.poses:
+                yield (edge, pose)
+
+
+@dataclasses.dataclass
+class ComplexOrLigandTask:
+    edge: Edge
+    pose: Pose
+    item: ComplexOrLigand
+    task: Optional[Task] = None
 
 
 def construct_edge_set_from_dir(directory: Path) -> EdgeSet:

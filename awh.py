@@ -3,18 +3,21 @@ import shutil
 from pathlib import Path
 from typing import List
 
-import hyperqueue.cluster
+import hyperqueue
 from hyperqueue import Job
 from hyperqueue.task.task import Task
 from hyperqueue.visualization import visualize_job
 
+from ligate.awh.common import Complex, Ligand
 from ligate.awh.ligen.common import LigenTaskContext
 from ligate.awh.pipeline.check_protein.tasks import hq_submit_check_protein
-from ligate.awh.pipeline.common import construct_edge_set_from_dir
+from ligate.awh.pipeline.common import ComplexOrLigandTask, construct_edge_set_from_dir
 from ligate.awh.pipeline.docking import (
     DockingPipelineConfig,
     SubmittedDockingPipeline, hq_submit_ligen_docking_workflow,
 )
+from ligate.awh.pipeline.equilibrate import EquilibrateParams, prepare_equilibrate
+from ligate.awh.pipeline.equilibrate.tasks import hq_submit_equilibrate
 from ligate.awh.pipeline.hq import HqCtx
 from ligate.awh.pipeline.minimization import MinimizationParams
 from ligate.awh.pipeline.minimization.tasks import hq_submit_minimization
@@ -120,12 +123,39 @@ def awh_workflow(
     # )
     # task = snapshot_task(actual_input_dir, "after-hybrid-ligands", [task])
 
-    minimization_params = MinimizationParams(steps=10, cores=4)
-
+    # Construct the initial task item for a ligand and complex in each pose
     edge_set = construct_edge_set_from_dir(actual_input_dir)
-    solvated = hq_submit_minimization(edge_set=edge_set, params=minimization_params, gmx=gmx,
-                                      hq=hq_ctx)
-    task = snapshot_task(actual_input_dir, "after-minimization", solvated.tasks())
+    tasks: List[ComplexOrLigandTask] = []
+    for (edge, pose) in edge_set.iterate_poses():
+        for item in (Complex, Ligand):
+            tasks.append(ComplexOrLigandTask(
+                edge=edge,
+                pose=pose,
+                item=item(edge.pose_dir(pose)),
+            ))
+
+    # Minimization
+    minimization_params = MinimizationParams(steps=10, cores=4)
+    for task in tasks:
+        task.task = hq_submit_minimization(task.item, params=minimization_params, gmx=gmx,
+                                           hq=hq_ctx.with_dep(task.task))
+    dep = snapshot_task(actual_input_dir, "after-minimization", [t.task for t in tasks])
+
+    # Prepare equilibration
+    equilibrate_params = EquilibrateParams(cores=4)
+    dep = job.function(
+        prepare_equilibrate,
+        args=(actual_input_dir, equilibrate_params, gmx),
+        name="prepare-equilibrate",
+        deps=[dep]
+    )
+    dep = snapshot_task(actual_input_dir, "after-prepare-equilibrate", [dep])
+
+    # Equilibration
+    for task in tasks:
+        task.task = hq_submit_equilibrate(task.item, params=equilibrate_params, gmx=gmx,
+                                          hq=hq_ctx.with_dep(dep))
+    dep = snapshot_task(actual_input_dir, "after-equilibrate", [t.task for t in tasks])
 
 
 if __name__ == "__main__":

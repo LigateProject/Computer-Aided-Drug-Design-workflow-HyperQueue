@@ -1,5 +1,5 @@
 import dataclasses
-from typing import Dict
+from typing import Dict, Generic, List, TypeVar
 
 from hyperqueue.task.task import Task
 
@@ -20,3 +20,17 @@ class EdgeTaskMapping:
 
     def get_edge_task(self, edge: Edge) -> Task:
         return self.edge_to_task[edge]
+
+
+Key = TypeVar("Key")
+
+
+@dataclasses.dataclass
+class TaskMapping(Generic[Key]):
+    map: Dict[Key, Task]
+
+    def get_task(self, key: Key) -> Task:
+        return self.map[key]
+
+    def all_tasks(self) -> List[Task]:
+        return list(self.map.values())

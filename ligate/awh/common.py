@@ -8,6 +8,14 @@ class ComplexOrLigand(PathProvider):
         super().__init__(root)
 
     @property
+    def edge(self) -> str:
+        return self.root.parent.name
+
+    @property
+    def pose(self) -> str:
+        return self.root.name
+
+    @property
     def kind(self) -> str:
         raise NotImplementedError
 
@@ -29,6 +37,10 @@ class ComplexOrLigand(PathProvider):
 
     @property
     def ions_output(self) -> Path:
+        raise NotImplementedError
+
+    @property
+    def equiNVT(self) -> Path:
         raise NotImplementedError
 
 
@@ -57,6 +69,10 @@ class Complex(ComplexOrLigand):
     def ions_output(self) -> Path:
         return self.file_path("ions_complex.gro")
 
+    @property
+    def equiNVT(self) -> Path:
+        return self.file_path("equiNVT_complex.tpr")
+
 
 class Ligand(ComplexOrLigand):
     @property
@@ -82,3 +98,7 @@ class Ligand(ComplexOrLigand):
     @property
     def ions_output(self) -> Path:
         return self.file_path("ions_ligand.gro")
+
+    @property
+    def equiNVT(self) -> Path:
+        return self.file_path("equiNVT_ligand.tpr")

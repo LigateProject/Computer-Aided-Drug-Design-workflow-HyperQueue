@@ -12,3 +12,4 @@ EQ_NVT_L0_MDP = MDP_DIR / "eq_nvt_l0.mdp"
 PRODUCTION_MDP = MDP_DIR / "production.mdp"
 
 CREATE_HYBRID_LIGANDS_SCRIPT = SCRIPTS_DIR / "create-hybrid-ligands.sh"
+PREPARE_EQUILIBRATION_SCRIPT = SCRIPTS_DIR / "prepare-equilibration.sh"

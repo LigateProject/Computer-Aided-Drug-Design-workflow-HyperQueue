@@ -1,9 +1,8 @@
 import dataclasses
-import os
-import subprocess
 from pathlib import Path
 
 from ...scripts import CREATE_HYBRID_LIGANDS_SCRIPT, SCRIPTS_DIR
+from ....utils.cmd import execute_command, replace_env
 from ....wrapper.gromacs import Gromacs
 
 
@@ -14,14 +13,14 @@ class CreateHybridLigandsParams:
 
 
 def create_hybrid_ligands(params: CreateHybridLigandsParams, gmx: Gromacs):
-    env = os.environ.copy()
-    env["OMP_NUM_THREADS"] = str(params.cores)
-    env["CADD_SCRIPTS_DIR"] = str(SCRIPTS_DIR)
-    env["GROMACS"] = str(gmx.binary_path)
+    env = replace_env(
+        OMP_NUM_THREADS=str(params.cores),
+        CADD_SCRIPTS_DIR=str(SCRIPTS_DIR),
+        GROMACS=str(gmx.binary_path)
+    )
 
-    subprocess.run(
-        CREATE_HYBRID_LIGANDS_SCRIPT,
-        check=True,
-        cwd=params.directory,
+    execute_command(
+        [CREATE_HYBRID_LIGANDS_SCRIPT],
+        workdir=params.directory,
         env=env
     )

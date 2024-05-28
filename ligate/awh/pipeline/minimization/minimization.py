@@ -1,5 +1,5 @@
 from . import MinimizationParams, generate_mdp_for_minimization
-from ...paths import ComplexOrLigand
+from ...common import ComplexOrLigand
 from ....utils.io import check_file_nonempty, delete_files_filter, move_file
 from ....utils.tracing import trace_fn
 from ....wrapper.gromacs import Gromacs

@@ -1,5 +1,5 @@
 from . import generate_mdp_for_minimization
-from ...paths import ComplexOrLigand
+from ...common import ComplexOrLigand
 from ....pipelines.awh import MinimizationParams
 from ....utils.io import check_file_nonempty, delete_file
 from ....utils.tracing import trace_fn
