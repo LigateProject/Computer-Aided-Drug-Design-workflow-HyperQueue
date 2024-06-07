@@ -13,10 +13,10 @@ def execute_command(
     input: Optional[bytes] = None,
     workdir: Optional[GenericPath] = None,
     env: Optional[Dict[str, str]] = None,
+    check: bool = True,
 ) -> subprocess.CompletedProcess:
     env = env or {}
-    environment = os.environ.copy()
-    environment.update(env)
+    environment = replace_env(**env)
 
     cmd = normalize_arguments(args)
     kwargs = {}
@@ -28,7 +28,7 @@ def execute_command(
     env = " ".join([f"{k}={v}" for (k, v) in sorted(env.items(), key=lambda v: v[0])])
     logging.debug(f"Executing {env} `{' '.join(cmd)}` at `{workdir or os.getcwd()}`")
     result = subprocess.run(cmd, cwd=workdir, env=environment, **kwargs)
-    if result.returncode != 0:
+    if check and result.returncode != 0:
         raise Exception(f"`{' '.join(cmd)}` resulted in error. Exit code: {result.returncode}")
     return result
 

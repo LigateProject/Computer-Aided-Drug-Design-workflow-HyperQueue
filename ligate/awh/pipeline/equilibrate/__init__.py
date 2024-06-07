@@ -34,10 +34,14 @@ def prepare_equilibrate(directory: Path, params: EquilibrateParams, gmx: Gromacs
 
 @trace_fn()
 def equilibrate(input: ComplexOrLigand, params: EquilibrateParams, gmx: Gromacs):
-    gmx.execute([
+    result = gmx.execute([
         "mdrun",
         "-pin", "on",
         "-ntmpi", "1",
         "-ntomp", params.cores,
         "-deffnm", input.equiNVT.stem
-    ], workdir=input.path)
+    ], workdir=input.path, check=False)
+    if result.returncode == 0:
+        print("EQUILIBRATION SUCCEEDED")
+    else:
+        print(f"EQUILIBRATION FAILED: {result.returncode}")

@@ -13,3 +13,4 @@ PRODUCTION_MDP = MDP_DIR / "production.mdp"
 
 CREATE_HYBRID_LIGANDS_SCRIPT = SCRIPTS_DIR / "create-hybrid-ligands.sh"
 PREPARE_EQUILIBRATION_SCRIPT = SCRIPTS_DIR / "prepare-equilibration.sh"
+PREPARE_PRODUCTION_SIMULATION_SCRIPT = SCRIPTS_DIR / "prepare-production-simulation.sh"

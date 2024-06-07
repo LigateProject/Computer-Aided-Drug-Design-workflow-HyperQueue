@@ -8,7 +8,7 @@ integrator               = md
 ; Start time and timestep in ps
 tinit                    = 0
 dt                       = 0.002
-nsteps                   = -1
+nsteps                   = {{ nsteps | default(-1) }}
 
 ld_seed = -1
 ; For exact run continuation or redoing part of a run
