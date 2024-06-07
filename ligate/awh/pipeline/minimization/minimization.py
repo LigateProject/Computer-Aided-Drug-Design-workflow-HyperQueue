@@ -1,5 +1,6 @@
-from . import MinimizationParams, generate_mdp_for_minimization
+from . import MinimizationParams
 from ...common import ComplexOrLigand
+from ....mdp import generate_em_l0_mdp
 from ....utils.io import check_file_nonempty, delete_files_filter, move_file
 from ....utils.tracing import trace_fn
 from ....wrapper.gromacs import Gromacs
@@ -11,7 +12,7 @@ def energy_minimize(
         params: MinimizationParams,
         gmx: Gromacs
 ):
-    with generate_mdp_for_minimization(params) as mdp:
+    with generate_em_l0_mdp(params.steps) as mdp:
         minimized_em = input.file_path(f"EM_{input.kind}.tpr")
         mdpout = input.file_path(f"EMout_{input.kind}.mdp")
         gmx.execute(

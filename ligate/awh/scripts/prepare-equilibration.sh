@@ -3,6 +3,7 @@
 ### Inputs
 # CADD_SCRIPTS_DIR - path to the directory with CADD scripts
 # GROMACS - path to a GROMACS `gmx` file
+# MDP_FILE - path to a eq_nvt_l0.mdp file
 
 ### Input directory
 # Expects to be executed in a directory that contains edge_lig_35_L_lig_34_L... directories with
@@ -12,8 +13,6 @@
 set -ue
 
 export LC_NUMERIC="en_US.UTF-8"
-
-PATH_TO_MDP=${CADD_SCRIPTS_DIR}/mdp
 
 target=$(pwd | rev | cut -d "/" -f 1 | rev)
 
@@ -116,8 +115,8 @@ fi
 # run grompp to get input .tpr file
 # need to use soft-core potentials although vdW is not switched off => ignore the corresponding warning
 # system may have a slight net charge due to rounding errors => ignore that warning, too
-${GROMACS} grompp -f ${PATH_TO_MDP}/eq_nvt_l0.mdp -c ions_complex.gro -p topol_amber.top -o equiNVT_complex.tpr -po equiNVTOut_complex.mdp -maxwarn 2 || true
-${GROMACS} grompp -f ${PATH_TO_MDP}/eq_nvt_l0.mdp -c ions_ligand.gro -p topol_ligandInWater.top -o equiNVT_ligand.tpr -po equiNVTOut_ligand.mdp -maxwarn 2 || true
+${GROMACS} grompp -f ${MDP_FILE} -c ions_complex.gro -p topol_amber.top -o equiNVT_complex.tpr -po equiNVTOut_complex.mdp -maxwarn 2 || true
+${GROMACS} grompp -f ${MDP_FILE} -c ions_ligand.gro -p topol_ligandInWater.top -o equiNVT_ligand.tpr -po equiNVTOut_ligand.mdp -maxwarn 2 || true
 ## error catching
 ## TPR file for equilibration must exist
 if ! [ -f equiNVT_complex.tpr ]

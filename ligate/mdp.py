@@ -5,6 +5,7 @@ from typing import Generator
 
 from jinja2 import Template
 
+from .awh.scripts import EM_L0_MDP, EQ_NVT_L0_MDP
 from .utils.paths import GenericPath
 
 
@@ -33,3 +34,15 @@ def rendered_mdp(input: Path, **parameters) -> Generator[Path, None, None]:
         with open(path, "w") as f:
             f.write(template.render(**parameters))
         yield path
+
+
+@contextlib.contextmanager
+def generate_em_l0_mdp(steps: int):
+    with rendered_mdp(EM_L0_MDP, nsteps=steps) as mdp:
+        yield mdp
+
+
+@contextlib.contextmanager
+def generate_eq_nvt_l0_mdp(steps: int):
+    with rendered_mdp(EQ_NVT_L0_MDP, nsteps=steps) as mdp:
+        yield mdp

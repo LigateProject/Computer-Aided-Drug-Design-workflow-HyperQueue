@@ -1,10 +1,12 @@
 import logging
+import os
 import shutil
 from pathlib import Path
 from typing import List
 
 import hyperqueue
 from hyperqueue import Job
+from hyperqueue.task.function import PythonEnv
 from hyperqueue.task.task import Task
 from hyperqueue.visualization import visualize_job
 
@@ -19,8 +21,6 @@ from ligate.awh.pipeline.docking import (
 from ligate.awh.pipeline.equilibrate import EquilibrateParams, prepare_equilibrate
 from ligate.awh.pipeline.equilibrate.tasks import hq_submit_equilibrate
 from ligate.awh.pipeline.hq import HqCtx
-from ligate.awh.pipeline.minimization import MinimizationParams
-from ligate.awh.pipeline.minimization.tasks import hq_submit_minimization
 from ligate.awh.pipeline.select_ligands import (
     LigandSelectionConfig,
     hq_submit_select_ligands,
@@ -111,7 +111,8 @@ def awh_workflow(
     snapshot_dir(input_dir, "after-gromacs-ligen-integration")
 
     # start_step = "after-gromacs-ligen-integration"
-    start_step = "after-hybrid-ligands"
+    # start_step = "after-hybrid-ligands"
+    start_step = "after-minimization"
     actual_input_dir = workdir / "cadd"
     shutil.copytree(ref_dir(start_step), actual_input_dir)
 
@@ -135,19 +136,19 @@ def awh_workflow(
             ))
 
     # Minimization
-    minimization_params = MinimizationParams(steps=10, cores=4)
-    for task in tasks:
-        task.task = hq_submit_minimization(task.item, params=minimization_params, gmx=gmx,
-                                           hq=hq_ctx.with_dep(task.task))
-    dep = snapshot_task(actual_input_dir, "after-minimization", [t.task for t in tasks])
+    # minimization_params = MinimizationParams(steps=10, cores=4)
+    # for task in tasks:
+    #     task.task = hq_submit_minimization(task.item, params=minimization_params, gmx=gmx,
+    #                                        hq=hq_ctx.with_dep(task.task))
+    # dep = snapshot_task(actual_input_dir, "after-minimization", [t.task for t in tasks])
 
     # Prepare equilibration
-    equilibrate_params = EquilibrateParams(cores=4)
+    equilibrate_params = EquilibrateParams(steps=10, cores=4)
     dep = job.function(
         prepare_equilibrate,
         args=(actual_input_dir, equilibrate_params, gmx),
         name="prepare-equilibrate",
-        deps=[dep]
+        deps=[]
     )
     dep = snapshot_task(actual_input_dir, "after-prepare-equilibrate", [dep])
 
@@ -178,15 +179,20 @@ if __name__ == "__main__":
 
     job = Job(default_workdir=WORKDIR / "hq", default_env=dict(HQ_PYLOG="DEBUG"))
     # output = ligen_workflow(job, WORKDIR, DATA_DIR, ligen_ctx)
-    awh_workflow(job, Path(
-        "backup/ligate-workflows/referenceData/02_refOut_GROMACS_LiGen_integration").absolute(),
-                 WORKDIR)
+    # awh_workflow(job, Path(
+    #     "backup/ligate-workflows/referenceData/02_refOut_GROMACS_LiGen_integration").absolute(),
+    #              WORKDIR)
+    awh_workflow(job, Path("data/mcl1/02_refOut_GROMACS_LiGen_integration").absolute(), WORKDIR)
 
     visualize_job(job, "job.dot")
 
     # Run the workflow
     with hyperqueue.cluster.LocalCluster() as cluster:
         cluster.start_worker()
-        client = cluster.client()
+        client = cluster.client(
+            python_env=PythonEnv(
+                prologue=f"""export PYTHONPATH=$PYTHONPATH:{os.getcwd()}"""
+            )
+        )
         submitted = client.submit(job)
         client.wait_for_jobs([submitted])
