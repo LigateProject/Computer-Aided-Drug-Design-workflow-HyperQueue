@@ -179,7 +179,7 @@ sc-coul                  = yes
 ;alpha_Q = 0.3
 ;sigma_Q = 1.0
 
-refcoord-scaling = com
+refcoord-scaling         = com
 
 
 ; Non-equilibrium MD stuff

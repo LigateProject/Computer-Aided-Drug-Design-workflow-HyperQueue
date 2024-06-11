@@ -20,7 +20,7 @@ def add_ions(input: ComplexOrLigand, params: MinimizationParams, gmx: Gromacs):
             "-p", input.topology_file,
             "-o", add_ions_output,
             "-po", mdout,
-            "-maxwarn", "2"
+            "-maxwarn", "3"
         ], workdir=input.path)
         check_file_nonempty(add_ions_output)
         delete_file(mdout)

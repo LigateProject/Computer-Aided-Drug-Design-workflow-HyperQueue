@@ -1,9 +1,8 @@
-import numpy
 import sys
 
 from rdkit import Chem
 from rdkit.Chem import rdMolAlign
-from rdkit.Chem import rdmolops
+from rdkit.Chem import rdMolTransforms
 
 class TopologyMerger:
 
@@ -164,22 +163,16 @@ class TopologyMerger:
 
     def createMapping(self, filename1, filename2):
         # let rdkit align the two molecules
-        ligandA = rdmolops.AddHs(Chem.MolFromMol2File(filename1))
-        ligandB = rdmolops.AddHs(Chem.MolFromMol2File(filename2))
-        o3a = rdMolAlign.GetO3A(ligandA, ligandB)
-        mapping = o3a.Matches()
-
-        # we can assume that the order of atoms is the same in mol2 and itp file
-        # rdkit only aligns heavy atoms; add hydrogens back
-        numberMapping = []
-        for i in range(len(self.atoms)):
-            numberMapping.append([])
-            for j in range(len(self.atoms[i])):
-                if (not "h" in self.atoms[i][j][1]):
-                    numberMapping[i].append(j)
-        for i in range(len(mapping)):
-            for j in range(len(mapping[i])):
-                mapping[i][j] = numberMapping[j][i]
+        ligandA = Chem.MolFromMol2File(filename1, removeHs=False)
+        ligandB = Chem.MolFromMol2File(filename2, removeHs=False)
+        o3a = rdMolAlign.GetO3A(ligandB, ligandA)
+        matches = o3a.Matches()
+        mapping = []
+        for i in range(len(matches)):
+            mapping.append([matches[i][1], matches[i][0]])
+        conformer = ligandB.GetConformer()
+        rdMolTransforms.TransformConformer(conformer, o3a.Trans()[1])
+        self.newCoords = conformer.GetPositions()
 
         # identify hydrogens bound to heavy atoms
         for i in range(len(mapping)):
@@ -189,10 +182,10 @@ class TopologyMerger:
                 boundHydrogens.append([])
                 for k in range(len(self.bonds[j])):
                     if (mapping[i][j] == int(self.bonds[j][k][0])-1):
-                        if ("h" in self.atoms[j][int(self.bonds[j][k][1])-1][1]):
+                        if ("h" in (self.atoms[j][int(self.bonds[j][k][1])-1][1])[:-1]):
                             boundHydrogens[j].append(int(self.bonds[j][k][1])-1)
                     elif (mapping[i][j] == int(self.bonds[j][k][1])-1):
-                        if ("h" in self.atoms[j][int(self.bonds[j][k][0])-1][1]):
+                        if ("h" in (self.atoms[j][int(self.bonds[j][k][0])-1][1])[:-1]):
                             boundHydrogens[j].append(int(self.bonds[j][k][0])-1)
                 boundHydrogens[j].sort()
                 numberHydrogens.append(len(boundHydrogens[j]))
@@ -519,7 +512,11 @@ class TopologyMerger:
                     elif (line == lines[-1]):
                         gro[index][-1] = [float(boxDim) for boxDim in line.split()]
                     else:
-                        gro[index][-1] = [gro[index][-1][0], gro[index][-1][1], gro[index][-1][2], int(gro[index][-1][3]), float(gro[index][-1][4]), float(gro[index][-1][5]), float(gro[index][-1][6])]
+                        ## print aligned heavy atoms of ligand B
+                        if (index == 1):
+                            gro[index][-1] = [gro[index][-1][0], gro[index][-1][1], gro[index][-1][2], int(gro[index][-1][3]), self.newCoords[counter-2][0]/10.0, self.newCoords[counter-2][1]/10.0, self.newCoords[counter-2][2]/10.0]
+                        else:
+                            gro[index][-1] = [gro[index][-1][0], gro[index][-1][1], gro[index][-1][2], int(gro[index][-1][3]), float(gro[index][-1][4]), float(gro[index][-1][5]), float(gro[index][-1][6])]
                 else:
                     gro[index].append("Merged ligand\n")
                 counter += 1
