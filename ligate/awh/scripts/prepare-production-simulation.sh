@@ -8,7 +8,7 @@
 ### Input directory
 # Expects to be executed in a directory that contains edge_lig_35_L_lig_34_L... directories with
 # pose_0 subdirectories.
-# After execution, prepared TODO.
+# After execution, prepares production_[complex/ligand].tpr files for the final AWH step.
 
 set -ue
 
