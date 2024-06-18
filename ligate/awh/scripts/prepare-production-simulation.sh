@@ -48,27 +48,26 @@ rm ions_complex.gro ions_ligand.gro equi* slurm-*
 cd ..
 done # poses
 
-echo "foo"
-
 # remove directory if none of the poses survives
-if (( $(ls -lh ${edge} | grep "pose_" | wc -l) == 0 ));
+if (( $(ls -lh . | grep "pose_" | wc -l) == 0 ));
 then
-echo "For ${edge}, the equilibration was not successful for any of the poses. Deleting directory!"
-cd ..
-rm -rf ${edge}
-continue
+  echo "For ${edge}, the equilibration was not successful for any of the poses. Deleting directory!"
+  exit 1
+#cd ..
+#rm -rf ${edge}
+#continue
 fi
 
 cd ..
 done # edges
 
 # remove directory if none of the edges survives
-if (( $(ls -lh ${target} | grep "edge_" | wc -l) == 0 ));
+if (( $(ls -lh . | grep "edge_" | wc -l) == 0 ));
 then
 echo "The equilibration was not successful for any of the edges. Stopping workflow execution!"
 cd ..
-rm -rf ${target}
-exit 0
+rm -rf .
+exit 1
 fi
 
 for edge in edge_*; do
@@ -82,8 +81,8 @@ mv mergedConstantMass.itp merged.itp
 
 # run grompp to get input .tpr file
 # ignore warning about perturbed constraints
-${GROMACS} grompp -f ${MDP_FILE} -c start_complex.gro -p topol_amber.top -o production_complex.tpr -po productionOut_complex.mdp -maxwarn 1 || true
-${GROMACS} grompp -f ${MDP_FILE} -c start_ligand.gro -p topol_ligandInWater.top -o production_ligand.tpr -po productionOut_ligand.mdp -maxwarn 1 || true
+${GROMACS} grompp -f ${MDP_FILE} -c start_complex.gro -p topol_amber.top -o production_complex.tpr -po productionOut_complex.mdp -maxwarn 2 || true
+${GROMACS} grompp -f ${MDP_FILE} -c start_ligand.gro -p topol_ligandInWater.top -o production_ligand.tpr -po productionOut_ligand.mdp -maxwarn 2 || true
 ## error catching
 ## TPR file for production simulation must exist
 if ! [ -f production_complex.tpr ]
@@ -110,7 +109,7 @@ cd ..
 done # poses
 
 # remove directory if none of the poses survives
-if (( $(ls -lh | grep "pose_" | wc -l) == 0 ));
+if (( $(ls -lh . | grep "pose_" | wc -l) == 0 ));
 then
 echo "For ${edge}, the TPR file could not be generated successfully for any of the poses. Deleting directory!"
 exit 1
@@ -123,12 +122,11 @@ cd ..
 done # edges
 
 # remove directory if none of the edges survives
-if (( $(ls -lh | grep "edge_" | wc -l) == 0 ));
+if (( $(ls -lh . | grep "edge_" | wc -l) == 0 ));
 then
 echo "The TPR file could not be generated successfully for any of the edges. Stopping workflow execution!"
-cd ..
-#rm -rf ${target}
 exit 1
+rm -rf .
 fi
 
 echo "${target} successfully completed!"
