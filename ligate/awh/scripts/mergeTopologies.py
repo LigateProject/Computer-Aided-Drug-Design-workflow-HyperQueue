@@ -244,20 +244,16 @@ class TopologyMerger:
         self.atoms[-1].append(" [ atoms ]\n")
         self.atoms[-1].append(";   nr       type  resnr residue  atom   cgnr     charge       mass  typeB    chargeB      massB\n")
         justificationList = [6, 12, 7, 7, 7, 7, 11, 11, 12, 11, 11]
-        for i in range(max(self.indexMapping[-1]) + 1):
+        atomRange = max([self.indexMapping[0][-1] + 1, max(self.indexMapping[-1]) + 1])
+        for i in range(atomRange):
             resultString = ""
             if (i < len(self.atoms[0])):
                 for j in range(len(self.atoms[0][i])):
                     resultString += self.atoms[0][i][j].rjust(justificationList[j], " ")
                 if i in self.indexMapping[1]:
-                    checkCount = 0
                     indexList = [1, 6, 7]
                     for j in range(3):
-                        if (self.atoms[0][i][indexList[j]] != self.atoms[1][self.indexMapping[1].index(i)][indexList[j]]):
-                            checkCount += 1
-                    if (checkCount > 0):
-                        for j in range(3):
-                            resultString += self.atoms[1][self.indexMapping[1].index(i)][indexList[j]].rjust(justificationList[len(self.atoms[0][i]) + j], " ")
+                        resultString += self.atoms[1][self.indexMapping[1].index(i)][indexList[j]].rjust(justificationList[len(self.atoms[0][i]) + j], " ")
                 else:
                     if ("DUM_" + self.atoms[0][i][1] not in self.dummyAtoms):
                         self.dummyAtoms.append("DUM_" + self.atoms[0][i][1])
@@ -290,16 +286,35 @@ class TopologyMerger:
         self.bonds[-1].append(";  ai    aj funct            c0            c1            c2            c3\n")
         justificationList = [6, 7, 7, 15, 15, 15, 15]
         alreadySeen = []
+        # generate list of tuples with bonds in state B expressed in the atom indices of state A
+        alreadySeenTuplesB = []
+        for i in range(len(self.bonds[1])):
+            alreadySeenTuplesB.append((self.indexMapping[1][int(self.bonds[1][i][0])-1]+1, self.indexMapping[1][int(self.bonds[1][i][1])-1]+1))
         for i in range(len(self.bonds[0])):
             alreadySeen.append([(self.bonds[0][i][0], self.bonds[0][i][1]), self.bonds[0][i][2], self.bonds[0][i][3], self.bonds[0][i][4], self.bonds[0][i][3], self.bonds[0][i][4]])
+            testTuple = (int(self.bonds[0][i][0]), int(self.bonds[0][i][1]))
+            inverseTuple = (testTuple[1], testTuple[0])
+            # Set force constant to zero in state B if bond only exists in state A and does not involve a virtual site
+            if (testTuple not in alreadySeenTuplesB) and (inverseTuple not in alreadySeenTuplesB) and (testTuple[0]-1 in self.indexMapping[1]) and (testTuple[1]-1 in self.indexMapping[1]):
+                alreadySeen[-1][5] = "0.000000"
         alreadySeenTuples = [tuple(map(int, alreadySeen[i][0])) for i in range(len(alreadySeen))]
         for i in range(len(self.bonds[1])):
             testTuple = (self.indexMapping[1][int(self.bonds[1][i][0])-1]+1, self.indexMapping[1][int(self.bonds[1][i][1])-1]+1)
+            inverseTuple = (testTuple[1], testTuple[0])
+            # modify force field paramerers for state B (check both permutations of the tuple)
             if testTuple in alreadySeenTuples:
                 alreadySeen[alreadySeenTuples.index(testTuple)][-2] = self.bonds[1][i][3]
                 alreadySeen[alreadySeenTuples.index(testTuple)][-1] = self.bonds[1][i][4]
+            elif inverseTuple in alreadySeenTuples:
+                alreadySeen[alreadySeenTuples.index(inverseTuple)][-2] = self.bonds[1][i][3]
+                alreadySeen[alreadySeenTuples.index(inverseTuple)][-1] = self.bonds[1][i][4]
+                # we have to avoid redundant bond definitions because they cause constraint errors
+                continue
             else:
                 alreadySeen.append([tuple(map(str, testTuple)), self.bonds[1][i][2], self.bonds[1][i][3], self.bonds[1][i][4], self.bonds[1][i][3], self.bonds[1][i][4]])
+            # Set force constant to zero in state A if bond only exists in state B and does not involve a virtual site
+            if (testTuple not in alreadySeenTuples) and (inverseTuple not in alreadySeenTuples) and (testTuple[0]-1 < len(self.atoms[0])) and (testTuple[1]-1 < len(self.atoms[0])):
+                alreadySeen[-1][3] = "0.000000"
         for i in range(len(alreadySeen)):
             resultString = ""
             resultString += alreadySeen[i][0][0].rjust(justificationList[0]) + alreadySeen[i][0][1].rjust(justificationList[1])
@@ -321,6 +336,10 @@ class TopologyMerger:
         alreadySeenTuples = [tuple(map(int, alreadySeen[i][0])) for i in range(len(alreadySeen))]
         for i in range(len(self.pairs[1])):
             testTuple = (self.indexMapping[1][int(self.pairs[1][i][0])-1]+1, self.indexMapping[1][int(self.pairs[1][i][1])-1]+1)
+            inverseTuple = (testTuple[1], testTuple[0])
+            # we have to avoid redundant pair definitions because they cause constraint errors
+            if inverseTuple in alreadySeenTuples:
+                continue
             if testTuple not in alreadySeenTuples:
                 alreadySeen.append([tuple(map(str, testTuple)), self.pairs[1][i][2]])
         for i in range(len(alreadySeen)):
@@ -337,16 +356,35 @@ class TopologyMerger:
         self.angles[-1].append(";  ai    aj    ak funct            c0            c1            c2            c3\n")
         justificationList = [6, 7, 7, 7, 15, 15, 15, 15]
         alreadySeen = []
+        # generate list of tuples with angles in state B expressed in the atom indices of state A
+        alreadySeenTuplesB = []
+        for i in range(len(self.angles[1])):
+            alreadySeenTuplesB.append((self.indexMapping[1][int(self.angles[1][i][0])-1]+1, self.indexMapping[1][int(self.angles[1][i][1])-1]+1, self.indexMapping[1][int(self.angles[1][i][2])-1]+1))
         for i in range(len(self.angles[0])):
             alreadySeen.append([(self.angles[0][i][0], self.angles[0][i][1], self.angles[0][i][2]), self.angles[0][i][3], self.angles[0][i][4], self.angles[0][i][5], self.angles[0][i][4], self.angles[0][i][5]])
+            testTuple = (int(self.angles[0][i][0]), int(self.angles[0][i][1]), int(self.angles[0][i][2]))
+            inverseTuple = (testTuple[2], testTuple[1], testTuple[0])
+            # Set force constant to zero in state B if bond only exists in state A and does not involve a virtual site
+            if (testTuple not in alreadySeenTuplesB) and (inverseTuple not in alreadySeenTuplesB) and (testTuple[0]-1 in self.indexMapping[1]) and (testTuple[1]-1 in self.indexMapping[1]) and (testTuple[2]-1 in self.indexMapping[1]):
+                alreadySeen[-1][5] = "0.000000"
         alreadySeenTuples = [tuple(map(int, alreadySeen[i][0])) for i in range(len(alreadySeen))]
         for i in range(len(self.angles[1])):
             testTuple = (self.indexMapping[1][int(self.angles[1][i][0])-1]+1, self.indexMapping[1][int(self.angles[1][i][1])-1]+1, self.indexMapping[1][int(self.angles[1][i][2])-1]+1)
+            inverseTuple = (testTuple[2], testTuple[1], testTuple[0])
+            # modify force field paramerers for state B (check both permutations of the tuple)
             if testTuple in alreadySeenTuples:
                 alreadySeen[alreadySeenTuples.index(testTuple)][-2] = self.angles[1][i][4]
                 alreadySeen[alreadySeenTuples.index(testTuple)][-1] = self.angles[1][i][5]
+            elif inverseTuple in alreadySeenTuples:
+                alreadySeen[alreadySeenTuples.index(inverseTuple)][-2] = self.angles[1][i][4]
+                alreadySeen[alreadySeenTuples.index(inverseTuple)][-1] = self.angles[1][i][5]
+                # we have to avoid redundant angle definitions because they cause constraint errors
+                continue
             else:
                 alreadySeen.append([tuple(map(str, testTuple)), self.angles[1][i][3], self.angles[1][i][4], self.angles[1][i][5], self.angles[1][i][4], self.angles[1][i][5]])
+            # Set force constant to zero in state A if angle only exists in state B and does not involve a virtual site
+            if (testTuple not in alreadySeenTuples) and (inverseTuple not in alreadySeenTuples) and (testTuple[0]-1 < len(self.atoms[0])) and (testTuple[1]-1 < len(self.atoms[0])) and (testTuple[2]-1 < len(self.atoms[0])):
+                alreadySeen[-1][3] = "0.000000"
         for i in range(len(alreadySeen)):
             resultString = ""
             resultString += alreadySeen[i][0][0].rjust(justificationList[0]) + alreadySeen[i][0][1].rjust(justificationList[1]) + alreadySeen[i][0][2].rjust(justificationList[2])
@@ -370,7 +408,7 @@ class TopologyMerger:
                 listToAppend.append(self.dihedrals[0][i][j])
             for j in range(5, 8):
                 listToAppend.append(self.dihedrals[0][i][j])
-            listToAppend[6] = "0" # why?
+            listToAppend[6] = "0"
             alreadySeen.append(listToAppend)
         for i in range(len(self.dihedrals[1])):
             listToAppend = []
@@ -380,7 +418,7 @@ class TopologyMerger:
                 listToAppend.append(self.dihedrals[1][i][j])
             for j in range(5, 8):
                 listToAppend.append(self.dihedrals[1][i][j])
-            listToAppend[3] = "0" # why?
+            listToAppend[3] = "0"
             alreadySeen.append(listToAppend)
         for i in range(len(alreadySeen)):
             resultString = ""
@@ -399,9 +437,9 @@ class TopologyMerger:
                 check = True
             if check:
                 if ((i < len(self.dihedrals[0])) and (int(alreadySeen[i][1]) == 4) and (float(alreadySeen[i][3]) > 0) and (float(alreadySeen[i][6]) == 0)):
-                    alreadySeen[i][3] = "0" # why?
+                    alreadySeen[i][3] = "0"
                 elif ((i >= len(self.dihedrals[0])) and (int(alreadySeen[i][1]) == 4) and (float(alreadySeen[i][3]) == 0) and (float(alreadySeen[i][6]) > 0)):
-                    alreadySeen[i][6] = "0" # why?
+                    alreadySeen[i][6] = "0"
                 else:
                     alreadySeen[i][3], alreadySeen[i][6] = alreadySeen[i][6], alreadySeen[i][3]
                 resultString = ""
@@ -467,7 +505,8 @@ class TopologyMerger:
             if i == 0:
                 outputFile.write(groFileList[0][0])
             elif i == 1:
-                outputFile.write(" {:d}\n".format(max(self.indexMapping[-1]) + 1))
+                atomNumber = max([self.indexMapping[0][-1] + 1, max(self.indexMapping[-1]) + 1])
+                outputFile.write(" {:d}\n".format(atomNumber))
             else:
                 string = ""
                 for j in range(3):

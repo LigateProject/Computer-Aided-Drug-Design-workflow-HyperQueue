@@ -115,8 +115,8 @@ fi
 # run grompp to get input .tpr file
 # need to use soft-core potentials although vdW is not switched off => ignore the corresponding warning
 # system may have a slight net charge due to rounding errors => ignore that warning, too
-${GROMACS} grompp -f ${MDP_FILE} -c ions_complex.gro -p topol_amber.top -o equiNVT_complex.tpr -po equiNVTOut_complex.mdp -maxwarn 2 || true
-${GROMACS} grompp -f ${MDP_FILE} -c ions_ligand.gro -p topol_ligandInWater.top -o equiNVT_ligand.tpr -po equiNVTOut_ligand.mdp -maxwarn 2 || true
+${GROMACS} grompp -f ${MDP_FILE} -c ions_complex.gro -p topol_amber.top -o equiNVT_complex.tpr -po equiNVTOut_complex.mdp -maxwarn 3 || true
+${GROMACS} grompp -f ${MDP_FILE} -c ions_ligand.gro -p topol_ligandInWater.top -o equiNVT_ligand.tpr -po equiNVTOut_ligand.mdp -maxwarn 3 || true
 ## error catching
 ## TPR file for equilibration must exist
 if ! [ -f equiNVT_complex.tpr ]

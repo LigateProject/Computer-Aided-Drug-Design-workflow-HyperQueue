@@ -121,8 +121,8 @@ gen-vel                  = no ; we want to start at 0 K => no velocities
 gen-temp                 = 298
 gen-seed                 = -1
 
-; OPTIONS FOR BONDS    
-constraints              = all-bonds
+; OPTIONS FOR BONDS
+constraints              = h-bonds
 ; Type of constraint algorithm
 constraint-algorithm     = Lincs
 ; Do not constrain the start configuration
