@@ -182,6 +182,12 @@ def check_has_extension(path: GenericPath, extension: str):
         )
 
 
+def check_file_exists(path: GenericPath):
+    path = Path(path)
+    if not path.is_file():
+        raise Exception(f"The path {path} is not an existing file.")
+
+
 def check_file_nonempty(path: GenericPath):
     path = Path(path)
     if not path.is_file():

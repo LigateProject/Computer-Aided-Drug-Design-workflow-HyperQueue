@@ -2,7 +2,13 @@
 #    uv pip compile --extra awh pyproject.toml -o requirements.txt
 accelerate==0.20.3
 acpype==2022.7.21
+beartype==0.18.5
+    # via
+    #   plum-dispatch
+    #   pyserde
 biopython==1.81
+casefy==0.1.7
+    # via pyserde
 certifi==2024.2.2
     # via requests
 charset-normalizer==3.3.2
@@ -35,6 +41,7 @@ hyperqueue==0.17.0
 idna==3.6
     # via requests
 jinja2==3.1.3
+    # via pyserde
 kiwisolver==1.4.5
     # via matplotlib
 markupsafe==2.1.5
@@ -45,6 +52,8 @@ matplotlib==3.8.4
     #   seaborn
 mpi4py==3.1.5
     # via gmx-mmpbsa
+mypy-extensions==1.0.0
+    # via typing-inspect
 networkx==3.3
 numpy==1.23.0
     # via
@@ -87,10 +96,13 @@ pillow==10.3.0
     # via
     #   matplotlib
     #   rdkit
+plum-dispatch==2.2.2
+    # via pyserde
 psutil==5.9.8
     # via accelerate
 pyparsing==3.1.2
     # via matplotlib
+pyserde==0.19.0
 python-dateutil==2.9.0.post0
     # via
     #   matplotlib
@@ -146,7 +158,12 @@ typer==0.4.1
 typing-extensions==4.11.0
     # via
     #   huggingface-hub
+    #   plum-dispatch
+    #   pyserde
     #   torch
+    #   typing-inspect
+typing-inspect==0.9.0
+    # via pyserde
 urllib3==2.2.1
     # via requests
 wheel==0.43.0
