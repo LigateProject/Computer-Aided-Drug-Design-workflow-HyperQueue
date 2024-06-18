@@ -7,6 +7,8 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import ContextManager, List, Optional, Union
 
+from ...utils.io import ensure_directory
+
 logger = logging.getLogger(__name__)
 
 GenericPath = Union[Path, str]
@@ -101,9 +103,3 @@ class LigenContainerContext:
                     if not host_path.is_file():
                         raise Exception(f"Output file `{file.host_path}` not found")
                     shutil.copy(host_path, file.target_path)
-
-
-def ensure_directory(path: GenericPath) -> Path:
-    path = Path(path)
-    path.mkdir(parents=True, exist_ok=True)
-    return path.absolute()
