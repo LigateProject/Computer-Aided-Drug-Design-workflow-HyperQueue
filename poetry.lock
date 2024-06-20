@@ -619,13 +619,13 @@ typing = ["types-PyYAML", "types-requests", "types-simplejson", "types-toml", "t
 
 [[package]]
 name = "hyperqueue"
-version = "0.17.0"
+version = "0.18.0"
 description = "HyperQueue Python API"
 category = "main"
 optional = false
 python-versions = ">=3.6"
 files = [
-    {file = "hyperqueue-0.17.0-cp36-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:c76962524d3a3f7263f7f4310f85e0d06e93948220913f861baa753687db27d3"},
+    {file = "hyperqueue-0.18.0-cp36-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:1a4ffd9cc61b4fea5854e4d8d30d535c5a5cbe27eb01876ff0d1acf42f93e091"},
 ]
 
 [package.dependencies]
@@ -2597,4 +2597,4 @@ awh = ["Jinja2", "numpy", "cython", "rdkit", "biopython", "tmbed", "accelerate",
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "397865c7898c98f7a279a1944d9fe118dd9794808c35e0a092e50aec3869bb66"
+content-hash = "d289e74d11cc2db4fb6d6119d9abb3ce812860f8785ae0ef6b0e37edd8caefac"

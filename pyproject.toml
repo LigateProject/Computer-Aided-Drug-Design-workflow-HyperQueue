@@ -7,7 +7,7 @@ license = "MIT"
 
 [tool.poetry.dependencies]
 python = "^3.10"
-hyperqueue = "^0.17.0"
+hyperqueue = "0.18.0"
 click = "^8.1.3"
 typer = "0.4.1"
 Jinja2 = { version = "^3.1.1", optional = true }
