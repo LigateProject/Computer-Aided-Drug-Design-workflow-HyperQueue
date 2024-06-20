@@ -8,14 +8,13 @@ from typing import List
 import hyperqueue
 import typer
 from hyperqueue import Job
-from hyperqueue.ffi.protocol import ResourceRequest
 from hyperqueue.task.function import PythonEnv
 from hyperqueue.task.task import Task
 from hyperqueue.visualization import visualize_job
 
 from ligate.awh.common import Complex, Ligand
 from ligate.awh.ligen.common import LigenTaskContext
-from ligate.awh.pipeline.awh import AWHParams, run_awh_until_convergence
+# from ligate.awh.pipeline.awh import AWHParams, run_awh_until_convergence
 from ligate.awh.pipeline.check_protein.tasks import hq_submit_check_protein
 from ligate.awh.pipeline.common import ComplexOrLigandTask, construct_edge_set_from_dir
 from ligate.awh.pipeline.docking import (
@@ -188,17 +187,17 @@ def awh_workflow(
             hq=hq_ctx
         )
         dep = snapshot_task(actual_input_dir, "after-prepare-production-simulation", [dep])
-        awh_params = AWHParams(
-            cores=8
-        )
-        for (edge, pose) in edge_set.iterate_poses():
+        # awh_params = AWHParams(
+        #     cores=8
+        # )
+        # for (edge, pose) in edge_set.iterate_poses():
             #     run_awh_until_convergence(awh_params, edge.pose_dir(pose), gmx=gmx)
-            dep = job.function(run_awh_until_convergence,
-                               args=(awh_params, edge.pose_dir(pose), gmx),
-                               resources=ResourceRequest(cpus=awh_params.cores),
-                               deps=[dep])
-            dep = snapshot_task(actual_input_dir, "after-awh", [dep])
-            break
+            # dep = job.function(run_awh_until_convergence,
+            #                    args=(awh_params, edge.pose_dir(pose), gmx),
+            #                    resources=ResourceRequest(cpus=awh_params.cores),
+            #                    deps=[dep])
+            # dep = snapshot_task(actual_input_dir, "after-awh", [dep])
+            # break
     else:
         assert False
 
