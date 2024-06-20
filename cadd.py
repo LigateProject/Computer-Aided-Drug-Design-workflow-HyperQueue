@@ -7,7 +7,7 @@ from typing import List
 
 import hyperqueue
 import typer
-from hyperqueue import Job
+from hyperqueue import Client, Job
 from hyperqueue.task.function import PythonEnv
 from hyperqueue.task.task import Task
 from hyperqueue.visualization import visualize_job
@@ -217,16 +217,22 @@ def load_ligen_params(path: Path) -> LigenWorkfowParams:
     )
 
 
-def run_job_locally(job: Job):
-    with hyperqueue.cluster.LocalCluster() as cluster:
-        cluster.start_worker()
-        client = cluster.client(
-            python_env=PythonEnv(
-                prologue=f"""export PYTHONPATH=$PYTHONPATH:{os.getcwd()}"""
-            )
-        )
+def run_hq_job(job: Job, local_cluster: bool = False):
+    env = PythonEnv(
+        prologue=f"""export PYTHONPATH=$PYTHONPATH:{os.getcwd()}"""
+    )
+
+    def run(client: Client):
         submitted = client.submit(job)
         client.wait_for_jobs([submitted])
+
+    if local_cluster:
+        with hyperqueue.cluster.LocalCluster() as cluster:
+            cluster.start_worker()
+            client = cluster.client(python_env=env)
+            run(client)
+    else:
+        run(Client())
 
 
 @app.command()
@@ -234,8 +240,9 @@ def ligen(
         workdir: Path,
         params: Path,
         ligen_container: Path,
+        local_cluster: bool = False
 ):
-    workdir = workdir.resolve()
+    workdir = ensure_directory(workdir, clear=True)
     job = Job(default_workdir=workdir / "hq", default_env=dict(HQ_PYLOG="DEBUG"))
 
     ligen_ctx = LigenTaskContext(
@@ -252,7 +259,7 @@ def ligen(
 
     visualize_job(job, "job.dot")
 
-    run_job_locally(job)
+    run_hq_job(job, local_cluster=local_cluster)
 
 
 @app.command()
@@ -270,7 +277,7 @@ def awh():
 
     visualize_job(job, "job.dot")
 
-    run_job_locally(job)
+    run_hq_job(job, local_cluster=True)
 
 
 if __name__ == "__main__":
