@@ -42,10 +42,16 @@ app = typer.Typer()
 
 
 @dataclasses.dataclass
-class LigenWorkfowParams:
+class LigenWorkflowData:
     protein_pdb: Path
     probe_mol2: Path
     smi: Path
+
+
+@dataclasses.dataclass
+class LigenWorkfowParams:
+    data: LigenWorkflowData
+    max_molecules_per_smi: int = 10
 
 
 def ligen_workflow(
@@ -59,15 +65,15 @@ def ligen_workflow(
     """
     ensure_directory(ligen_ctx.workdir)
 
-    task = hq_submit_check_protein(params.protein_pdb, ligen_ctx.workdir, job)
+    task = hq_submit_check_protein(params.data.protein_pdb, ligen_ctx.workdir, job)
 
     # Perform virtual screening. Expand SMI into MOL2, and generate a CSV with scores for each
     # ligand in the input SMI file.
     screening_config = VirtualScreeningPipelineConfig(
-        input_smi=params.smi,
-        input_probe_mol2=params.probe_mol2,
-        input_protein=params.protein_pdb,
-        max_molecules_per_smi=4,
+        input_smi=params.data.smi,
+        input_probe_mol2=params.data.probe_mol2,
+        input_protein=params.data.protein_pdb,
+        max_molecules_per_smi=params.max_molecules_per_smi,
     )
     output = hq_submit_ligen_virtual_screening_workflow(
         ligen_ctx,
@@ -91,8 +97,8 @@ def ligen_workflow(
     # Dock the best ligands.
     docking_config = DockingPipelineConfig(
         input_smi=best_ligands_smi,
-        input_probe_mol2=params.probe_mol2,
-        input_protein=params.protein_pdb,
+        input_probe_mol2=params.data.probe_mol2,
+        input_protein=params.data.protein_pdb,
     )
     return hq_submit_ligen_docking_workflow(
         ligen_ctx, ligen_ctx.workdir / "docking", docking_config, job, deps=[select_task]
@@ -199,13 +205,16 @@ def awh_workflow(
 
 def load_ligen_params(path: Path) -> LigenWorkfowParams:
     params = deserialize_yaml(LigenWorkfowParams, path)
-    check_file_exists(params.protein_pdb)
-    check_file_exists(params.probe_mol2)
-    check_file_exists(params.smi)
+    check_file_exists(params.data.protein_pdb)
+    check_file_exists(params.data.probe_mol2)
+    check_file_exists(params.data.smi)
     return LigenWorkfowParams(
-        protein_pdb=params.protein_pdb.resolve(),
-        probe_mol2=params.probe_mol2.resolve(),
-        smi=params.smi.resolve(),
+        data=LigenWorkflowData(
+            protein_pdb=params.data.protein_pdb.resolve(),
+            probe_mol2=params.data.probe_mol2.resolve(),
+            smi=params.data.smi.resolve(),
+        ),
+        max_molecules_per_smi=params.max_molecules_per_smi
     )
 
 
@@ -222,7 +231,7 @@ def run_job_locally(job: Job):
 
 
 @app.command()
-def ligen_vscreen(
+def ligen(
         workdir: Path,
         params: Path,
         ligen_container: Path,
