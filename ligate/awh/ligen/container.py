@@ -1,5 +1,6 @@
 import contextlib
 import logging
+import os
 import shutil
 import subprocess
 import tempfile
@@ -77,6 +78,10 @@ class LigenContainerContext:
         return self.map_file(path, input=False)
 
     def run(self, command: str, input: Optional[bytes] = None):
+        # Clear the environment, to remove MPI/PMI/Slurm env. variables
+        env = {}
+        if "PATH" in os.environ:
+            env["PATH"] = os.environ["PATH"]
         with tempfile.TemporaryDirectory() as tmpdir:
             subprocess.check_output(
                 [
@@ -89,11 +94,10 @@ class LigenContainerContext:
                     str(self.container),
                     "bash",
                     "-c",
-                    # mpirun is needed in order for Ligen to work, otherwise it sometimes crashes in
-                    # MPI I/O
-                    f"""mpirun -np 1 --bind-to none {command}""",
+                    command
                 ],
                 input=input,
+                env=env
             )
     
             # Copy output files from the tmpdir to their destination
