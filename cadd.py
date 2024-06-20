@@ -2,6 +2,7 @@ import dataclasses
 import logging
 import os
 import shutil
+import sys
 from pathlib import Path
 from typing import List
 
@@ -219,7 +220,8 @@ def load_ligen_params(path: Path) -> LigenWorkfowParams:
 
 def run_hq_job(job: Job, local_cluster: bool = False):
     env = PythonEnv(
-        prologue=f"""export PYTHONPATH=$PYTHONPATH:{os.getcwd()}"""
+        prologue=f"""export PYTHONPATH=$PYTHONPATH:{os.getcwd()}""",
+        python_bin=sys.executable
     )
 
     def run(client: Client):
