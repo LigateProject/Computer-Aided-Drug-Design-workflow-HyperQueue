@@ -232,7 +232,7 @@ def run_hq_job(job: Job, local_cluster: bool = False):
             client = cluster.client(python_env=env)
             run(client)
     else:
-        run(Client())
+        run(Client(server_dir=os.environ.get("HQ_SERVER_DIR"), python_env=env))
 
 
 @app.command()
