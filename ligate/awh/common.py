@@ -43,6 +43,10 @@ class ComplexOrLigand(PathProvider):
     def equiNVT(self) -> Path:
         raise NotImplementedError
 
+    @property
+    def production_tpr(self) -> Path:
+        raise NotImplementedError
+
 
 class Complex(ComplexOrLigand):
     @property
@@ -73,6 +77,10 @@ class Complex(ComplexOrLigand):
     def equiNVT(self) -> Path:
         return self.file_path("equiNVT_complex.tpr")
 
+    @property
+    def production_tpr(self) -> Path:
+        return self.file_path("production_complex.tpr")
+
 
 class Ligand(ComplexOrLigand):
     @property
@@ -102,3 +110,7 @@ class Ligand(ComplexOrLigand):
     @property
     def equiNVT(self) -> Path:
         return self.file_path("equiNVT_ligand.tpr")
+
+    @property
+    def production_tpr(self) -> Path:
+        return self.file_path("production_ligand.tpr")

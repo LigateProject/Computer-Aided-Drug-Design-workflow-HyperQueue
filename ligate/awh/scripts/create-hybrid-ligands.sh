@@ -92,6 +92,10 @@ eof
 # print position restraints file for ligand
 python3 $PATH_TO_SCRIPTS/posResForLigand.py 
 
+# make sure masses are not changed because this is not supported with AWH
+python3 ${PATH_TO_SCRIPTS}/fixMassesForAWH.py
+mv mergedConstantMass.itp merged.itp
+
 # include position restraints for protein correctly
 for file in *; do
 if grep -q "posre" ${file} && ! grep -q "posre_ligand" ${file}

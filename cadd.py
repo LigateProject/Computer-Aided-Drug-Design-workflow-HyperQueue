@@ -16,7 +16,6 @@ from hyperqueue.visualization import visualize_job
 from ligate.awh.common import Complex, Ligand
 from ligate.awh.ligen.common import LigenTaskContext
 # from ligate.awh.pipeline.awh import AWHParams, run_awh_until_convergence
-from ligate.awh.pipeline.check_protein.tasks import hq_submit_check_protein
 from ligate.awh.pipeline.common import ComplexOrLigandTask, construct_edge_set_from_dir
 from ligate.awh.pipeline.docking import (
     DockingPipelineConfig, SubmittedDockingPipeline, hq_submit_ligen_docking_workflow,
@@ -65,7 +64,8 @@ def ligen_workflow(
     """
     ensure_directory(ligen_ctx.workdir)
 
-    task = hq_submit_check_protein(params.data.protein_pdb, ligen_ctx.workdir, job)
+    # Do not run this for the demo, it is not necessary
+    # task = hq_submit_check_protein(params.data.protein_pdb, ligen_ctx.workdir, job)
 
     # Perform virtual screening. Expand SMI into MOL2, and generate a CSV with scores for each
     # ligand in the input SMI file.
@@ -80,7 +80,8 @@ def ligen_workflow(
         ligen_ctx.workdir / "vscreening",
         config=screening_config,
         job=job,
-        deps=[task],
+        deps=[]
+        # deps=[task],
     )
 
     # Select best N ligands based on the assigned scores, and generate a new SMI file with the
@@ -106,13 +107,12 @@ def ligen_workflow(
 
 
 def awh_workflow(
-        job: Job,
         input_dir: Path,
         workdir: Path,
-):
+) -> Job:
     gmx = Gromacs("installed/gromacs/bin/gmx")
 
-    reference_dir = ensure_directory("workdir-reference-mcl1")
+    reference_dir = ensure_directory("workdir-reference")
 
     def snapshot_dir(dir: Path, name: str):
         target = reference_dir / name
@@ -120,30 +120,39 @@ def awh_workflow(
             delete_path(target)
         shutil.copytree(dir, reference_dir / name)
 
-    def snapshot_task(dir: Path, name: str, tasks: List[Task]) -> Task:
-        return job.function(lambda: snapshot_dir(dir, name), deps=tasks)
+    def snapshot_task(job: Job, dir: Path, name: str, tasks: List[Task]) -> Task:
+        return job.function(lambda: snapshot_dir(dir, name), deps=tasks, name=f"snapshot-{name}")
 
     def ref_dir(name: str) -> Path:
         return reference_dir / name
 
     # Copy the original input directory
-    snapshot_dir(input_dir, "after-hybrid-ligands")
+    snapshot_dir(input_dir, "after-gromacs-ligen-integration")
 
     # start_step = "after-gromacs-ligen-integration"
-    # start_step = "after-hybrid-ligands"
+    start_step = "after-hybrid-ligands"
     # start_step = "after-minimization"
     # start_step = "after-prepare-equilibrate"
-    start_step = "after-equilibrate"
+    # start_step = "after-equilibrate"
     # start_step = "after-prepare-production-simulation"
     actual_input_dir = workdir / "cadd"
     shutil.copytree(ref_dir(start_step), actual_input_dir)
 
-    hq_ctx = HqCtx(job=job)
-    # task = hq_submit_hybrid_ligands(
+    hq_workdir = workdir / "hq"
+
+    # First job
+    # job = create_job(hq_workdir)
+    # hq_ctx = HqCtx(job=job)
+    # dep = hq_submit_hybrid_ligands(
     #     CreateHybridLigandsParams(directory=actual_input_dir, cores=8),
     #     hq=hq_ctx
     # )
-    # task = snapshot_task(actual_input_dir, "after-hybrid-ligands", [task])
+    # snapshot_task(job, actual_input_dir, "after-hybrid-ligands", [dep])
+    # run_hq_job(job, local_cluster=True)
+
+    # Second job
+    job = create_job(hq_workdir)
+    hq_ctx = HqCtx(job=job)
 
     # Construct the initial task item for a ligand and complex in each pose
     edge_set = construct_edge_set_from_dir(actual_input_dir)
@@ -156,7 +165,7 @@ def awh_workflow(
                 item=item(edge.pose_dir(pose)),
             ))
 
-    mode = "prepare-production-simulation"
+    mode = "minimize"
 
     # Minimization
     if mode == "minimize":
@@ -164,7 +173,7 @@ def awh_workflow(
         for task in tasks:
             task.task = hq_submit_minimization(task.item, params=minimization_params, gmx=gmx,
                                                hq=hq_ctx.with_dep(task.task))
-        dep = snapshot_task(actual_input_dir, "after-minimization", [t.task for t in tasks])
+        dep = snapshot_task(job, actual_input_dir, "after-minimization", [t.task for t in tasks])
 
         # Prepare equilibration
         equilibrate_params = EquilibrateParams(steps=10, cores=4)
@@ -174,18 +183,25 @@ def awh_workflow(
             name="prepare-equilibrate",
             deps=[dep]
         )
-        dep = snapshot_task(actual_input_dir, "after-prepare-equilibrate", [dep])
+        dep = snapshot_task(job, actual_input_dir, "after-prepare-equilibrate", [dep])
 
         # Equilibration
         for task in tasks:
             task.task = hq_submit_equilibrate(task.item, params=equilibrate_params, gmx=gmx,
                                               hq=hq_ctx.with_dep(dep))
-        dep = snapshot_task(actual_input_dir, "after-equilibrate", [t.task for t in tasks])
-    elif mode == "prepare-production-simulation":
-        dep = hq_submit_prepare_production_simulation(
-            PrepareProductionSimulationParams(directory=actual_input_dir, cores=8, steps=5000),
-            gmx=gmx,
-            hq=hq_ctx
+        dep = snapshot_task(job, actual_input_dir, "after-equilibrate", [t.task for t in tasks])
+
+        # Prepare production simulation
+        production_params = PrepareProductionSimulationParams(steps=50)
+        for task in tasks:
+            task.task = hq_submit_prepare_production_simulation(
+                task.item, params=production_params, gmx=gmx,
+                hq=hq_ctx.with_dep(dep))
+        dep = snapshot_task(job, actual_input_dir, "after-prepare-production-simulation",
+                            [t.task for t in tasks])
+    elif mode == "awh":
+        awh_params = AWHParams(
+            cores=8
         )
         dep = snapshot_task(actual_input_dir, "after-prepare-production-simulation", [dep])
         # awh_params = AWHParams(
@@ -201,6 +217,7 @@ def awh_workflow(
             # break
     else:
         assert False
+    return job
 
 
 def load_ligen_params(path: Path) -> LigenWorkfowParams:
@@ -237,6 +254,10 @@ def run_hq_job(job: Job, local_cluster: bool = False):
         run(Client(server_dir=os.environ.get("HQ_SERVER_DIR"), python_env=env))
 
 
+def create_job(workdir) -> Job:
+    return Job(default_workdir=workdir, default_env=dict(HQ_PYLOG="DEBUG"))
+
+
 @app.command()
 def ligen(
         workdir: Path,
@@ -245,7 +266,7 @@ def ligen(
         local_cluster: bool = False
 ):
     workdir = ensure_directory(workdir, clear=True)
-    job = Job(default_workdir=workdir / "hq", default_env=dict(HQ_PYLOG="DEBUG"))
+    job = create_job(workdir / "hq")
 
     ligen_ctx = LigenTaskContext(
         workdir=workdir,
@@ -266,16 +287,15 @@ def ligen(
 
 @app.command()
 def awh():
-    WORKDIR = ensure_directory(Path("workdir"), clear=True)
+    workdir = ensure_directory(Path("workdir"), clear=True)
 
-    job = Job(default_workdir=WORKDIR / "hq", default_env=dict(HQ_PYLOG="DEBUG"))
+    job = awh_workflow(Path(
+        "backup/ligate-workflows/referenceData/02_refOut_GROMACS_LiGen_integration").resolve(),
+                       workdir)
+    # awh_workflow(job, Path("data/mcl1/02_refOut_GROMACS_LiGen_integration").absolute(), workdir)
     # awh_workflow(job, Path(
-    #     "backup/ligate-workflows/referenceData/02_refOut_GROMACS_LiGen_integration").resolve(),
-    #              WORKDIR)
-    # awh_workflow(job, Path("data/mcl1/02_refOut_GROMACS_LiGen_integration").absolute(), WORKDIR)
-    awh_workflow(job, Path(
-        "backup/ligate-workflows/referenceData-mcl1/03_refOut_createHybridLigands").resolve(),
-                 WORKDIR)
+    #     "backup/ligate-workflows/referenceData-mcl1/03_refOut_createHybridLigands").resolve(),
+    #              workdir)
 
     visualize_job(job, "job.dot")
 

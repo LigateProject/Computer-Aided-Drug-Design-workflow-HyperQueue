@@ -1,30 +1,32 @@
 import dataclasses
-from pathlib import Path
 
-from ...scripts import PREPARE_PRODUCTION_SIMULATION_SCRIPT, SCRIPTS_DIR
+from ...common import ComplexOrLigand
 from ....mdp import generate_production_mdp
-from ....utils.cmd import execute_command, replace_env
+from ....utils.io import check_file_nonempty, delete_file
 from ....wrapper.gromacs import Gromacs
 
 
 @dataclasses.dataclass
 class PrepareProductionSimulationParams:
-    directory: Path
     steps: int = -1
-    cores: int = 4
 
 
-def prepare_production_simulation(params: PrepareProductionSimulationParams, gmx: Gromacs):
+def prepare_production_simulation(
+        item: ComplexOrLigand,
+        params: PrepareProductionSimulationParams,
+        gmx: Gromacs
+):
+    out_mdp = f"productionOut_{item.kind}.mdp"
+
     with generate_production_mdp(steps=params.steps) as mdp:
-        env = replace_env(
-            OMP_NUM_THREADS=str(params.cores),
-            CADD_SCRIPTS_DIR=str(SCRIPTS_DIR),
-            GROMACS=str(gmx.binary_path),
-            MDP_FILE=str(mdp)
-        )
-
-        execute_command(
-            [PREPARE_PRODUCTION_SIMULATION_SCRIPT],
-            workdir=params.directory,
-            env=env
-        )
+        gmx.execute([
+            "grompp",
+            "-f", mdp,
+            "-c", item.equiNVT,
+            "-p", item.topology_file,
+            "-o", item.production_tpr,
+            "-po", out_mdp,
+            "-maxwarn", "2"
+        ], workdir=item.path)
+        check_file_nonempty(item.production_tpr)
+        delete_file(item.file_path(out_mdp))
