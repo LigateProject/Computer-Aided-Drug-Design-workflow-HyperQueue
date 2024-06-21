@@ -26,23 +26,37 @@ class MappedFile:
     input: bool
 
 
+def detect_apptainer_binary() -> str:
+    apptainer = shutil.which("apptainer")
+    if apptainer is not None:
+        return apptainer
+    logger.warning("Could not find apptainer binary, trying to fall back to singularity")
+    singularity = shutil.which("singularity")
+    if singularity is not None:
+        return singularity
+    raise Exception("`apptainer` nor `singularity` found in the environment")
+
+
 @contextlib.contextmanager
 def ligen_container(container: GenericPath) -> ContextManager["LigenContainerContext"]:
+    apptainer = detect_apptainer_binary()
+
     container = Path(container).absolute()
     with tempfile.TemporaryDirectory() as tmpdir:
         tmpdir = Path(tmpdir)
-        ctx = LigenContainerContext(container, tmpdir)
+        ctx = LigenContainerContext(container, tmpdir, apptainer_bin=apptainer)
         yield ctx
 
 
 class LigenContainerContext:
-    def __init__(self, container: Path, directory: Path):
+    def __init__(self, container: Path, directory: Path, apptainer_bin: str = "apptainer"):
         self.container = container
         self.apptainer_dir = ensure_directory(directory / "apptainer")
         self.files_container_dir = Path("/files")
         self.files_host_dir = ensure_directory(directory / "files")
         self.mapped_files: List[MappedFile] = []
         self.file_names = set()
+        self.apptainer_bin = apptainer_bin
 
     def map_file(self, path: Path, input: bool) -> Path:
         """
@@ -85,7 +99,7 @@ class LigenContainerContext:
         with tempfile.TemporaryDirectory() as tmpdir:
             subprocess.check_output(
                 [
-                    "apptainer",
+                    self.apptainer_bin,
                     "exec",
                     "--bind", f"{self.files_host_dir}:{self.files_container_dir}",
                     # Some processes inside the container can share /tmp, which doesn't end well
