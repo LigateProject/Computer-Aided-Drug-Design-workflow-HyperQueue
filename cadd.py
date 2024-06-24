@@ -56,7 +56,8 @@ class LigenWorkfowParams:
 def ligen_workflow(
         job: Job,
         params: LigenWorkfowParams,
-        ligen_ctx: LigenTaskContext
+        ligen_ctx: LigenTaskContext,
+        dock: bool
 ) -> SubmittedDockingPipeline:
     """
     Checks the input protein, performs virtual screening and docking of the most
@@ -86,24 +87,25 @@ def ligen_workflow(
 
     # Select best N ligands based on the assigned scores, and generate a new SMI file with the
     # best ligands.
-    best_ligands_smi = ligen_ctx.workdir / "selected-ligands.smi"
-    selection_config = LigandSelectionConfig(
-        input_smi=screening_config.input_smi,
-        scores_csv=output.output_scores_csv,
-        output_smi=best_ligands_smi,
-        n_ligands=10,
-    )
-    select_task = hq_submit_select_ligands(selection_config, job, output.tasks)
-
-    # Dock the best ligands.
-    docking_config = DockingPipelineConfig(
-        input_smi=best_ligands_smi,
-        input_probe_mol2=params.data.probe_mol2,
-        input_protein=params.data.protein_pdb,
-    )
-    return hq_submit_ligen_docking_workflow(
-        ligen_ctx, ligen_ctx.workdir / "docking", docking_config, job, deps=[select_task]
-    )
+    if dock:
+        best_ligands_smi = ligen_ctx.workdir / "selected-ligands.smi"
+        selection_config = LigandSelectionConfig(
+            input_smi=screening_config.input_smi,
+            scores_csv=output.output_scores_csv,
+            output_smi=best_ligands_smi,
+            n_ligands=10,
+        )
+        select_task = hq_submit_select_ligands(selection_config, job, output.tasks)
+    
+        # Dock the best ligands.
+        docking_config = DockingPipelineConfig(
+            input_smi=best_ligands_smi,
+            input_probe_mol2=params.data.probe_mol2,
+            input_protein=params.data.protein_pdb,
+        )
+        return hq_submit_ligen_docking_workflow(
+            ligen_ctx, ligen_ctx.workdir / "docking", docking_config, job, deps=[select_task]
+        )
 
 
 def awh_workflow(
@@ -263,7 +265,8 @@ def ligen(
         workdir: Path,
         params: Path,
         ligen_container: Path,
-        local_cluster: bool = False
+        dock: bool = False,
+        local_cluster: bool = False,
 ):
     workdir = ensure_directory(workdir, clear=True)
     job = create_job(workdir / "hq")
@@ -277,7 +280,8 @@ def ligen(
     ligen_workflow(
         job,
         params=params,
-        ligen_ctx=ligen_ctx
+        ligen_ctx=ligen_ctx,
+        dock=dock
     )
 
     visualize_job(job, "job.dot")
