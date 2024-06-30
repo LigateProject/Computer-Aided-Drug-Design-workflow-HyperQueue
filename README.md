@@ -1,4 +1,4 @@
-# Ligate Ligen/Gromacs CADD workflow
+# Ligate LiGen/Gromacs CADD workflow
 This repository contains a HyperQueue workflow that implements a LiGen virtual screening + docking pipeline, and also a
 CADD pipeline that adds integration with GROMACS.
 
@@ -33,7 +33,7 @@ Before starting to set up anything, you should have at least the following packa
 
 You will then need to install several dependencies. You can examine the [Dockerfile](Dockerfile) to see how it installs these dependencies on Ubuntu 22.04.
 
-Steps 3) - 5) are only needed for the CADD pipeline.
+Steps 3 - 5 are only needed for the CADD pipeline.
 
 1) Create a virtual environment
     ```bash
@@ -62,8 +62,28 @@ Steps 3) - 5) are only needed for the CADD pipeline.
    ```
 
 
-## Running the pipelines
+## Usage
 
-### Ligen
+### LiGen
 1) Prepare the input dataset.
 It needs to consists of a `.pdb` protein file, a `.mol2` probe file, and a `.smi` file containing ligands.
+2) Get access to an Apptainer file containing LiGen tools (it is proprietary)
+3) Prepare a YAML file that configures the workflow parameters. Here is an example:
+    ```yaml
+    data:
+      protein_pdb: <path>
+      probe_mol2: <path>
+      smi: <path>
+    max_molecules_per_smi: <number>
+    ```
+    The `max_moleculer_per_smi` parameter specifies the number of ligands per HyperQueue task. A number such as `10` is a reasonable default.
+   The paths are resolved relative to the directory from which the script is executed (step 4.).
+4) Execute the workflow.
+    ```bash
+    (venv) $ python3 cadd.py ligen <workdir> <params-file> <ligen-container> [--dock] [--local-cluster]
+    ```
+    - `workdir` will store intermediate files and outputs of the workflow.
+    - `params-file` is a path to a YAML with workflow parameters (step 3).
+    - `ligen-container` is a path to the LiGen apptainer image (step 2).
+    - `--dock` specifies whether docking should also be performed. Without it, only virtual screening is performed.
+    - `--local-cluster` specifies whether a new HyperQueue cluster should be created. If unset, the code will try to connect to an existing HyperQueue instance on the local node.

@@ -65,9 +65,6 @@ def ligen_workflow(
     """
     ensure_directory(ligen_ctx.workdir)
 
-    # Do not run this for the demo, it is not necessary
-    # task = hq_submit_check_protein(params.data.protein_pdb, ligen_ctx.workdir, job)
-
     # Perform virtual screening. Expand SMI into MOL2, and generate a CSV with scores for each
     # ligand in the input SMI file.
     screening_config = VirtualScreeningPipelineConfig(
