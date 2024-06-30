@@ -1,0 +1,31 @@
+exclude = [
+    ".git",
+    ".git-rewrite",
+    ".ipynb_checkpoints",
+    ".pytest_cache",
+    ".ruff_cache",
+    "__pypackages__",
+    "_build",
+    "buck-out",
+    "build",
+    "dist",
+    "node_modules",
+    "site-packages",
+    "venv",
+]
+include = [
+    "ligate/**/*.py",
+    "tests/**/*.py",
+]
+
+line-length = 100
+indent-width = 4
+
+target-version = "py38"
+
+[lint]
+select = ["E4", "E7", "E9", "F"]
+ignore = [
+    # bare expect
+    "E722"
+]
