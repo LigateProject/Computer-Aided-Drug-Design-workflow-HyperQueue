@@ -60,3 +60,10 @@ Steps 3) - 5) are only needed for the CADD pipeline.
    ```bash
    (venv) $ python3 main.py check-env
    ```
+
+
+## Running the pipelines
+
+### Ligen
+1) Prepare the input dataset.
+It needs to consists of a `.pdb` protein file, a `.mol2` probe file, and a `.smi` file containing ligands.
