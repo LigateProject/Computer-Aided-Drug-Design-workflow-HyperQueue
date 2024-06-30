@@ -1,15 +1,12 @@
 # Ligate Ligen/Gromacs CADD workflow
-This repository contains various utility functions for converting Ligen/Gromacs files and primarily
-it implements two pipelines:
-1) Conversion from Ligen data to Gromacs data (`ligconv`)
-2) AWH pipeline (`awh`)
+This repository contains a HyperQueue workflow that implements a LiGen virtual screening + docking pipeline, and also a
+CADD pipeline that adds integration with GROMACS.
 
-Both pipelines use [HyperQueue](https://it4innovations.github.io/hyperqueue) to build and execute
-a task graph.
+Both pipelines use [HyperQueue](https://it4innovations.github.io/hyperqueue) to build and execute a task graph.
 
 ## Installation
 
-There is a bunch of external dependencies required to run the workflow. They can be installed in two ways, with a Dockerfile or natively on the target system.
+There are several external dependencies required to run the workflows. They can be installed in two ways, with a Dockerfile or natively on the target system.
 
 Before installing the dependencies, you have to download `AmbertTools23.tar.bz` from https://ambermd.org/GetAmber.php (registration is required to download it), and put it into the `deps` directory.
 
@@ -35,6 +32,8 @@ Before starting to set up anything, you should have at least the following packa
     - For example `libopenmpi-dev`
 
 You will then need to install several dependencies. You can examine the [Dockerfile](Dockerfile) to see how it installs these dependencies on Ubuntu 22.04.
+
+Steps 3) - 5) are only needed for the CADD pipeline.
 
 1) Create a virtual environment
     ```bash
